@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calculator, FileText, TrendingDown } from "lucide-react"
+import { Calculator, FileText, TrendingDown, CheckCircle, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+/* ---------------- MOCK DATA ---------------- */
 
 const tdsBreakdown = [
   { month: "April 2024", tdsAmount: 3800, salary: 75000 },
@@ -23,54 +25,71 @@ const deductions = [
   { section: "HRA", description: "House Rent Allowance", amount: 120000, utilized: 120000 },
 ]
 
+/* ---------------- CALCULATIONS ---------------- */
+
+const grossIncome = 900000
+const totalDeductions = deductions.reduce((acc, d) => acc + d.utilized, 0)
+const taxableIncome = grossIncome - totalDeductions
+const estimatedTax = 45600
+
+const totalTdsDeducted = tdsBreakdown.reduce((acc, t) => acc + t.tdsAmount, 0)
+const tdsStatus =
+  totalTdsDeducted >= estimatedTax ? "On Track" : "Shortfall"
+
+/* ---------------- COMPONENT ---------------- */
+
 export default function ClientTax() {
   return (
     <ClientLayout activeTab="/client/tax">
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Tax & TDS</h1>
-          <p className="text-muted-foreground">Manage your tax calculations and TDS details</p>
+          <p className="text-muted-foreground">
+            Estimated tax, TDS status, and eligible deductions
+          </p>
         </div>
 
-        {/* Tax Summary Cards */}
+        {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Gross Annual Income</CardTitle>
+              <CardTitle className="text-sm">Gross Annual Income</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">₹9,00,000</div>
-              <p className="text-xs text-muted-foreground mt-1">FY 2024-25</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Deductions</CardTitle>
+              <CardTitle className="text-sm">Eligible Deductions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">₹2,88,000</div>
-              <p className="text-xs text-muted-foreground mt-1">Section 80C, 80D, HRA</p>
+              <div className="text-2xl font-bold text-green-600">
+                ₹{totalDeductions.toLocaleString()}
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Taxable Income</CardTitle>
+              <CardTitle className="text-sm">Taxable Income</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹6,12,000</div>
-              <p className="text-xs text-muted-foreground mt-1">After deductions</p>
+              <div className="text-2xl font-bold">
+                ₹{taxableIncome.toLocaleString()}
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Estimated Tax</CardTitle>
+              <CardTitle className="text-sm">Estimated Tax</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">₹45,600</div>
-              <p className="text-xs text-muted-foreground mt-1">Old tax regime</p>
+              <div className="text-2xl font-bold text-primary">
+                ₹{estimatedTax.toLocaleString()}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -79,80 +98,70 @@ export default function ClientTax() {
           <TabsList>
             <TabsTrigger value="estimate">
               <Calculator className="mr-2 h-4 w-4" />
-              Tax Estimate
+              Estimated Tax
             </TabsTrigger>
             <TabsTrigger value="deductions">
               <TrendingDown className="mr-2 h-4 w-4" />
-              Deductions
+              Eligible Deductions
             </TabsTrigger>
             <TabsTrigger value="tds">
               <FileText className="mr-2 h-4 w-4" />
-              TDS Breakdown
+              TDS Status
             </TabsTrigger>
           </TabsList>
 
+          {/* Estimated Tax Calculation */}
           <TabsContent value="estimate">
             <Card>
               <CardHeader>
-                <CardTitle>Tax Calculation Summary</CardTitle>
-                <CardDescription>Detailed tax computation for FY 2024-25</CardDescription>
+                <CardTitle>Estimated Tax Calculation</CardTitle>
+                <CardDescription>
+                  Tax estimation based on current income and deductions (Old Regime)
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Gross Salary Income</p>
-                      <p className="text-lg font-semibold">₹9,00,000</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Other Income</p>
-                      <p className="text-lg font-semibold">₹0</p>
-                    </div>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 bg-muted p-4 rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Gross Income</p>
+                    <p className="font-semibold">₹9,00,000</p>
                   </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Deductions</p>
+                    <p className="font-semibold">- ₹{totalDeductions.toLocaleString()}</p>
+                  </div>
+                </div>
 
-                  <div className="space-y-2 border-l-4 border-primary pl-4">
-                    <h4 className="font-semibold">Deductions</h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Section 80C</span>
-                        <span className="font-medium">- ₹1,50,000</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Section 80D</span>
-                        <span className="font-medium">- ₹18,000</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">HRA Exemption</span>
-                        <span className="font-medium">- ₹1,20,000</span>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-2 gap-4 bg-primary/5 p-4 rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Taxable Income</p>
+                    <p className="text-xl font-bold text-primary">
+                      ₹{taxableIncome.toLocaleString()}
+                    </p>
                   </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Estimated Tax</p>
+                    <p className="text-xl font-bold text-primary">
+                      ₹{estimatedTax.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-primary/5 rounded-lg">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Taxable Income</p>
-                      <p className="text-xl font-bold text-primary">₹6,12,000</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Tax Payable</p>
-                      <p className="text-xl font-bold text-primary">₹45,600</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button>Download Tax Summary</Button>
-                    <Button variant="outline">Compare Regimes</Button>
-                  </div>
+                <div className="flex gap-4">
+                  <Button>Recalculate Tax</Button>
+                  <Button variant="outline">Compare New Regime</Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* Eligible Deductions */}
           <TabsContent value="deductions">
             <Card>
               <CardHeader>
-                <CardTitle>Deduction Summary</CardTitle>
-                <CardDescription>Track your tax-saving investments and deductions</CardDescription>
+                <CardTitle>Eligible Deductions</CardTitle>
+                <CardDescription>
+                  Track utilized vs remaining deduction limits
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -160,30 +169,31 @@ export default function ClientTax() {
                     <TableRow>
                       <TableHead>Section</TableHead>
                       <TableHead>Description</TableHead>
-                      <TableHead className="text-right">Max Limit</TableHead>
-                      <TableHead className="text-right">Utilized</TableHead>
+                      <TableHead className="text-right">Limit</TableHead>
+                      <TableHead className="text-right">Used</TableHead>
                       <TableHead className="text-right">Remaining</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deductions.map((deduction, index) => {
-                      const remaining = deduction.amount - deduction.utilized
-                      const percentage = (deduction.utilized / deduction.amount) * 100
+                    {deductions.map((d, i) => {
+                      const remaining = d.amount - d.utilized
                       return (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{deduction.section}</TableCell>
-                          <TableCell>{deduction.description}</TableCell>
-                          <TableCell className="text-right">₹{deduction.amount.toLocaleString()}</TableCell>
-                          <TableCell className="text-right">₹{deduction.utilized.toLocaleString()}</TableCell>
+                        <TableRow key={i}>
+                          <TableCell className="font-medium">{d.section}</TableCell>
+                          <TableCell>{d.description}</TableCell>
+                          <TableCell className="text-right">₹{d.amount.toLocaleString()}</TableCell>
+                          <TableCell className="text-right">₹{d.utilized.toLocaleString()}</TableCell>
                           <TableCell className="text-right">₹{remaining.toLocaleString()}</TableCell>
                           <TableCell>
-                            {percentage === 100 ? (
-                              <Badge className="bg-green-50 text-green-700">Maxed Out</Badge>
-                            ) : percentage === 0 ? (
+                            {remaining === 0 ? (
+                              <Badge className="bg-green-50 text-green-700">
+                                Fully Utilized
+                              </Badge>
+                            ) : remaining === d.amount ? (
                               <Badge variant="secondary">Not Used</Badge>
                             ) : (
-                              <Badge variant="outline">{percentage.toFixed(0)}% Used</Badge>
+                              <Badge variant="outline">Partially Used</Badge>
                             )}
                           </TableCell>
                         </TableRow>
@@ -195,50 +205,56 @@ export default function ClientTax() {
             </Card>
           </TabsContent>
 
+          {/* TDS Status */}
           <TabsContent value="tds">
             <Card>
               <CardHeader>
-                <CardTitle>TDS Breakdown</CardTitle>
-                <CardDescription>Monthly TDS deductions from salary</CardDescription>
+                <CardTitle>TDS Status</CardTitle>
+                <CardDescription>
+                  Track deducted TDS against estimated tax
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  {tdsStatus === "On Track" ? (
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                  )}
+                  <div>
+                    <p className="font-medium">TDS Status: {tdsStatus}</p>
+                    <p className="text-sm text-muted-foreground">
+                      TDS Deducted: ₹{totalTdsDeducted.toLocaleString()} | Estimated Tax: ₹{estimatedTax.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Month</TableHead>
-                      <TableHead className="text-right">Gross Salary</TableHead>
-                      <TableHead className="text-right">TDS Deducted</TableHead>
-                      <TableHead className="text-right">Net Salary</TableHead>
+                      <TableHead className="text-right">Salary</TableHead>
+                      <TableHead className="text-right">TDS</TableHead>
+                      <TableHead className="text-right">Net</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tdsBreakdown.map((tds, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{tds.month}</TableCell>
-                        <TableCell className="text-right">₹{tds.salary.toLocaleString()}</TableCell>
-                        <TableCell className="text-right text-red-600">- ₹{tds.tdsAmount.toLocaleString()}</TableCell>
-                        <TableCell className="text-right font-semibold">
-                          ₹{(tds.salary - tds.tdsAmount).toLocaleString()}
+                    {tdsBreakdown.map((t, i) => (
+                      <TableRow key={i}>
+                        <TableCell>{t.month}</TableCell>
+                        <TableCell className="text-right">₹{t.salary.toLocaleString()}</TableCell>
+                        <TableCell className="text-right text-red-600">
+                          - ₹{t.tdsAmount.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          ₹{(t.salary - t.tdsAmount).toLocaleString()}
                         </TableCell>
                       </TableRow>
                     ))}
-                    <TableRow className="bg-muted/50">
-                      <TableCell className="font-bold">Total (5 months)</TableCell>
-                      <TableCell className="text-right font-bold">
-                        ₹{tdsBreakdown.reduce((acc, tds) => acc + tds.salary, 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right font-bold text-red-600">
-                        - ₹{tdsBreakdown.reduce((acc, tds) => acc + tds.tdsAmount, 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right font-bold">
-                        ₹{tdsBreakdown.reduce((acc, tds) => acc + (tds.salary - tds.tdsAmount), 0).toLocaleString()}
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
                 </Table>
-                <div className="mt-4">
-                  <Button variant="outline">Download Form 16</Button>
-                </div>
+
+                <Button variant="outline">Download Form 16</Button>
               </CardContent>
             </Card>
           </TabsContent>

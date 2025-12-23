@@ -42,18 +42,15 @@ interface ClientLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/client/dashboard" },
   { icon: User, label: "Profile", href: "/client/profile" },
-  { icon: Wallet, label: "My Salary", href: "/client/salary" },
-  { icon: Building2, label: "Bank Accounts", href: "/client/bank-accounts" },
-  { icon: Receipt, label: "Receipts & Expenses", href: "/client/expenses" },
+  { icon: Building2, label: "My salary & Bank Accounts", href: "/client/my_salary" },
+  { icon: Receipt, label: "Receipts & Expenses", href: "/client/Receipts_Expenses" },
   { icon: TrendingUp, label: "My Investments", href: "/client/investments" },
-  { icon: CreditCard, label: "Demat Account", href: "/client/demat" },
-  { icon: Shield, label: "My Insurance", href: "/client/insurance" },
+  { icon: Shield, label: "My Insurance", href: "/client/my_insurance" },
   { icon: Calculator, label: "Tax & TDS", href: "/client/tax" },
-  { icon: FileText, label: "Assets Statement", href: "/client/assets" },
+  { icon: FileText, label: "Assets Statement", href: "/client/assets_statement" },
   { icon: BarChart3, label: "Reports", href: "/client/reports" },
   { icon: Bell, label: "Reminders", href: "/client/reminders" },
-  { icon: MessageSquare, label: "Messages", href: "/client/messages" },
-  { icon: HelpCircle, label: "Support", href: "/client/support" },
+  { icon: HelpCircle, label: "Help & Support", href: "/client/help_support" },
 ]
 
 export function ClientLayout({ children, activeTab }: ClientLayoutProps) {

@@ -50,20 +50,15 @@ const menuItems = [
     label: "Profile",
     routeAllowed: [1],
   },
+  
   {
-    href: "/client/salary",
-    icon: Wallet,
-    label: "My Salary",
-    routeAllowed: [1],
-  },
-  {
-    href: "/client/bank-accounts",
+    href: "/client/my_salary",
     icon: Building2,
-    label: "Bank Accounts",
+    label: "My salary & Bank Accounts",
     routeAllowed: [1],
   },
   {
-    href: "/client/expenses",
+    href: "/client/Receipts_Expenses",
     icon: Receipt,
     label: "Receipts & Expenses",
     routeAllowed: [1],
@@ -74,14 +69,9 @@ const menuItems = [
     label: "My Investments",
     routeAllowed: [1],
   },
+
   {
-    href: "/client/demat",
-    icon: CreditCard,
-    label: "Demat Account",
-    routeAllowed: [1],
-  },
-  {
-    href: "/client/insurance",
+    href: "/client/my_insurance",
     icon: Shield,
     label: "My Insurance",
     routeAllowed: [1],
@@ -93,7 +83,7 @@ const menuItems = [
     routeAllowed: [1],
   },
   {
-    href: "/client/assets",
+    href: "/client/assets_statement",
     icon: FileText,
     label: "Assets Statement",
     routeAllowed: [1],
@@ -111,15 +101,9 @@ const menuItems = [
     routeAllowed: [1],
   },
   {
-    href: "/client/messages",
-    icon: MessageSquare,
-    label: "Messages / Communication",
-    routeAllowed: [1],
-  },
-  {
-    href: "/client/support",
+    href: "/client/help_support",
     icon: HelpCircle,
-    label: "Feedback & Support",
+    label: "Help & Support",
     routeAllowed: [1],
   },
 
