@@ -1,15 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { BookOpen, UserCircle, Shield, Loader2, Sparkles, CheckCircle2 } from "lucide-react"
+import { 
+  BookOpen, UserCircle, Shield, Loader2, Sparkles, CheckCircle2,
+  LockKeyhole, Fingerprint, Building2, IndianRupee, ShieldCheck,
+  Users, Globe, Server, Database, Cpu, Award, TrendingUp,
+  FileText, Calendar, MapPin, Phone, Mail, ArrowRight,
+  BadgeCheck, FileSignature, Scale, GraduationCap, Heart,
+  Truck, Train, Plane, Wifi, Banknote, Home
+} from "lucide-react"
 import { setUserData } from "@/lib/cookies"
 import { useToast } from "@/hooks/use-toast"
 import { loginUser } from "@/app/actions/auth"
+import { motion, AnimatePresence } from "framer-motion"
+import gsap from "gsap"
 
 interface LoginPageProps {
   onBack: () => void
@@ -19,19 +28,32 @@ interface LoginPageProps {
 const stakeholders = [
   {
     id: 1,
-    name: "Client",
-    description: "Government Employee",
+    name: "Government Employee",
+    description: "Financial Management Portal",
     icon: UserCircle,
-    color: "from-blue-600 to-indigo-600",
-    bgGradient: "from-blue-500/10 via-indigo-500/5 to-purple-500/10",
+    iconSecondary: Building2,
+    color: "from-blue-700 to-blue-900",
+    bgColor: "bg-gradient-to-br from-blue-50 to-blue-100",
+    badgeColor: "bg-blue-100 text-blue-700",
+    role: "employee",
+    departments: [
+      { name: "Education", icon: GraduationCap },
+      { name: "Health", icon: Heart },
+      { name: "Revenue", icon: Scale },
+      { name: "Police", icon: Shield }
+    ]
   },
   {
     id: 2,
-    name: "Admin",
-    description: "Financial Advisor",
-    icon: Shield,
-    color: "from-purple-600 to-pink-600",
-    bgGradient: "from-purple-500/10 via-pink-500/5 to-rose-500/10",
+    name: "Financial Advisor",
+    description: "Administrative Portal",
+    icon: ShieldCheck,
+    iconSecondary: TrendingUp,
+    color: "from-emerald-700 to-emerald-900",
+    bgColor: "bg-gradient-to-br from-emerald-50 to-emerald-100",
+    badgeColor: "bg-emerald-100 text-emerald-700",
+    role: "advisor",
+    certifications: ["RBI Certified", "SEBI Registered", "Ministry Approved"]
   },
 ]
 
@@ -39,42 +61,201 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
   const [selectedStakeholder, setSelectedStakeholder] = useState<number>(1)
   const [username, setUsername] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [showGovDepartments, setShowGovDepartments] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  
+  const containerRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const particlesRef = useRef<HTMLDivElement>(null)
+
+  // Initialize GSAP animations
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    // Create animated background pattern
+    const createBackgroundPattern = () => {
+      if (!containerRef.current) return
+      
+      // Government seal animation
+      const seal = document.createElement('div')
+      seal.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-5'
+      seal.innerHTML = `
+        <div class="absolute inset-0 rounded-full border-4 border-blue-800"></div>
+        <div class="absolute inset-12 rounded-full border-2 border-blue-800"></div>
+      `
+      containerRef.current.appendChild(seal)
+      
+      // Animate seal rotation
+      gsap.to(seal, {
+        rotation: 360,
+        duration: 60,
+        repeat: -1,
+        ease: "none"
+      })
+      
+      // Create floating elements
+      const symbols = [UserCircle, Building2, ShieldCheck, IndianRupee]
+      symbols.forEach((Symbol, index) => {
+        const element = document.createElement('div')
+        element.className = 'absolute text-blue-300/20'
+        element.innerHTML = `<svg class="w-12 h-12"><use xlink:href="#${Symbol}" /></svg>`
+        element.style.left = `${Math.random() * 100}%`
+        element.style.top = `${Math.random() * 100}%`
+        
+        containerRef.current?.appendChild(element)
+        
+        gsap.to(element, {
+          y: (Math.random() - 0.5) * 100,
+          x: (Math.random() - 0.5) * 100,
+          rotation: Math.random() * 360,
+          duration: Math.random() * 20 + 10,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: index * 2
+        })
+      })
+    }
+
+    // Create particles effect
+    const createParticles = () => {
+      if (!particlesRef.current) return
+      
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div')
+        particle.className = 'absolute rounded-full bg-blue-400/20'
+        particle.style.width = `${Math.random() * 4 + 2}px`
+        particle.style.height = particle.style.width
+        particle.style.left = `${Math.random() * 100}%`
+        particle.style.top = `${Math.random() * 100}%`
+        
+        particlesRef.current.appendChild(particle)
+        
+        gsap.to(particle, {
+          y: -100,
+          x: (Math.random() - 0.5) * 100,
+          opacity: 0,
+          duration: Math.random() * 3 + 2,
+          repeat: -1,
+          delay: Math.random() * 5,
+          ease: "power1.out"
+        })
+      }
+    }
+
+    // Card entrance animation
+    if (cardRef.current) {
+      gsap.from(cardRef.current, {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+      })
+    }
+
+    createBackgroundPattern()
+    createParticles()
+
+    return () => {
+      gsap.killTweensOf('.absolute')
+    }
+  }, [])
+
+  const handleStakeholderSelect = (id: number) => {
+    setSelectedStakeholder(id)
+    
+    // Animate selection
+    const buttons = document.querySelectorAll('.stakeholder-button')
+    buttons.forEach((btn, index) => {
+      if (index + 1 === id) {
+        gsap.to(btn, {
+          scale: 1.05,
+          boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)",
+          duration: 0.3,
+          ease: "power2.out"
+        })
+      } else {
+        gsap.to(btn, {
+          scale: 1,
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          duration: 0.3,
+          ease: "power2.out"
+        })
+      }
+    })
+  }
 
   const handleLogin = async () => {
     if (!selectedStakeholder) return
 
     setIsLoading(true)
+    
+    // Login animation
+    if (cardRef.current) {
+      gsap.to(cardRef.current, {
+        scale: 0.98,
+        duration: 0.2,
+        repeat: 2,
+        yoyo: true,
+        ease: "power2.inOut"
+      })
+    }
+
     try {
-      // Direct login without authentication
+      // Create success particles
+      for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div')
+        particle.className = `absolute w-2 h-2 rounded-full ${
+          selectedStakeholder === 1 ? 'bg-blue-500' : 'bg-emerald-500'
+        }`
+        particle.style.left = '50%'
+        particle.style.top = '50%'
+        
+        cardRef.current?.appendChild(particle)
+        
+        gsap.to(particle, {
+          x: gsap.utils.random(-100, 100),
+          y: gsap.utils.random(-100, 100),
+          opacity: 0,
+          scale: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          onComplete: () => particle.remove()
+        })
+      }
+
       const userData = {
         UserTypeID: selectedStakeholder,
-        role: selectedStakeholder === 1 ? "client" : "admin",
-        name: username || (selectedStakeholder === 1 ? "Client User" : "Admin User"),
-        id: `USER${Date.now()}`,
-        UserName: username || (selectedStakeholder === 1 ? "Client User" : "Admin User"),
+        role: selectedStakeholder === 1 ? "employee" : "advisor",
+        name: username || stakeholders.find(s => s.id === selectedStakeholder)?.name || "User",
+        id: `GOV${Date.now().toString().slice(-6)}`,
+        UserName: username || stakeholders.find(s => s.id === selectedStakeholder)?.name || "User",
       }
 
       setUserData(userData)
       onLogin(userData)
 
       toast({
-        title: "Welcome! 🎉",
-        description: `Successfully logged in as ${userData.name}`,
+        title: "Access Granted",
+        description: `Welcome to the ${selectedStakeholder === 1 ? "Government Employee Portal" : "Financial Advisor Dashboard"}`,
         variant: "default",
       })
 
-      // Route based on selected stakeholder
-      if (selectedStakeholder === 1) {
-        router.push("/client/dashboard")
-      } else if (selectedStakeholder === 2) {
-        router.push("/admin/dashboard")
-      }
+      // Enhanced route transition
+      setTimeout(() => {
+        if (selectedStakeholder === 1) {
+          router.push("/client/dashboard")
+        } else if (selectedStakeholder === 2) {
+          router.push("/admin/dashboard")
+        }
+      }, 800)
+
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred. Please try again."
+      const errorMsg = error instanceof Error ? error.message : "Authentication failed. Please try again."
       toast({
-        title: "Login Failed",
+        title: "Access Denied",
         description: errorMsg,
         variant: "destructive",
       })
@@ -86,92 +267,203 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
   const selectedStakeholderData = stakeholders.find((s) => s.id === selectedStakeholder)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-12 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-300/10 to-blue-300/10 rounded-full blur-3xl animate-pulse-slow" />
+    <div 
+      ref={containerRef}
+      className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white via-blue-50/30 to-white px-4 py-12 relative overflow-hidden"
+    >
+      {/* Government Top Banner */}
+      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-saffron-500 via-white to-green-500 py-1 z-50">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-saffron-600"></div>
+              <div className="w-2 h-2 rounded-full bg-white border border-saffron-600"></div>
+              <div className="w-2 h-2 rounded-full bg-green-600"></div>
+            </div>
+            <span className="text-xs font-bold text-gray-900">भारत सरकार | GOVERNMENT OF INDIA</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-green-600"></div>
+              <div className="w-2 h-2 rounded-full bg-white border border-green-600"></div>
+              <div className="w-2 h-2 rounded-full bg-saffron-600"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="w-full max-w-lg relative z-10 animate-fade-in-up">
-        <Card className="border-0 shadow-2xl shadow-indigo-500/10 bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden">
-          {/* Header with gradient */}
-          <CardHeader className="text-center pt-10 pb-8 space-y-4 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50" />
-            <div className="relative z-10">
-              <div className="mx-auto w-20 h-20 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30 mb-4 animate-glow">
-                <BookOpen className="w-10 h-10 text-white" />
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Government seal pattern */}
+        <div className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #1e40af 1px, transparent 1px),
+              linear-gradient(to bottom, #1e40af 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+          }}
+        />
+        
+        {/* Floating particles */}
+        <div ref={particlesRef} className="absolute inset-0" />
+        
+        {/* Gradient orbs */}
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        
+        {/* Security grid overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent" />
+      </div>
+
+      {/* Main Login Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl relative z-10"
+      >
+        <Card 
+          ref={cardRef}
+          className="border border-gray-200/50 bg-white/95 backdrop-blur-xl shadow-2xl shadow-blue-500/5 rounded-2xl overflow-hidden"
+        >
+          {/* Government Header */}
+          <CardHeader className="pt-12 pb-8 relative overflow-hidden">
+            {/* Background pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-emerald-50" />
+            <div className="absolute inset-0 opacity-5"
+              style={{
+                backgroundImage: `
+                  radial-gradient(circle at 25% 25%, #3b82f6 1px, transparent 1px),
+                  radial-gradient(circle at 75% 75%, #10b981 1px, transparent 1px)
+                `,
+                backgroundSize: '60px 60px'
+              }}
+            />
+            
+            <div className="relative z-10 text-center">
+              {/* Government seal */}
+              <div className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center shadow-xl mb-6 ring-4 ring-blue-200/50">
+                <div className="w-16 h-16 border-4 border-white rounded-full flex items-center justify-center relative">
+                  <div className="w-10 h-10 border-2 border-white rounded-full"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-0.5 bg-white"></div>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-0.5 bg-white rotate-90"></div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-indigo-900 to-purple-900 bg-clip-text text-transparent">
-                  Welcome Back
-                </h1>
-                <p className="text-sm text-gray-600 font-medium flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-500" />
-                  Financial Management System
-                </p>
+              
+              <CardTitle className="text-3xl font-bold text-gray-900 mb-3">
+                ArthYantra Financial Portal
+              </CardTitle>
+              <CardDescription className="text-gray-700 font-medium text-lg">
+                Financial Management System
+              </CardDescription>
+              
+              {/* Security status */}
+              <div className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-blue-800">Secure Government Portal</span>
+                <LockKeyhole className="h-4 w-4 text-blue-600" />
               </div>
             </div>
           </CardHeader>
 
           <CardContent className="px-8 pb-10 space-y-8">
-            {/* User Type Selection - Modern Cards */}
-            <div className="space-y-4">
-              <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                Select Your Role
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
+            {/* Portal Selection */}
+            <div className="space-y-5">
+              <div className="text-center mb-2">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Select Portal Access</h3>
+                <p className="text-sm text-gray-600">Choose your role to continue</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {stakeholders.map((stakeholder) => {
                   const Icon = stakeholder.icon
+                  const IconSecondary = stakeholder.iconSecondary
                   const isSelected = selectedStakeholder === stakeholder.id
+                  
                   return (
                     <button
                       key={stakeholder.id}
-                      onClick={() => setSelectedStakeholder(stakeholder.id)}
-                      className={`group relative p-5 rounded-2xl transition-all duration-300 transform ${
-                        isSelected
-                          ? "scale-105 shadow-lg shadow-indigo-500/20"
-                          : "hover:scale-102 hover:shadow-md"
+                      onClick={() => handleStakeholderSelect(stakeholder.id)}
+                      className={`stakeholder-button relative p-6 rounded-xl transition-all duration-300 ${stakeholder.bgColor} border-2 ${
+                        isSelected 
+                          ? `border-blue-500 shadow-lg shadow-blue-500/20` 
+                          : 'border-transparent hover:border-gray-300'
                       }`}
                     >
-                      {/* Background with gradient */}
-                      <div
-                        className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
-                          isSelected
-                            ? `bg-gradient-to-br ${stakeholder.bgGradient} border-2 border-indigo-300`
-                            : "bg-white border-2 border-gray-200 group-hover:border-indigo-200"
-                        }`}
-                      />
+                      {/* Selection indicator */}
+                      {isSelected && (
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        </div>
+                      )}
                       
-                      <div className="relative flex flex-col items-center space-y-3">
-                        {/* Icon with enhanced styling */}
-                        <div
-                          className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stakeholder.color} flex items-center justify-center shadow-md transition-all duration-300 ${
-                            isSelected ? "scale-110 shadow-lg" : "group-hover:scale-105"
-                          }`}
-                        >
+                      <div className="flex items-start gap-4">
+                        {/* Primary icon */}
+                        <div className={`flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br ${stakeholder.color} flex items-center justify-center shadow-md`}>
                           <Icon className="w-7 h-7 text-white" />
                         </div>
                         
-                        <div className="text-center space-y-1">
-                          <h3 className={`text-base font-bold transition-colors ${
-                            isSelected ? "text-indigo-900" : "text-gray-800"
-                          }`}>
-                            {stakeholder.name}
-                          </h3>
-                          <p className="text-xs text-gray-600 font-medium">
+                        <div className="flex-1 text-left">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className={`text-lg font-bold ${isSelected ? 'text-gray-900' : 'text-gray-800'}`}>
+                              {stakeholder.name}
+                            </h4>
+                            <div className={`text-xs px-2 py-1 rounded-full ${stakeholder.badgeColor}`}>
+                              {stakeholder.role === 'employee' ? 'Govt' : 'Admin'}
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-gray-600 mb-3">
                             {stakeholder.description}
                           </p>
+                          
+                          {/* Additional info */}
+                          <div className="flex items-center gap-2">
+                            <IconSecondary className="w-4 h-4 text-gray-500" />
+                            <span className="text-xs text-gray-500 font-medium">
+                              {stakeholder.role === 'employee' ? '28+ Departments' : 'Certified Advisor'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Selected indicator */}
-                      {isSelected && (
-                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg animate-scale-in">
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        </div>
+                      {/* Department badges for government employees */}
+                      {stakeholder.role === 'employee' && isSelected && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-4 pt-4 border-t border-gray-200/50"
+                        >
+                          <div className="flex flex-wrap gap-2">
+                            {stakeholder.departments?.slice(0, 3).map((dept, idx) => (
+                              <div key={idx} className="flex items-center gap-1 px-2 py-1 bg-white/50 rounded-md text-xs text-gray-700">
+                                <dept.icon className="w-3 h-3" />
+                                {dept.name}
+                              </div>
+                            ))}
+                            {stakeholder.departments && stakeholder.departments.length > 3 && (
+                              <div className="px-2 py-1 bg-white/50 rounded-md text-xs text-gray-700">
+                                +{stakeholder.departments.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                      
+                      {/* Certifications for advisors */}
+                      {stakeholder.role === 'advisor' && isSelected && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-4 pt-4 border-t border-gray-200/50"
+                        >
+                          <div className="flex flex-wrap gap-2">
+                            {stakeholder.certifications?.map((cert, idx) => (
+                              <div key={idx} className="px-2 py-1 bg-emerald-50 rounded-md text-xs text-emerald-700 font-medium">
+                                {cert}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
                       )}
                     </button>
                   )
@@ -179,100 +471,201 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
               </div>
             </div>
 
-            {/* Username Input - Modern Design */}
-            <div className="space-y-3">
-              <Label htmlFor="username" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                Display Name
-                <span className="text-xs text-gray-400 font-normal ml-auto">(Optional)</span>
-              </Label>
-              <div className="relative group">
-                <Input
-                  id="username"
-                  placeholder="Enter your name..."
-                  className="h-12 bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl transition-all duration-300 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 group-hover:border-gray-300"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                />
+            {/* User Information */}
+            <AnimatePresence>
+              {selectedStakeholder && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-5"
+                >
+                  <div className="text-center">
+                    <h4 className="text-lg font-bold text-gray-900 mb-1">
+                      Enter Your Information
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {selectedStakeholder === 1 
+                        ? 'For government employee verification'
+                        : 'For advisor portal access'
+                      }
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-3">
+                      <Label htmlFor="username" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <UserCircle className="w-4 h-4 text-blue-600" />
+                        Display Name
+                      </Label>
+                      <Input
+                        id="username"
+                        placeholder={selectedStakeholder === 1 ? "Enter your name as per records" : "Enter advisor name"}
+                        className="h-12 bg-white border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <Label htmlFor="userid" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <Fingerprint className="w-4 h-4 text-blue-600" />
+                        Employee/Advisor ID
+                      </Label>
+                      <Input
+                        id="userid"
+                        placeholder={selectedStakeholder === 1 ? "Optional: Govt ID" : "Optional: Advisor ID"}
+                        className="h-12 bg-white border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      />
+                    </div>
+                  </div>
+                  
+                  {selectedStakeholder === 1 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center"
+                    >
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowGovDepartments(!showGovDepartments)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        {showGovDepartments ? 'Hide' : 'View'} Government Departments
+                      </Button>
+                      
+                      {showGovDepartments && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200"
+                        >
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                              { name: 'Education', icon: GraduationCap },
+                              { name: 'Health', icon: Heart },
+                              { name: 'Revenue', icon: Scale },
+                              { name: 'Police', icon: Shield },
+                              { name: 'Transport', icon: Truck },
+                              { name: 'Railways', icon: Train },
+                              { name: 'Aviation', icon: Plane },
+                              { name: 'Telecom', icon: Wifi }
+                            ].map((dept, idx) => (
+                              <div key={idx} className="flex flex-col items-center p-2 bg-white rounded-md">
+                                <dept.icon className="w-5 h-5 text-blue-600 mb-1" />
+                                <span className="text-xs font-medium text-gray-700">{dept.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Login Button */}
+            <div className="space-y-4">
+              <Button
+                onClick={handleLogin}
+                disabled={isLoading}
+                className={`w-full h-14 bg-gradient-to-r ${
+                  selectedStakeholderData?.color || "from-blue-700 to-blue-900"
+                } hover:opacity-90 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden`}
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Authenticating...
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-bold">Access Portal</div>
+                        <div className="text-xs opacity-90">
+                          Continue as {selectedStakeholderData?.name}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </Button>
+              
+              {/* Security notice */}
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
+                  <ShieldCheck className="w-3 h-3 text-green-600" />
+                  <span>Secure government authentication</span>
+                </div>
               </div>
             </div>
-
-            {/* Login Button - Enhanced */}
-            <Button
-              onClick={handleLogin}
-              disabled={isLoading}
-              className={`w-full h-13 bg-gradient-to-r ${
-                selectedStakeholderData?.color || "from-blue-600 to-indigo-600"
-              } hover:opacity-90 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl text-base group relative overflow-hidden`}
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Entering...
-                </>
-              ) : (
-                <>
-                  <Shield className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                  Continue as {selectedStakeholderData?.name}
-                </>
-              )}
-            </Button>
-
-            {/* Footer text */}
-            <p className="text-center text-xs text-gray-500 pt-2">
-              Secure access to your financial dashboard
-            </p>
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* Government Footer */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-900 to-blue-800 py-2 z-50">
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-blue-200 text-center">
+            <div className="flex items-center gap-3">
+              <Server className="w-3 h-3" />
+              <span>Data Center: India</span>
+            </div>
+            <span>Ministry of Finance | Government of India</span>
+            <div className="flex items-center gap-3">
+              <Database className="w-3 h-3" />
+              <span>© {new Date().getFullYear()} All Rights Reserved</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Enhanced CSS Animations */}
+      {/* Custom Styles */}
       <style jsx>{`
         @keyframes float {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(30px, -30px) scale(1.1); }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
-        @keyframes float-delayed {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-30px, 30px) scale(1.15); }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.1); }
         }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.5; }
+        
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
         }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
         }
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-          50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+        
+        .animate-pulse {
+          animation: pulse 4s ease-in-out infinite;
         }
-        @keyframes scale-in {
-          from {
-            transform: scale(0);
-            opacity: 0;
-          }
-          to {
-            transform: scale(1);
-            opacity: 1;
-          }
+        
+        .animate-bounce {
+          animation: bounce 2s ease-in-out infinite;
         }
-        .animate-float { animation: float 20s ease-in-out infinite; }
-        .animate-float-delayed { animation: float-delayed 25s ease-in-out infinite; }
-        .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
-        .animate-fade-in-up { animation: fade-in-up 0.6s ease-out; }
-        .animate-glow { animation: glow 3s ease-in-out infinite; }
-        .animate-scale-in { animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .hover\\:scale-102:hover { transform: scale(1.02); }
+        
+        /* Enhanced background pattern */
+        .government-bg {
+          background-image: 
+            radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0),
+            radial-gradient(circle at 1px 1px, rgba(34, 197, 94, 0.05) 1px, transparent 0);
+          background-size: 40px 40px, 80px 80px;
+        }
       `}</style>
     </div>
   )
