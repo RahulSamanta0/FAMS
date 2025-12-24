@@ -42,18 +42,10 @@ interface AdminLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
   { icon: Users, label: "Clients", href: "/admin/clients" },
-  { icon: FileText, label: "Client Fact Sheet", href: "/admin/fact-sheet" },
-  { icon: Database, label: "Data Entry", href: "/admin/data-entry" },
-  { icon: Package, label: "Offers & Products", href: "/admin/offers" },
-  { icon: MessageSquare, label: "Messages & Broadcast", href: "/admin/messages" },
-  { icon: MessageCircle, label: "Feedback Management", href: "/admin/feedback" },
   { icon: BarChart3, label: "Reports", href: "/admin/reports" },
-  { icon: LineChart, label: "Analytics", href: "/admin/analytics" },
-  { icon: Bot, label: "AI Assistant", href: "/admin/ai-assistant" },
-  { icon: Shield, label: "Compliance & Audit", href: "/admin/compliance" },
-  { icon: Search, label: "Search", href: "/admin/search" },
+  { icon: LineChart, label: "Approval", href: "/admin/Approval" },
   { icon: Settings, label: "Settings", href: "/admin/settings" },
-  { icon: HelpCircle, label: "Help & Docs", href: "/admin/help" },
+  { icon: HelpCircle, label: "Help & support", href: "/admin/help" },
 ]
 
 export function AdminLayout({ children, activeTab }: AdminLayoutProps) {
