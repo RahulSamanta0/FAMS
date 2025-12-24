@@ -96,7 +96,7 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
 
       <div className="w-full max-w-lg relative z-10 animate-fade-in-up">
         <Card className="border-0 shadow-2xl shadow-indigo-500/10 bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden">
-          {/* Header with gradient */}
+          {/* Header with gradient hhdhh */}
           <CardHeader className="text-center pt-10 pb-8 space-y-4 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50" />
             <div className="relative z-10">
