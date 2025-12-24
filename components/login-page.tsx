@@ -314,39 +314,14 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent" />
       </div>
 
-      {/* Main Login Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl relative z-10"
-      >
-        <Card 
-          ref={cardRef}
-          className="border border-gray-200/50 bg-white/95 backdrop-blur-xl shadow-2xl shadow-blue-500/5 rounded-2xl overflow-hidden"
-        >
-          {/* Government Header */}
-          <CardHeader className="pt-12 pb-8 relative overflow-hidden">
-            {/* Background pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-emerald-50" />
-            <div className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `
-                  radial-gradient(circle at 25% 25%, #3b82f6 1px, transparent 1px),
-                  radial-gradient(circle at 75% 75%, #10b981 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px'
-              }}
-            />
-            
-            <div className="relative z-10 text-center">
-              {/* Government seal */}
-              <div className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center shadow-xl mb-6 ring-4 ring-blue-200/50">
-                <div className="w-16 h-16 border-4 border-white rounded-full flex items-center justify-center relative">
-                  <div className="w-10 h-10 border-2 border-white rounded-full"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-0.5 bg-white"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-0.5 bg-white rotate-90"></div>
-                </div>
+      <div className="w-full max-w-lg relative z-10 animate-fade-in-up">
+        <Card className="border-0 shadow-2xl shadow-indigo-500/10 bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden">
+          {/* Header with gradient hhdhh */}
+          <CardHeader className="text-center pt-10 pb-8 space-y-4 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50" />
+            <div className="relative z-10">
+              <div className="mx-auto w-20 h-20 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30 mb-4 animate-glow">
+                <BookOpen className="w-10 h-10 text-white" />
               </div>
               
               <CardTitle className="text-3xl font-bold text-gray-900 mb-3">

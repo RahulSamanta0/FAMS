@@ -26,6 +26,8 @@ import {
   MessageSquare,
   HelpCircle,
   Database,
+  DatabaseBackup,
+  ClipboardEdit,
   MessageCircle,
   LineChart,
   Bot,
@@ -50,7 +52,12 @@ const menuItems = [
     label: "Profile",
     routeAllowed: [1],
   },
-  
+  {
+    href: "/client/data_entry",
+    icon: ClipboardEdit,
+    label: "Data Entry",
+    routeAllowed: [1],
+  },
   {
     href: "/client/my_salary",
     icon: Building2,

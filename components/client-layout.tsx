@@ -28,6 +28,7 @@ import {
   X,
   Moon,
   Sun,
+  ClipboardEdit,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -40,6 +41,7 @@ interface ClientLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/client/dashboard" },
   { icon: User, label: "Profile", href: "/client/profile" },
+  { icon: ClipboardEdit, label: "Data Entry", href: "/client/data_entry" },
   { icon: Building2, label: "Salary & Bank Accounts", href: "/client/my_salary" },
   { icon: Receipt, label: "Receipts & Expenses", href: "/client/Receipts_Expenses" },
   { icon: TrendingUp, label: "Investments", href: "/client/investments" },
