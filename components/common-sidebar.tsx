@@ -33,6 +33,10 @@ import {
   Bot,
   Search,
   Settings,
+  FileUser,
+  Landmark,
+  HomeIcon,
+  PieChart,
 } from "lucide-react"
 import Link from "next/link"
 import { removeUserData, getUserData } from "@/lib/cookies"
@@ -57,6 +61,12 @@ const menuItems = [
     icon: ClipboardEdit,
     label: "Data Entry",
     routeAllowed: [1],
+    children: [
+      { href: "/client/data_entry/family_details", icon: FileUser, label: "Family Details", routeAllowed: [1] },
+      { href: "/client/data_entry/banking_details", icon: Landmark, label: "Banking Details", routeAllowed: [1] },
+      { href: "/client/data_entry/asset_declaration", icon: HomeIcon, label: "Asset Declaration", routeAllowed: [1] },
+      { href: "/client/data_entry/investments", icon: PieChart, label: "Investments", routeAllowed: [1] },
+    ],
   },
   {
     href: "/client/my_salary",
