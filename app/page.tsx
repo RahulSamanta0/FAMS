@@ -572,7 +572,7 @@ export default function GovernmentLandingPage() {
                 <div>
                   <div className="flex items-baseline gap-2">
                     <h1 className="text-xl md:text-2xl font-bold text-blue-900 tracking-tight">
-                      आर्थयंत्र
+                      Arthayantra
                     </h1>
                     <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
                       v2.1
@@ -692,13 +692,10 @@ export default function GovernmentLandingPage() {
             
             <h1 className="hero-title">
               <div className="hindi-text text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">
-                वित्तीय प्रबंधन{' '}
+                Financial Management{' '}
                 <span className="text-saffron-300 b fsaffron-400 to-y">
-                  सरल, सुरक्षित, संपूर्ण
+                  Simple, Secure, Complete
                 </span>
-              </div>
-              <div className="english-text text-xl sm:text-2xl md:text-3xl text-blue-100 font-light">
-                {/* Text will be animated by GSAP */}
               </div>
             </h1>
             
