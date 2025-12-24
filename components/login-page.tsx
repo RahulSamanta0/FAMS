@@ -314,7 +314,7 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent" />
       </div>
 
-      <div className="w-full max-w-lg relative z-10 animate-fade-in-up">
+      <motion.div className="w-full max-w-lg relative z-10 animate-fade-in-up">
         <Card className="border-0 shadow-2xl shadow-indigo-500/10 bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden">
           {/* Header with gradient hhdhh */}
           <CardHeader className="text-center pt-10 pb-8 space-y-4 relative">
