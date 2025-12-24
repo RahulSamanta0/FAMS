@@ -95,12 +95,6 @@ const menuItems = [
     routeAllowed: [1],
   },
   {
-    href: "/client/reminders",
-    icon: Bell,
-    label: "Reminders & Notifications",
-    routeAllowed: [1],
-  },
-  {
     href: "/client/help_support",
     icon: HelpCircle,
     label: "Help & Support",

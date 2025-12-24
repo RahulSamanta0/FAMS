@@ -67,12 +67,6 @@ export default function ClientReports() {
       <div className="space-y-6">
 
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Reports</h1>
-          <p className="text-muted-foreground">
-            CA-ready financial reports and analysis
-          </p>
-        </div>
 
         {/* CA Ready Consolidated Report */}
         <Card>

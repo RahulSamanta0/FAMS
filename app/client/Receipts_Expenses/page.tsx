@@ -8,8 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-import { Plus, Wallet, Upload, X } from "lucide-react"
+import { Plus, Wallet, Upload, X, TrendingUp, TrendingDown, DollarSign, Receipt, Image as ImageIcon } from "lucide-react"
 
 /* ---------------- MOCK DATA ---------------- */
 
@@ -31,24 +34,30 @@ export default function ReceiptsAndExpenses() {
   const [receipts, setReceipts] = useState<
     { file: File; preview: string }[]
   >([])
+  
+  // Manual entry state
+  const [manualEntry, setManualEntry] = useState({
+    type: "expense",
+    category: "",
+    description: "",
+    amount: "",
+    mode: "Cash"
+  })
 
   const totalIncome = monthlyIncome.reduce((acc, i) => acc + i.amount, 0)
   const totalExpenses = expenses.reduce((acc, e) => acc + e.amount, 0)
   const savings = totalIncome - totalExpenses
 
   return (
-    <ClientLayout activeTab="/client/receipts-expenses">
-      <div className="space-y-6">
+    <ClientLayout activeTab="/client/Receipts_Expenses">
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Receipts & Expenses</h1>
-            <p className="text-muted-foreground">
-              Track monthly income, expenses, and cash entries
-            </p>
-          </div>
-          <Button>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            Receipts & Expenses
+          </h1>
+          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300">
             <Plus className="mr-2 h-4 w-4" />
             Add Entry
           </Button>
@@ -56,67 +65,89 @@ export default function ReceiptsAndExpenses() {
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+          <Card className="bg-gradient-to-br from-green-50 via-green-100 to-green-50 dark:from-green-900/40 dark:via-green-800/40 dark:to-green-900/40 border-green-200 dark:border-green-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-medium text-green-900 dark:text-green-100">Total Income</CardTitle>
+              <div className="p-2 bg-green-200 dark:bg-green-700 rounded-full">
+                <TrendingUp className="h-5 w-5 text-green-700 dark:text-green-200" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-3xl font-bold text-green-700 dark:text-green-300">
                 ₹{totalIncome.toLocaleString()}
               </div>
+              <p className="text-xs text-green-600 dark:text-green-200 mt-1">This month</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+          <Card className="bg-gradient-to-br from-red-50 via-red-100 to-red-50 dark:from-red-900/40 dark:via-red-800/40 dark:to-red-900/40 border-red-200 dark:border-red-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-medium text-red-900 dark:text-red-100">Total Expenses</CardTitle>
+              <div className="p-2 bg-red-200 dark:bg-red-700 rounded-full">
+                <TrendingDown className="h-5 w-5 text-red-700 dark:text-red-200" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-3xl font-bold text-red-700 dark:text-red-300">
                 ₹{totalExpenses.toLocaleString()}
               </div>
+              <p className="text-xs text-red-600 dark:text-red-200 mt-1">This month</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Net Savings</CardTitle>
+          <Card className={`bg-gradient-to-br ${savings >= 0 
+            ? "from-blue-50 via-blue-100 to-blue-50 dark:from-blue-900/40 dark:via-blue-800/40 dark:to-blue-900/40 border-blue-200 dark:border-blue-700" 
+            : "from-orange-50 via-orange-100 to-orange-50 dark:from-orange-900/40 dark:via-orange-800/40 dark:to-orange-900/40 border-orange-200 dark:border-orange-700"
+          } hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}>
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className={`text-sm font-medium ${savings >= 0 ? "text-blue-900 dark:text-blue-100" : "text-orange-900 dark:text-orange-100"}`}>
+                Net Savings
+              </CardTitle>
+              <div className={`p-2 rounded-full ${savings >= 0 ? "bg-blue-200 dark:bg-blue-700" : "bg-orange-200 dark:bg-orange-700"}`}>
+                <DollarSign className={`h-5 w-5 ${savings >= 0 ? "text-blue-700 dark:text-blue-200" : "text-orange-700 dark:text-orange-200"}`} />
+              </div>
             </CardHeader>
             <CardContent>
-              <div
-                className={`text-2xl font-bold ${
-                  savings >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
+              <div className={`text-3xl font-bold ${savings >= 0 ? "text-blue-700 dark:text-blue-300" : "text-orange-700 dark:text-orange-300"}`}>
                 ₹{savings.toLocaleString()}
               </div>
+              <p className={`text-xs mt-1 ${savings >= 0 ? "text-blue-600 dark:text-blue-200" : "text-orange-600 dark:text-orange-200"}`}>
+                {savings >= 0 ? "Great savings!" : "Budget deficit"}
+              </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Monthly Income Entry */}
-        <Card>
+        <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
           <CardHeader>
-            <CardTitle>Monthly Income</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-700 dark:to-green-600 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-green-700 dark:text-green-100" />
+              </div>
+              Monthly Income
+            </CardTitle>
             <CardDescription>Income received this month</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Mode</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                <TableRow className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700">
+                  <TableHead className="font-semibold">Source</TableHead>
+                  <TableHead className="font-semibold">Mode</TableHead>
+                  <TableHead className="text-right font-semibold">Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {monthlyIncome.map((income, index) => (
-                  <TableRow key={index}>
+                  <TableRow key={index} className="hover:bg-green-50/50 dark:hover:bg-green-900/20 transition-colors">
                     <TableCell className="font-medium">{income.source}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{income.mode}</Badge>
+                      <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
+                        {income.mode}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-green-600">
+                    <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
                       +₹{income.amount.toLocaleString()}
                     </TableCell>
                   </TableRow>
@@ -127,34 +158,41 @@ export default function ReceiptsAndExpenses() {
         </Card>
 
         {/* Expense Categorization */}
-        <Card>
+        <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
           <CardHeader>
-            <CardTitle>Expense Categorization</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-700 dark:to-red-600 rounded-lg">
+                <Receipt className="h-5 w-5 text-red-700 dark:text-red-100" />
+              </div>
+              Expense Categorization
+            </CardTitle>
             <CardDescription>Categorized monthly expenses</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Mode</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                <TableRow className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700">
+                  <TableHead className="font-semibold">Category</TableHead>
+                  <TableHead className="font-semibold">Description</TableHead>
+                  <TableHead className="font-semibold">Mode</TableHead>
+                  <TableHead className="text-right font-semibold">Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {expenses.map((expense, index) => (
-                  <TableRow key={index}>
+                  <TableRow key={index} className="hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-colors">
                     <TableCell>
-                      <Badge className="bg-muted text-foreground">
+                      <Badge className="bg-gradient-to-r from-purple-100 to-purple-200 dark:from-purple-900/40 dark:to-purple-800/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700">
                         {expense.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>{expense.description}</TableCell>
+                    <TableCell className="font-medium">{expense.description}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{expense.mode}</Badge>
+                      <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
+                        {expense.mode}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-red-600">
+                    <TableCell className="text-right font-bold text-red-600 dark:text-red-400">
                       -₹{expense.amount.toLocaleString()}
                     </TableCell>
                   </TableRow>
@@ -164,88 +202,93 @@ export default function ReceiptsAndExpenses() {
           </CardContent>
         </Card>
 
-        {/* Receipt Upload */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Receipt Upload</CardTitle>
-            <CardDescription>
-              Upload bill images for expense verification
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-6 text-muted-foreground hover:border-primary">
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  const files = e.target.files
-                  if (!files) return
-
-                  const uploaded = Array.from(files).map((file) => ({
-                    file,
-                    preview: URL.createObjectURL(file),
-                  }))
-
-                  setReceipts((prev) => [...prev, ...uploaded])
-                }}
-              />
-
-              <Upload className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">
-                Click to upload receipt images
-              </span>
-              <span className="text-xs">
-                JPG or PNG • Multiple files supported
-              </span>
-            </label>
-
-            {receipts.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-3 md:grid-cols-4">
-                {receipts.map((receipt, index) => (
-                  <div
-                    key={index}
-                    className="relative overflow-hidden rounded-lg border"
-                  >
-                    <Image
-                      src={receipt.preview}
-                      alt="Receipt"
-                      width={300}
-                      height={300}
-                      className="h-40 w-full object-cover"
-                    />
-
-                    <button
-                      onClick={() =>
-                        setReceipts((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        )
-                      }
-                      className="absolute right-2 top-2 rounded-full bg-background p-1 shadow"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Cash & Manual Entries */}
-        <Card>
+        <Card className="border-slate-200 dark:border-slate-700 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 backdrop-blur hover:shadow-xl transition-all duration-300">
           <CardHeader>
-            <CardTitle>Cash & Manual Entries</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-700 dark:to-amber-600 rounded-lg">
+                <Wallet className="h-5 w-5 text-amber-700 dark:text-amber-100" />
+              </div>
+              Cash & Manual Entries
+            </CardTitle>
             <CardDescription>
-              Expenses and income recorded manually
+              Add manual income or expense entries
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <Wallet className="h-5 w-5" />
-              Cash entries are included where mode is marked as <b>Cash</b>.
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="type">Type</Label>
+                  <Select 
+                    value={manualEntry.type} 
+                    onValueChange={(value) => setManualEntry({...manualEntry, type: value})}
+                  >
+                    <SelectTrigger id="type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="income">Income</SelectItem>
+                      <SelectItem value="expense">Expense</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Input
+                    id="category"
+                    placeholder="e.g., Salary, Rent, Food"
+                    value={manualEntry.category}
+                    onChange={(e) => setManualEntry({...manualEntry, category: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    placeholder="Enter description"
+                    value={manualEntry.description}
+                    onChange={(e) => setManualEntry({...manualEntry, description: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="amount">Amount (₹)</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={manualEntry.amount}
+                    onChange={(e) => setManualEntry({...manualEntry, amount: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mode">Payment Mode</Label>
+                  <Select 
+                    value={manualEntry.mode} 
+                    onValueChange={(value) => setManualEntry({...manualEntry, mode: value})}
+                  >
+                    <SelectTrigger id="mode">
+                      <SelectValue placeholder="Select mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Cash">Cash</SelectItem>
+                      <SelectItem value="Bank">Bank</SelectItem>
+                      <SelectItem value="UPI">UPI</SelectItem>
+                      <SelectItem value="Card">Card</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Manual Entry
+              </Button>
             </div>
           </CardContent>
         </Card>

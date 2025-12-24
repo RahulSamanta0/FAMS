@@ -61,17 +61,11 @@ export default function ClientAssets() {
   const totalAssets = totalImmovable + totalMovable
 
   return (
-    <ClientLayout activeTab="/client/assets">
+    <ClientLayout activeTab="/client/assets_statement">
       <div className="space-y-6">
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">My Assets</h1>
-            <p className="text-muted-foreground">
-              Property documents and asset growth tracking
-            </p>
-          </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Asset
@@ -156,47 +150,7 @@ export default function ClientAssets() {
           </CardContent>
         </Card>
 
-        {/* Property Document Upload */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Property Documents</CardTitle>
-            <CardDescription>
-              Upload sale deed, registration, or property papers (PDF)
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-6 text-muted-foreground hover:border-primary">
-              <input
-                type="file"
-                accept="application/pdf"
-                className="hidden"
-                onChange={(e) => {
-                  if (!e.target.files) return
-                  setDocuments((prev) => [
-                    ...prev,
-                    ...Array.from(e.target.files),
-                  ])
-                }}
-              />
-              <Upload className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">
-                Upload Property Document (PDF)
-              </span>
-            </label>
-
-            {documents.length > 0 && (
-              <ul className="space-y-2">
-                {documents.map((doc, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm">
-                    <FileText className="h-4 w-4" />
-                    {doc.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+       
 
         {/* Asset Appreciation Tracking */}
         <Card>

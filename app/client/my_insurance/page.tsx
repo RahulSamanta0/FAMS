@@ -79,17 +79,11 @@ export default function ClientInsurance() {
   }
 
   return (
-    <ClientLayout activeTab="/client/insurance">
+    <ClientLayout activeTab="/client/my_insurance">
       <div className="space-y-6">
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Insurance</h1>
-            <p className="text-muted-foreground">
-              Life & health insurance management
-            </p>
-          </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Policy
@@ -185,50 +179,6 @@ export default function ClientInsurance() {
           </CardContent>
         </Card>
 
-        {/* Policy Document Upload */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Policy Documents</CardTitle>
-            <CardDescription>
-              Upload insurance policy PDFs
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-6 text-muted-foreground hover:border-primary">
-              <input
-                type="file"
-                accept="application/pdf"
-                className="hidden"
-                onChange={(e) => {
-                  if (!e.target.files) return
-                  setDocuments((prev) => [
-                    ...prev,
-                    ...Array.from(e.target.files),
-                  ])
-                }}
-              />
-              <Upload className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">
-                Upload Policy PDF
-              </span>
-            </label>
-
-            {documents.length > 0 && (
-              <ul className="space-y-2">
-                {documents.map((doc, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <FileText className="h-4 w-4" />
-                    {doc.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Claim Tracking */}
         <Card>
@@ -276,17 +226,7 @@ export default function ClientInsurance() {
           </CardContent>
         </Card>
 
-        {/* Coverage Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Coverage Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center gap-3 text-sm text-muted-foreground">
-            <ShieldCheck className="h-5 w-5" />
-            Your insurance policies provide financial protection for life and
-            medical emergencies.
-          </CardContent>
-        </Card>
+      
 
       </div>
     </ClientLayout>
