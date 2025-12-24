@@ -7,83 +7,52 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { 
-  BookOpen, UserCircle, Shield, Loader2, CheckCircle2,
-  LockKeyhole, Fingerprint, Building2, ShieldCheck,
-  GraduationCap, Heart, Scale, Truck, Train, Plane,
-  Wifi, ArrowRight, ChevronLeft, AlertCircle, Eye,
-  EyeOff, AlertTriangle, IndianRupee, Globe,
-  FileText, Calendar, MapPin, Phone, Mail
+  Loader2, CheckCircle2, LockKeyhole, Eye, EyeOff,
+  ArrowRight, AlertCircle, UserCircle, ShieldCheck,
+  Building2, IndianRupee, Shield, Key, Users, Settings
 } from "lucide-react"
 import { setUserData } from "@/lib/cookies"
 import { useToast } from "@/hooks/use-toast"
-import { motion, AnimatePresence } from "framer-motion"
-import gsap from "gsap"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 
 interface LoginPageProps {
   onBack: () => void
   onLogin: (userData: { role: string; name: string; id: string; userTypeID: number }) => void
 }
 
-interface Stakeholder {
+interface UserType {
   id: number
   name: string
-  description: string
-  icon: any
-  iconSecondary: any
-  color: string
-  bgColor: string
-  badgeColor: string
   role: string
-  departments?: Array<{ name: string; icon: any }>
-  certifications?: string[]
+  icon: any
+  color: string
+  description: string
 }
 
-const STAKEHOLDERS: Stakeholder[] = [
+const USER_TYPES: UserType[] = [
   {
     id: 1,
     name: "Government Employee",
-    description: "Financial Management & Department Portal",
-    icon: UserCircle,
-    iconSecondary: Building2,
-    color: "from-blue-600 to-indigo-700",
-    bgColor: "bg-gradient-to-br from-blue-50 via-white to-indigo-50",
-    badgeColor: "bg-blue-100 text-blue-700",
-    role: "employee",
-    departments: [
-      { name: "Education", icon: GraduationCap },
-      { name: "Health", icon: Heart },
-      { name: "Revenue", icon: Scale },
-      { name: "Transport", icon: Truck },
-      { name: "Railways", icon: Train },
-      { name: "Aviation", icon: Plane },
-      { name: "Telecom", icon: Wifi }
-    ]
+    role: "client",
+    icon: Users,
+    color: "from-blue-600 to-blue-800",
+    description: "Access salary, taxes, pensions, and financial management"
   },
   {
     id: 2,
     name: "Financial Advisor",
-    description: "Administrative & Analytics Portal",
-    icon: ShieldCheck,
-    iconSecondary: Globe,
+    role: "admin",
+    icon: Settings,
     color: "from-emerald-600 to-green-700",
-    bgColor: "bg-gradient-to-br from-emerald-50 via-white to-green-50",
-    badgeColor: "bg-emerald-100 text-emerald-700",
-    role: "advisor",
-    certifications: ["RBI Certified", "SEBI Registered", "Ministry Approved"]
+    description: "Administrative access for certified advisors"
   },
 ]
 
 export function LoginPage({ onBack, onLogin }: LoginPageProps) {
-  const [selectedStakeholder, setSelectedStakeholder] = useState<number>(1)
+  const [selectedUserType, setSelectedUserType] = useState<number>(1)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [showDepartments, setShowDepartments] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [loginStep, setLoginStep] = useState<"select" | "credentials" | "verification">("select")
   
   const router = useRouter()
   const { toast } = useToast()
@@ -93,233 +62,117 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
 
   // Government Banner Component
   const GovernmentBanner = () => (
-    <div className="w-full bg-gradient-to-r from-saffron-500 via-white to-green-500 py-2 mb-4">
-      <div className="container mx-auto">
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-saffron-600"></div>
-            <div className="w-2 h-2 rounded-full bg-white border border-saffron-600"></div>
-            <div className="w-2 h-2 rounded-full bg-green-600"></div>
+    <div className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 py-3 border-b border-blue-700">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
+                <div className="w-3 h-3 border border-white rounded-full" />
+              </div>
+            </div>
+            <div className="text-white">
+              <div className="font-bold text-sm">भारत सरकार | GOVERNMENT OF INDIA</div>
+              <div className="text-xs opacity-90">Ministry of Finance - ArthYantra Portal</div>
+            </div>
           </div>
-          <span className="text-sm font-bold text-gray-900">
-            भारत सरकार | GOVERNMENT OF INDIA
-          </span>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-green-600"></div>
-            <div className="w-2 h-2 rounded-full bg-white border border-green-600"></div>
-            <div className="w-2 h-2 rounded-full bg-saffron-600"></div>
+          <div className="text-white text-xs bg-white/10 px-3 py-1 rounded-full">
+            <span className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              Secure Access v2.1
+            </span>
           </div>
-        </div>
-        <div className="text-center text-xs text-gray-700 mt-1">
-          Ministry of Finance | Department of Financial Services
         </div>
       </div>
     </div>
   )
 
-  // Security Indicator Component
-  const SecurityIndicator = () => (
-    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 rounded-full border border-blue-200 mb-2">
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-sm font-semibold text-blue-800">
-          Secure Government Portal
-        </span>
-      </div>
-      <LockKeyhole className="h-4 w-4 text-blue-600" />
-    </div>
-  )
-
-  // Stakeholder Card Component
-  const StakeholderCard = ({ stakeholder, isSelected, onSelect }: { 
-    stakeholder: Stakeholder, 
-    isSelected: boolean, 
-    onSelect: () => void 
-  }) => {
-    const Icon = stakeholder.icon
-    const IconSecondary = stakeholder.iconSecondary
+  // User Type Selector Component
+  const UserTypeSelector = () => {
+    const selectedUser = USER_TYPES.find(u => u.id === selectedUserType)
     
     return (
-      <button
-        data-stakeholder-id={stakeholder.id}
-        onClick={onSelect}
-        className={`w-full p-5 rounded-xl transition-all duration-300 ${stakeholder.bgColor} border-2 text-left ${
-          isSelected 
-            ? `border-blue-500 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500/20` 
-            : 'border-transparent hover:border-gray-300 hover:shadow-md'
-        }`}
-      >
-        {isSelected && (
-          <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center shadow-lg">
-            <CheckCircle2 className="w-4 h-4 text-white" />
-          </div>
-        )}
-        
-        <div className="flex items-start gap-4">
-          <div className={`flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br ${stakeholder.color} flex items-center justify-center shadow-md`}>
-            <Icon className="w-7 h-7 text-white" />
-          </div>
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        {USER_TYPES.map((userType) => {
+          const Icon = userType.icon
+          const isSelected = selectedUserType === userType.id
           
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h4 className={`text-lg font-bold ${isSelected ? 'text-gray-900' : 'text-gray-800'}`}>
-                {stakeholder.name}
-              </h4>
-              <Badge className={stakeholder.badgeColor}>
-                {stakeholder.role === 'employee' ? 'Govt' : 'Admin'}
-              </Badge>
-            </div>
-            
-            <p className="text-sm text-gray-600 mb-3">
-              {stakeholder.description}
-            </p>
-            
-            <div className="flex items-center gap-2">
-              <IconSecondary className="w-4 h-4 text-gray-500" />
-              <span className="text-xs text-gray-500 font-medium">
-                {stakeholder.role === 'employee' ? '28+ Departments' : 'Certified Advisor'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </button>
+          return (
+            <button
+              key={userType.id}
+              onClick={() => setSelectedUserType(userType.id)}
+              className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 ${
+                isSelected 
+                  ? `border-blue-500 bg-gradient-to-br ${userType.color} bg-opacity-10 shadow-md` 
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${userType.color} flex items-center justify-center shadow-sm`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className={`font-semibold ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>
+                      {userType.role === 'client' ? 'Client Portal' : 'Admin Portal'}
+                    </h3>
+                    {isSelected && (
+                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {userType.name}
+                  </p>
+                </div>
+              </div>
+            </button>
+          )
+        })}
+      </div>
     )
   }
 
+  // Security Indicator Component
+  const SecurityIndicator = () => (
+    <div className="flex items-center justify-center gap-2 mb-6">
+      <div className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-2 rounded-full border border-blue-200">
+        <Shield className="h-4 w-4 text-blue-600" />
+        <span className="text-sm font-medium text-blue-700">
+          ISO 27001 Certified • 256-bit Encryption
+        </span>
+      </div>
+    </div>
+  )
+
   // Footer Component
   const Footer = () => (
-    <div className="w-full mt-4 py-3 px-6 bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg">
-      <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-xs">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-gray-300">
-              <IndianRupee className="w-3 h-3" />
-              <span>Govt. Financial System</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Shield className="w-3 h-3" />
-              <span>ISO 27001 Certified</span>
-            </div>
-          </div>
-          
-          <div className="text-center text-gray-300">
-            <div className="opacity-80">
-              Ministry of Finance | Government of India
-            </div>
-            <div className="opacity-60 text-xs mt-1">
-              © {new Date().getFullYear()} ArthYantra. All Rights Reserved.
-            </div>
-          </div>
+    <div className="w-full mt-8">
+      <div className="text-center text-xs text-gray-500 space-y-1">
+        <div className="flex items-center justify-center gap-4">
+          <span className="flex items-center gap-1">
+            <IndianRupee className="w-3 h-3" />
+            Official Government Portal
+          </span>
+          <span>•</span>
+          <span>🇮🇳 Servers in India</span>
+        </div>
+        <div>
+          © {new Date().getFullYear()} Ministry of Finance, Government of India. All rights reserved.
+        </div>
+        <div className="text-gray-400">
+          For assistance: helpdesk@finance.gov.in • Toll Free: 1800-11-2024
         </div>
       </div>
     </div>
   )
 
-  // Department Selector Component
-  const DepartmentSelector = () => (
-    <div className="text-center">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => setShowDepartments(!showDepartments)}
-        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-      >
-        {showDepartments ? 'Hide' : 'Show'} Available Departments
-      </Button>
-      
-      {showDepartments && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200"
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {STAKEHOLDERS[0].departments?.map((dept, idx) => {
-              const DeptIcon = dept.icon
-              return (
-                <div key={idx} className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                  <DeptIcon className="w-5 h-5 text-blue-600 mb-2" />
-                  <span className="text-xs font-medium text-gray-700">{dept.name}</span>
-                </div>
-              )
-            })}
-          </div>
-        </motion.div>
-      )}
-    </div>
-  )
-
-  // Initialize animations
-  useEffect(() => {
-    if (typeof window === 'undefined' || !containerRef.current || !cardRef.current) return
-
-    // Card entrance animation
-    gsap.from(cardRef.current, {
-      y: 30,
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.8,
-      ease: "back.out(1.7)",
-      delay: 0.2
-    })
-
-    // Create government seal animation
-    const createSeal = () => {
-      const seal = document.createElement('div')
-      seal.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.03] pointer-events-none'
-      seal.innerHTML = `
-        <div class="absolute inset-0 rounded-full border-6 border-blue-900"></div>
-        <div class="absolute inset-20 rounded-full border-3 border-blue-800"></div>
-        <div class="absolute inset-28 rounded-full border-2 border-blue-700"></div>
-      `
-      containerRef.current?.appendChild(seal)
-      
-      gsap.to(seal, {
-        rotation: 360,
-        duration: 100,
-        repeat: -1,
-        ease: "none"
-      })
-    }
-
-    createSeal()
-
-    return () => {
-      gsap.killTweensOf(containerRef.current?.querySelectorAll('.absolute') || [])
-    }
-  }, [])
-
-  const handleStakeholderSelect = (id: number) => {
-    setSelectedStakeholder(id)
-    setLoginStep("credentials")
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     
-    // Animation feedback
-    const card = document.querySelector(`[data-stakeholder-id="${id}"]`)
-    if (card) {
-      gsap.to(card, {
-        scale: 1.05,
-        duration: 0.3,
-        ease: "power2.out",
-        yoyo: true,
-        repeat: 1
-      })
-    }
-  }
-
-  const handleBack = () => {
-    if (loginStep === "credentials") {
-      setLoginStep("select")
-    } else if (loginStep === "verification") {
-      setLoginStep("credentials")
-    }
-  }
-
-  const handleLogin = async () => {
-    if (!selectedStakeholder || !username.trim()) {
+    if (!username.trim() || !password.trim()) {
       toast({
-        title: "Missing Information",
-        description: "Please enter your credentials",
+        title: "Credentials Required",
+        description: "Please enter your username and password",
         variant: "destructive",
       })
       return
@@ -328,319 +181,240 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
     setIsLoading(true)
 
     try {
-      // Show verification step
-      setLoginStep("verification")
-      
-      // Simulate API call delay
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500))
 
+      const userTypeData = USER_TYPES.find(u => u.id === selectedUserType)
       const userData = {
-        UserTypeID: selectedStakeholder,
-        role: STAKEHOLDERS.find(s => s.id === selectedStakeholder)?.role || "employee",
+        UserTypeID: selectedUserType,
+        role: userTypeData?.role || "client",
         name: username,
-        id: `GOV${Date.now().toString().slice(-8)}`,
+        id: `GOV${Date.now().toString().slice(-6)}`,
         UserName: username,
       }
 
       setUserData(userData)
       onLogin(userData)
 
-      // Success animation
-      if (cardRef.current) {
-        gsap.to(cardRef.current, {
-          scale: 1.02,
-          duration: 0.2,
-          repeat: 3,
-          yoyo: true
-        })
-      }
-
       toast({
-        title: "🎉 Access Granted",
-        description: `Welcome to ${STAKEHOLDERS.find(s => s.id === selectedStakeholder)?.name} Portal`,
-        variant: "default",
+        title: "Access Granted",
+        description: `Welcome to ${userTypeData?.name} Portal`,
+        className: "bg-green-50 text-green-800 border-green-200",
       })
 
-      // Route to dashboard
+      // Route to appropriate dashboard
       setTimeout(() => {
-        router.push(selectedStakeholder === 1 ? "/client/dashboard" : "/admin/dashboard")
-      }, 1000)
+        router.push(selectedUserType === 1 ? "/client/dashboard" : "/admin/dashboard")
+      }, 500)
 
     } catch (error) {
       toast({
-        title: "Access Denied",
-        description: "Invalid credentials or system error",
+        title: "Authentication Failed",
+        description: "Invalid credentials or network error. Please try again.",
         variant: "destructive",
       })
-      setLoginStep("credentials")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const selectedStakeholderData = STAKEHOLDERS.find((s) => s.id === selectedStakeholder)
+  const selectedUserTypeData = USER_TYPES.find((u) => u.id === selectedUserType)
 
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 via-white to-blue-50/30 px-4 py-6 relative overflow-hidden"
+      className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 via-white to-blue-50/20"
     >
       {/* Government Banner */}
       <GovernmentBanner />
 
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Subtle gradient orbs */}
-        <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-500/3 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-[250px] h-[250px] bg-emerald-500/3 rounded-full blur-3xl" />
-        
-        {/* Very subtle grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #1e40af 1px, transparent 1px),
-              linear-gradient(to bottom, #1e40af 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px'
-          }}
-        />
-      </div>
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-2xl">
+          <Card 
+            ref={cardRef}
+            className="border-0 shadow-xl rounded-xl overflow-hidden bg-white"
+          >
+            <CardHeader className="pb-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 via-white to-blue-50">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md">
+                    <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
+                      <div className="w-3 h-3 bg-white rounded-full" />
+                    </div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-gray-900">
+                      Arthayantra 
+                    </CardTitle>
+                    <CardDescription className="text-gray-600">
+                      Government Financial Management System
+                    </CardDescription>
+                  </div>
+                </div>
+                
+                {/* Security Indicator */}
 
-      {/* Main Login Card */}
-      <motion.div
-        ref={cardRef}
-        className="w-full max-w-lg"
-        layout
-      >
-        <Card className="border-0 shadow-xl shadow-blue-500/10 bg-white/95 backdrop-blur-lg rounded-xl overflow-hidden">
-          {/* Card Header */}
-          <CardHeader className="text-center pt-7 pb-5 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-purple-50/50" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 shadow-lg shadow-blue-500/20">
-                  <BookOpen className="w-7 h-7 text-white" />
-                </div>
-                <div className="text-left">
-                  <CardTitle className="text-xl font-bold text-gray-900">
-                    ArthYantra Portal
-                  </CardTitle>
-                  <CardDescription className="text-gray-600">
-                    Government Financial System
-                  </CardDescription>
-                </div>
+                <SecurityIndicator />
+                
+                {/* User Type Selector */}
+                <UserTypeSelector />
               </div>
-              
-              <SecurityIndicator />
-            </div>
-          </CardHeader>
+            </CardHeader>
 
-          <CardContent className="p-6">
-            <AnimatePresence mode="wait">
-              {/* Step 1: Stakeholder Selection */}
-              {loginStep === "select" && (
-                <motion.div
-                  key="select"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="space-y-5"
-                >
-                  <div className="text-center mb-2">
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Select Portal Access</h3>
-                    <p className="text-gray-600 text-sm">Choose your role to continue</p>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {STAKEHOLDERS.map((stakeholder) => (
-                      <StakeholderCard
-                        key={stakeholder.id}
-                        stakeholder={stakeholder}
-                        isSelected={selectedStakeholder === stakeholder.id}
-                        onSelect={() => handleStakeholderSelect(stakeholder.id)}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="pt-2">
-                    <Button
-                      onClick={() => setLoginStep("credentials")}
-                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-90"
-                    >
-                      Continue
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 2: Credentials */}
-              {loginStep === "credentials" && (
-                <motion.div
-                  key="credentials"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="space-y-5"
-                >
-                  <div className="flex items-center gap-3 mb-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleBack}
-                      className="rounded-full h-8 w-8"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
+            <CardContent className="p-8">
+              {/* Login Form */}
+              <form onSubmit={handleLogin} className="space-y-6">
+                {/* Selected Portal Info */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-blue-50/30 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    {selectedUserTypeData && (() => {
+                      const Icon = selectedUserTypeData.icon
+                      return <Icon className="w-5 h-5 text-blue-600" />
+                    })()}
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">Login Credentials</h3>
-                      <p className="text-sm text-gray-600">
-                        Access as {selectedStakeholderData?.name}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <UserCircle className="w-4 h-4 text-blue-600" />
-                        {selectedStakeholderData?.role === 'employee' ? 'Government ID / Email' : 'Advisor ID / Email'}
-                      </Label>
-                      <Input
-                        id="username"
-                        placeholder={selectedStakeholderData?.role === 'employee' 
-                          ? "Enter government email or ID"
-                          : "Enter advisor credentials"
-                        }
-                        className="h-11 bg-white border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        autoComplete="username"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="password" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <Fingerprint className="w-4 h-4 text-blue-600" />
-                        Password
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Enter your secure password"
-                          className="h-11 bg-white border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 pr-10"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          autoComplete="current-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
+                      <div className="text-sm font-semibold text-blue-800">
+                        {selectedUserTypeData?.role === 'client' ? 'Client Portal' : 'Admin Portal'}
+                      </div>
+                      <div className="text-xs text-blue-600">
+                        {selectedUserTypeData?.name}
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {selectedStakeholder === 1 && (
-                    <DepartmentSelector />
-                  )}
-
-                  <div className="space-y-3">
-                    <Button
-                      onClick={handleLogin}
-                      disabled={isLoading || !username.trim()}
-                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-90"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Authenticating...
-                        </>
-                      ) : (
-                        "Login to Portal"
-                      )}
-                    </Button>
-
-                    <div className="text-center">
-                      <Button
-                        variant="link"
-                        className="text-xs text-gray-500"
-                        onClick={() => {
-                          toast({
-                            title: "Help Requested",
-                            description: "IT support has been notified",
-                          })
-                        }}
-                      >
-                        <AlertCircle className="mr-1 h-3 w-3" />
-                        Need Help Accessing Portal?
-                      </Button>
+                {/* Username Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <UserCircle className="w-4 h-4 text-blue-600" />
+                      {selectedUserType === 1 ? 'Government ID / Email' : 'Advisor ID'}
                     </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 3: Verification */}
-              {loginStep === "verification" && (
-                <motion.div
-                  key="verification"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="space-y-5 text-center py-6"
-                >
+                  </Label>
+                  <Input
+                    id="username"
+                    placeholder={
+                      selectedUserType === 1 
+                        ? "e.g., DOE12345 or name@department.gov.in"
+                        : "Enter your advisor ID"
+                    }
+                    className="h-11 bg-white border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+                
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <LockKeyhole className="w-4 h-4 text-blue-600" />
+                      Password
+                    </div>
+                  </Label>
                   <div className="relative">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center mb-3">
-                      <motion.div
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <ShieldCheck className="w-8 h-8 text-green-600" />
-                      </motion.div>
-                    </div>
-                    
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full border-4 border-green-200 border-t-green-600 animate-spin" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="h-11 bg-white border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 pr-10"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Login Button */}
+                <div className="pt-4">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base font-medium shadow-md hover:shadow-lg transition-all"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Authenticating...
+                      </>
+                    ) : (
+                      <>
+                        <Key className="mr-2 h-5 w-5" />
+                        Login to {selectedUserTypeData?.role === 'client' ? 'Client' : 'Admin'} Portal
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Help Link */}
+                <div className="text-center pt-4">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-gray-500 hover:text-blue-600"
+                    onClick={() => {
+                      toast({
+                        title: "Help Requested",
+                        description: "IT support team has been notified. You will receive an email shortly.",
+                      })
+                    }}
+                  >
+                    <AlertCircle className="mr-1 h-4 w-4" />
+                    Forgot Password or Need Help?
+                  </Button>
+                </div>
+
+                {/* Security Notice */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-start gap-3 bg-gradient-to-r from-gray-50 to-gray-50/30 p-4 rounded-lg border border-gray-200">
+                    <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs text-gray-700">
+                      <span className="font-medium">Security Notice:</span> This portal is for authorized government personnel only. 
+                      Unauthorized access attempts are logged and may be prosecuted under the IT Act, 2000. 
+                      All data is encrypted and stored on secure Indian government servers.
                     </div>
                   </div>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
 
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-gray-900">Verifying Identity</h3>
-                    <p className="text-gray-600 text-sm">
-                      Authenticating with government servers...
-                    </p>
-                  </div>
+          {/* Status Indicators */}
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              <span>System: Active</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+              <span>Last Updated: {new Date().toLocaleDateString('en-IN')}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+              <span>Users Online: 2,847</span>
+            </div>
+          </div>
 
-                  <Progress value={66} className="h-1.5" />
-                  
-                  <div className="grid grid-cols-3 gap-2 text-xs text-gray-500">
-                    <div className="text-center">
-                      <div className="w-2 h-2 rounded-full bg-green-500 mx-auto mb-1" />
-                      <span>Identity</span>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mx-auto mb-1" />
-                      <span>Credentials</span>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-2 h-2 rounded-full bg-gray-300 mx-auto mb-1 animate-pulse" />
-                      <span>Authorization</span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </CardContent>
-        </Card>
-      </motion.div>
+          {/* Footer */}
+          <Footer />
+        </div>
+      </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl" />
+      </div>
     </div>
   )
 }
