@@ -46,9 +46,9 @@ interface ClientLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/client/dashboard" },
   { icon: User, label: "Profile", href: "/client/profile" },
-  { 
-    icon: ClipboardEdit, 
-    label: "Data Entry", 
+  {
+    icon: ClipboardEdit,
+    label: "Data Entry",
     href: "/client/data_entry",
     children: [
       { icon: FileUser, label: "Family Details", href: "/client/data_entry/family_details" },

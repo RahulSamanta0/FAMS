@@ -1,22 +1,24 @@
 "use client"
 
 import { useState } from "react"
-
+import { motion } from "framer-motion"
 import { ClientLayout } from "@/components/client-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 
 import {
-  Plus,
   ShieldCheck,
   Calendar,
   Bell,
-  Upload,
   FileText,
+  Activity,
+  AlertCircle,
+  CheckCircle2,
+  Clock
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 /* ---------------- MOCK DATA ---------------- */
 
@@ -41,6 +43,16 @@ const insurancePolicies = [
     status: "Active",
     reminder: false,
   },
+  {
+    type: "Vehicle Insurance",
+    provider: "ICICI Lombard",
+    policyName: "Car Protect 360",
+    coverage: 800000,
+    premium: 5500,
+    dueDate: "12 Sep 2025",
+    status: "Active",
+    reminder: true,
+  },
 ]
 
 const claims = [
@@ -48,21 +60,36 @@ const claims = [
     policy: "Health Suraksha",
     claimId: "CLM-2025-001",
     amount: 45000,
+    date: "10 Mar 2025",
     status: "Approved",
   },
   {
     policy: "Family Floater",
     claimId: "CLM-2025-002",
     amount: 22000,
+    date: "22 Jun 2025",
     status: "In Review",
   },
 ]
+
+/* ---------------- ANIMATION VARIANTS ---------------- */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
 
 /* ---------------- COMPONENT ---------------- */
 
 export default function ClientInsurance() {
   const [policies, setPolicies] = useState(insurancePolicies)
-  const [documents, setDocuments] = useState<File[]>([])
 
   const totalCoverage = policies.reduce(
     (acc, policy) => acc + policy.coverage,
@@ -80,155 +107,211 @@ export default function ClientInsurance() {
 
   return (
     <ClientLayout activeTab="/client/my_insurance">
-      <div className="space-y-6">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
+      >
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Policy
-          </Button>
-        </div>
+        {/* HEADER */}
+        <motion.div variants={itemVariants}>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Insurance & Claims
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Manage your policies, premiums, and claim history.
+          </p>
+        </motion.div>
 
-        {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+        {/* SUMMARY CARDS */}
+        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
+          
+          {/* Total Policies Card */}
+          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <ShieldCheck className="h-24 w-24 text-blue-600" />
+            </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Total Policies</CardTitle>
+              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Policies</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{policies.length}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white">{policies.length}</div>
+              <p className="text-xs text-slate-500 mt-1">Active Plans</p>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* Total Coverage Card */}
+          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <Activity className="h-24 w-24 text-sky-600" />
+            </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Total Coverage</CardTitle>
+              <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Total Coverage</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 ₹{totalCoverage.toLocaleString()}
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Sum Assured</p>
+            </CardContent>
+          </Card>
+
+          {/* Premium Due Card */}
+          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <Calendar className="h-24 w-24 text-indigo-600" />
+            </div>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Next Premium Due</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white">15 Jul 2025</div>
+              <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+                <Bell className="h-3 w-3" />
+                <span>Reminder Set</span>
               </div>
             </CardContent>
           </Card>
+        </motion.div>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Next Premium Due</CardTitle>
+        {/* INSURANCE POLICIES TABLE */}
+        <motion.div variants={itemVariants}>
+          <Card className="border-blue-100 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+            <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-slate-800 dark:text-white">Insurance Policies</CardTitle>
+                  <CardDescription className="text-blue-600/80 dark:text-slate-400">Policy details, premiums, and reminders</CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <span>15 Jul 2025</span>
+
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                  <TableRow>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Type & Provider</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Policy Name</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right h-12">Coverage</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right h-12">Premium</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Due Date</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Reminder</TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {policies.map((policy, index) => (
+                    <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                      <TableCell className="pl-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{policy.provider}</span>
+                          <Badge variant="outline" className="w-fit mt-1 text-xs border-blue-200 text-blue-600 bg-white/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">
+                            {policy.type}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium text-slate-700 dark:text-slate-300">
+                        {policy.policyName}
+                      </TableCell>
+                      <TableCell className="text-right font-medium text-slate-700 dark:text-slate-300">
+                        ₹{policy.coverage.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right font-medium text-slate-700 dark:text-slate-300">
+                        ₹{policy.premium.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-slate-600 dark:text-slate-400">
+                        {policy.dueDate}
+                      </TableCell>
+                      <TableCell className="pr-6">
+                        <div className="flex items-center gap-3">
+                          <Switch
+                            checked={policy.reminder}
+                            onCheckedChange={() => toggleReminder(index)}
+                            className="data-[state=checked]:bg-blue-600"
+                          />
+                          <span className={cn("text-xs font-medium", policy.reminder ? "text-blue-600" : "text-slate-400")}>
+                            {policy.reminder ? "On" : "Off"}
+                          </span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
 
-        {/* Insurance Policies */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Insurance Policies</CardTitle>
-            <CardDescription>
-              Policy details, premiums, and reminders
-            </CardDescription>
-          </CardHeader>
+        {/* CLAIM TRACKING TABLE */}
+        <motion.div variants={itemVariants}>
+          <Card className="border-blue-100 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+            <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-slate-800 dark:text-white">Claim Tracking</CardTitle>
+                  <CardDescription className="text-blue-600/80 dark:text-slate-400">Track submitted insurance claims</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
 
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Policy</TableHead>
-                  <TableHead>Provider</TableHead>
-                  <TableHead className="text-right">Coverage</TableHead>
-                  <TableHead className="text-right">Premium</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Reminder</TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {policies.map((policy, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Badge variant="outline">{policy.type}</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {policy.policyName}
-                    </TableCell>
-                    <TableCell>{policy.provider}</TableCell>
-                    <TableCell className="text-right">
-                      ₹{policy.coverage.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      ₹{policy.premium.toLocaleString()}
-                    </TableCell>
-                    <TableCell>{policy.dueDate}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Bell className="h-4 w-4 text-muted-foreground" />
-                        <Switch
-                          checked={policy.reminder}
-                          onCheckedChange={() => toggleReminder(index)}
-                        />
-                      </div>
-                    </TableCell>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                  <TableRow>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Policy Name</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Claim ID</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Date Submitted</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right h-12">Amount</TableHead>
+                    <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
 
+                <TableBody>
+                  {claims.map((claim, index) => (
+                    <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                      <TableCell className="pl-6 py-4 font-medium text-slate-900 dark:text-slate-100">
+                        {claim.policy}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-slate-500 dark:text-slate-400">
+                        {claim.claimId}
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-500 dark:text-slate-400">
+                        {claim.date}
+                      </TableCell>
+                      <TableCell className="text-right font-medium text-slate-700 dark:text-slate-300">
+                        ₹{claim.amount.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="pr-6">
+                        <Badge
+                          className={cn(
+                            "px-2.5 py-0.5 rounded-full text-xs font-medium border shadow-none",
+                            claim.status === "Approved"
+                              ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
+                              : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800"
+                          )}
+                        >
+                          {claim.status === "Approved" ? 
+                            <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Approved</span> : 
+                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> In Review</span>
+                          }
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* Claim Tracking */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Claim Tracking</CardTitle>
-            <CardDescription>
-              Track submitted insurance claims
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Policy</TableHead>
-                  <TableHead>Claim ID</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {claims.map((claim, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{claim.policy}</TableCell>
-                    <TableCell>{claim.claimId}</TableCell>
-                    <TableCell className="text-right">
-                      ₹{claim.amount.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          claim.status === "Approved"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-yellow-50 text-yellow-700"
-                        }
-                      >
-                        {claim.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-      
-
-      </div>
+      </motion.div>
     </ClientLayout>
   )
 }
