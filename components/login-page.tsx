@@ -466,16 +466,7 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
                 </div>
 
                 {/* Security Notice */}
-                <div className="mt-8 pt-8 border-t border-gray-100">
-                  <div className="flex items-start gap-4 bg-gradient-to-r from-slate-50 to-gray-50 p-5 rounded-xl border border-gray-200">
-                    <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-gray-700 leading-relaxed">
-                      <span className="font-semibold text-gray-900">Security Protocol Active:</span> This portal is exclusively for authorized personnel. 
-                      All access attempts are monitored, logged, and protected under the Information Technology Act, 2000. 
-                      Your session is encrypted end-to-end and stored securely on government-certified infrastructure.
-                    </div>
-                  </div>
-                </div>
+               
               </form>
             </CardContent>
           </Card>
@@ -484,51 +475,15 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
           <FeaturesGrid />
 
           {/* System Status */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="font-medium">System Status:</span>
-                <span className="text-emerald-600 font-semibold">Operational</span>
-              </div>
-            </div>
-            <div className="hidden sm:block h-4 w-px bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-amber-500 rounded-full" />
-                <span className="font-medium">Users Online:</span>
-                <span className="font-semibold">3,142</span>
-              </div>
-            </div>
-            <div className="hidden sm:block h-4 w-px bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span className="font-medium">Response Time:</span>
-                <span className="font-semibold">{"< 200ms"}</span>
-              </div>
-            </div>
-          </div>
+         
 
           {/* Footer */}
           <Footer />
         </div>
       </div>
 
-      {/* Background Elements */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-gray-50" />
-        
-        {/* Geometric patterns */}
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-br from-emerald-100/30 to-teal-100/30 rounded-full blur-3xl" />
-        
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" 
-          style={{ opacity: 0.3 }}
-        />
-      </div>
+      {/* Background Elements - Fixed version without SVG pattern */}
+     
     </div>
   )
 }

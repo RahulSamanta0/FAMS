@@ -29,6 +29,11 @@ import {
   Moon,
   Sun,
   ClipboardEdit,
+  ChevronDown,
+  FileUser,
+  Landmark,
+  Home as HomeIcon,
+  PieChart,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -41,7 +46,17 @@ interface ClientLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/client/dashboard" },
   { icon: User, label: "Profile", href: "/client/profile" },
-  { icon: ClipboardEdit, label: "Data Entry", href: "/client/data_entry" },
+  {
+    icon: ClipboardEdit,
+    label: "Data Entry",
+    href: "/client/data_entry",
+    children: [
+      { icon: FileUser, label: "Family Details", href: "/client/data_entry/family_details" },
+      { icon: Landmark, label: "Banking Details", href: "/client/data_entry/banking_details" },
+      { icon: HomeIcon, label: "Asset Declaration", href: "/client/data_entry/asset_declaration" },
+      { icon: PieChart, label: "Investments", href: "/client/data_entry/investments" },
+    ]
+  },
   { icon: Building2, label: "Salary & Bank Accounts", href: "/client/my_salary" },
   { icon: Receipt, label: "Receipts & Expenses", href: "/client/Receipts_Expenses" },
   { icon: TrendingUp, label: "Investments", href: "/client/investments" },
@@ -54,6 +69,7 @@ const menuItems = [
 
 export function ClientLayout({ children, activeTab }: ClientLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [darkMode, setDarkMode] = useState(() => {
     // Initialize from localStorage if available
     if (typeof window !== 'undefined') {
@@ -143,6 +159,62 @@ export function ClientLayout({ children, activeTab }: ClientLayoutProps) {
               {menuItems.map((item) => {
                 const Icon = item.icon
                 const isActive = activeTab === item.href
+                const hasChildren = item.children && item.children.length > 0
+                const isOpen = openDropdown === item.label
+
+                if (hasChildren) {
+                  return (
+                    <li key={item.href} className="mb-2">
+                      <div
+                        onClick={() => setOpenDropdown(isOpen ? null : item.label)}
+                        className={cn(
+                          "flex items-center gap-3 px-5 py-3 text-sm transition-all duration-200 mx-2 rounded-lg cursor-pointer",
+                          isActive
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg"
+                            : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                        <ChevronDown
+                          className={cn(
+                            "ml-auto h-4 w-4 transition-transform duration-300",
+                            isOpen ? "rotate-180" : ""
+                          )}
+                        />
+                      </div>
+                      <div
+                        className={cn(
+                          "overflow-hidden transition-[max-height] duration-500 ease-in-out",
+                          isOpen ? "max-h-screen" : "max-h-0"
+                        )}
+                      >
+                        <ul className="ml-6 mt-2 space-y-1">
+                          {item.children.map((child) => {
+                            const ChildIcon = child.icon
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  onClick={() => setSidebarOpen(false)}
+                                  className={cn(
+                                    "flex items-center gap-3 px-4 py-2 text-sm rounded-lg transition-all duration-200 mx-2",
+                                    activeTab === child.href
+                                      ? "bg-blue-600 text-white font-semibold"
+                                      : "text-slate-600 dark:text-slate-400 hover:bg-blue-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
+                                  )}
+                                >
+                                  {ChildIcon && <ChildIcon className="h-4 w-4" />}
+                                  {child.label}
+                                </Link>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    </li>
+                  )
+                }
 
                 return (
                   <li key={item.href}>

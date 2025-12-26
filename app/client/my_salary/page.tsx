@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { motion } from "framer-motion"
 import { ClientLayout } from "@/components/client-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -8,19 +9,32 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { DollarSign, CreditCard, Wallet, TrendingUp, Building2, Filter } from "lucide-react"
+import { 
+  DollarSign, 
+  CreditCard, 
+  Wallet, 
+  TrendingUp, 
+  Building2, 
+  Filter,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Briefcase,
+  Landmark,
+  Receipt
+} from "lucide-react"
 
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts"
+import { cn } from "@/lib/utils"
 
-/* ---------------- MOCK DATA (API READY) ---------------- */
+/* ---------------- MOCK DATA ---------------- */
 
 const salaryBreakdown = [
   { label: "Basic Salary", amount: 50000 },
@@ -47,7 +61,19 @@ const transactionsData = [
   { date: "May 2025", bank: "SBI", description: "Freelance Income", type: "Credit", amount: 12000 },
 ]
 
-/* ---------------- COMPONENT ---------------- */
+/* ---------------- ANIMATION VARIANTS ---------------- */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
 
 export default function SalaryAndBankAccounts() {
   /* ---------- FILTER STATE ---------- */
@@ -67,337 +93,295 @@ export default function SalaryAndBankAccounts() {
     return true
   })
 
-  /* ---------- API READY ---------- */
-  /*
-  useEffect(() => {
-    fetch("/api/transactions")
-      .then(res => res.json())
-      .then(data => setTransactions(data))
-  }, [])
-  */
-
   return (
     <ClientLayout activeTab="/client/my_salary">
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
+      >
 
-        {/* SUMMARY */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 dark:from-blue-900/40 dark:via-blue-800/40 dark:to-blue-900/40 border-blue-200 dark:border-blue-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium text-blue-900 dark:text-blue-100">Monthly Salary</CardTitle>
-              <div className="p-2 bg-blue-200 dark:bg-blue-700 rounded-full">
-                <DollarSign className="h-5 w-5 text-blue-700 dark:text-blue-200" />
-              </div>
+        {/* HEADER SECTION */}
+        <motion.div variants={itemVariants}>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Financial Overview
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Track your earnings, bank balances, and recent financial activity.
+          </p>
+        </motion.div>
+
+        {/* SUMMARY CARDS */}
+        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2">
+          
+          {/* Salary Card - Indigo Theme */}
+          <Card className="relative overflow-hidden border-indigo-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <Briefcase className="h-24 w-24 text-indigo-600" />
+            </div>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Monthly Earnings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-900 dark:text-blue-50">₹{totalSalary.toLocaleString()}</div>
-              <p className="text-xs text-blue-700 dark:text-blue-200 mt-1">Current month earnings</p>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalSalary.toLocaleString()}</div>
+              <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
+                <TrendingUp className="h-4 w-4 text-green-500" />
+                <span>+2.5% from last month</span>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-50 via-green-100 to-green-50 dark:from-green-900/40 dark:via-green-800/40 dark:to-green-900/40 border-green-200 dark:border-green-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium text-green-900 dark:text-green-100">Total Bank Balance</CardTitle>
-              <div className="p-2 bg-green-200 dark:bg-green-700 rounded-full">
-                <Wallet className="h-5 w-5 text-green-700 dark:text-green-200" />
-              </div>
+          {/* Bank Balance Card - Sky Theme */}
+          <Card className="relative overflow-hidden border-sky-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <Wallet className="h-24 w-24 text-sky-600" />
+            </div>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Net Liquid Assets</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-900 dark:text-green-50">₹{totalBankBalance.toLocaleString()}</div>
-              <p className="text-xs text-green-700 dark:text-green-200 mt-1">Across all accounts</p>
+              <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalBankBalance.toLocaleString()}</div>
+              <p className="text-xs text-slate-500 mt-1">Available across all accounts</p>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
 
-        {/* TABS */}
-        <Tabs defaultValue="salary" className="space-y-6">
-          <TabsList className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-1 border border-blue-100 dark:border-slate-600">
-            <TabsTrigger value="salary" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-600 data-[state=active]:shadow-md transition-all">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Salary
-            </TabsTrigger>
-            <TabsTrigger value="banks" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-600 data-[state=active]:shadow-md transition-all">
-              <Building2 className="h-4 w-4 mr-2" />
-              Banks
-            </TabsTrigger>
-            <TabsTrigger value="transactions" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-600 data-[state=active]:shadow-md transition-all">
-              <CreditCard className="h-4 w-4 mr-2" />
-              Transactions
-            </TabsTrigger>
-          </TabsList>
+        {/* TABS SECTION */}
+        <motion.div variants={itemVariants}>
+          <Tabs defaultValue="salary" className="space-y-6">
+            <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800 rounded-xl">
+              <TabsTrigger value="salary" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all px-6">
+                <DollarSign className="h-4 w-4 mr-2" /> Salary
+              </TabsTrigger>
+              <TabsTrigger value="banks" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all px-6">
+                <Landmark className="h-4 w-4 mr-2" /> Banks
+              </TabsTrigger>
+              <TabsTrigger value="transactions" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all px-6">
+                <CreditCard className="h-4 w-4 mr-2" /> History
+              </TabsTrigger>
+            </TabsList>
 
-          {/* SALARY TAB */}
-          <TabsContent value="salary" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-700 dark:to-purple-600 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-purple-700 dark:text-purple-100" />
+            {/* --- SALARY TAB --- */}
+            <TabsContent value="salary" className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-6">
+                
+                {/* 1. Salary Trend Chart */}
+                <Card className="md:col-span-2 border-blue-100 dark:border-slate-800 shadow-md bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-slate-950">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2 text-slate-800 dark:text-white">
+                      <TrendingUp className="h-5 w-5 text-indigo-600" />
+                      Salary Trend
+                    </CardTitle>
+                    <CardDescription className="text-slate-500">Income progression over the last quarter</CardDescription>
+                  </CardHeader>
+                  <CardContent className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={salaryHistory}>
+                        <defs>
+                          <linearGradient id="colorSalary" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="amount" 
+                          stroke="#4f46e5" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorSalary)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* 2. Monthly Salary Breakdown Table */}
+                <Card className="border-blue-100 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 h-full">
+                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                        <Receipt className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-slate-800 dark:text-white">Structure</CardTitle>
+                        <CardDescription className="text-slate-500">Monthly breakdown</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <Table>
+                      <TableBody>
+                        {salaryBreakdown.map((item, i) => (
+                          <TableRow key={i} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                            <TableCell className="pl-6 font-medium text-slate-600 dark:text-slate-400 py-3">{item.label}</TableCell>
+                            <TableCell className="text-right font-bold text-slate-800 dark:text-white py-3 pr-6">
+                              ₹{item.amount.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="bg-blue-50/50 dark:bg-slate-900/80 hover:bg-blue-50/60 border-t border-blue-100 dark:border-slate-800">
+                          <TableCell className="pl-6 font-bold text-indigo-600 dark:text-indigo-400">Gross Total</TableCell>
+                          <TableCell className="text-right font-bold text-indigo-600 dark:text-indigo-400 text-lg pr-6">
+                            ₹{totalSalary.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* --- BANKS TAB --- */}
+            <TabsContent value="banks">
+              <Card className="border-blue-100 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <Building2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl text-slate-800 dark:text-white">Linked Accounts</CardTitle>
+                      <CardDescription className="text-slate-500">Current standing of your connected bank accounts</CardDescription>
+                    </div>
                   </div>
-                  Salary Trend
-                </CardTitle>
-                <CardDescription>Your salary over the last 3 months</CardDescription>
-              </CardHeader>
-              <CardContent className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={salaryHistory}>
-                    <defs>
-                      <linearGradient id="salaryGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(262, 83%, 58%)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(262, 83%, 58%)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-700" />
-                    <XAxis dataKey="month" stroke="#64748b" className="dark:stroke-slate-400" />
-                    <YAxis stroke="#64748b" className="dark:stroke-slate-400" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        background: 'rgba(255, 255, 255, 0.95)', 
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <Line 
-                      dataKey="amount" 
-                      stroke="hsl(262, 83%, 58%)" 
-                      strokeWidth={3}
-                      dot={{ fill: "hsl(262, 83%, 58%)", r: 5 }}
-                      activeDot={{ r: 7 }}
-                      fill="url(#salaryGradient)"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-700 dark:to-blue-600 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-blue-700 dark:text-blue-100" />
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="overflow-hidden">
+                    <Table>
+                      <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                        <TableRow>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Bank Name</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Account Type</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right pr-6 h-12">Available Balance</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {bankAccounts.map((bank, i) => (
+                          <TableRow key={i} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                            <TableCell className="pl-6 font-medium text-slate-800 dark:text-slate-200">
+                              <div className="flex items-center gap-3">
+                                {bank.bank}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-slate-500 bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+                                {bank.account}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right pr-6 text-lg font-semibold text-green-600 dark:text-green-400">
+                              ₹{bank.balance.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   </div>
-                  Monthly Salary Breakdown
-                </CardTitle>
-                <CardDescription>Detailed component breakdown</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableBody>
-                    {salaryBreakdown.map((item, i) => (
-                      <TableRow key={i} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors">
-                        <TableCell className="font-medium">{item.label}</TableCell>
-                        <TableCell className="text-right">
-                          <span className="font-bold text-blue-700 dark:text-blue-300">
-                            ₹{item.amount.toLocaleString()}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-t-2 border-blue-200 dark:border-blue-700">
-                      <TableCell className="font-bold text-lg">Total</TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-bold text-xl text-blue-900 dark:text-blue-100">
-                          ₹{totalSalary.toLocaleString()}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          {/* BANK TAB */}
-          <TabsContent value="banks" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-700 dark:to-emerald-600 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-emerald-700 dark:text-emerald-100" />
+            {/* --- TRANSACTIONS TAB --- */}
+            <TabsContent value="transactions" className="space-y-4">
+              {/* Filter Bar */}
+              <Card className="p-4 border-blue-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50 shadow-sm">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                    <Filter className="h-4 w-4" /> Filters:
                   </div>
-                  Balance Trend
-                </CardTitle>
-                <CardDescription>Combined balance across all accounts</CardDescription>
-              </CardHeader>
-              <CardContent className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={[
-                      { month: "Apr", balance: 145000 },
-                      { month: "May", balance: 160000 },
-                      { month: "Jun", balance: 203000 },
-                    ]}
-                  >
-                    <defs>
-                      <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-700" />
-                    <XAxis dataKey="month" stroke="#64748b" className="dark:stroke-slate-400" />
-                    <YAxis stroke="#64748b" className="dark:stroke-slate-400" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        background: 'rgba(255, 255, 255, 0.95)', 
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <Line 
-                      dataKey="balance" 
-                      stroke="hsl(142, 76%, 36%)" 
-                      strokeWidth={3}
-                      dot={{ fill: "hsl(142, 76%, 36%)", r: 5 }}
-                      activeDot={{ r: 7 }}
-                      fill="url(#balanceGradient)"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                  <Select value={month} onValueChange={setMonth}>
+                    <SelectTrigger className="w-[140px] bg-white dark:bg-slate-950 border-blue-200 dark:border-slate-700">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Months</SelectItem>
+                      <SelectItem value="Jun 2025">Jun 2025</SelectItem>
+                      <SelectItem value="May 2025">May 2025</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-            <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-700 dark:to-green-600 rounded-lg">
-                    <Building2 className="h-5 w-5 text-green-700 dark:text-green-100" />
+                  <Select value={bank} onValueChange={setBank}>
+                    <SelectTrigger className="w-[140px] bg-white dark:bg-slate-950 border-blue-200 dark:border-slate-700">
+                      <SelectValue placeholder="Bank" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Banks</SelectItem>
+                      <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
+                      <SelectItem value="SBI">SBI</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <div className="flex items-center gap-2 ml-auto">
+                    <Switch id="credit-mode" checked={creditOnly} onCheckedChange={setCreditOnly} />
+                    <label htmlFor="credit-mode" className="text-sm font-medium text-slate-600 cursor-pointer">
+                      Credit Only
+                    </label>
                   </div>
-                  Bank Accounts
-                </CardTitle>
-                <CardDescription>Your linked bank accounts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700">
-                      <TableHead className="font-semibold">Bank</TableHead>
-                      <TableHead className="font-semibold">Account</TableHead>
-                      <TableHead className="text-right font-semibold">Balance</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bankAccounts.map((bank, i) => (
-                      <TableRow key={i} className="hover:bg-green-50/50 dark:hover:bg-green-900/20 transition-colors">
-                        <TableCell className="font-medium">{bank.bank}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
-                            {bank.account}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className="font-bold text-green-700 dark:text-green-300">
-                            ₹{bank.balance.toLocaleString()}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* TRANSACTIONS TAB */}
-          <TabsContent value="transactions" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <Card className="border-slate-200 dark:border-slate-700 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-700 dark:to-indigo-600 rounded-lg">
-                    <Filter className="h-5 w-5 text-indigo-700 dark:text-indigo-100" />
-                  </div>
-                  Filters
-                </CardTitle>
-                <CardDescription>Filter transactions by criteria</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-4">
-                <Select value={month} onValueChange={setMonth}>
-                  <SelectTrigger className="w-40 bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all">
-                    <SelectValue placeholder="Month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Months</SelectItem>
-                    <SelectItem value="Jun 2025">Jun 2025</SelectItem>
-                    <SelectItem value="May 2025">May 2025</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={bank} onValueChange={setBank}>
-                  <SelectTrigger className="w-48 bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all">
-                    <SelectValue placeholder="Bank" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Banks</SelectItem>
-                    <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
-                    <SelectItem value="SBI">SBI</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg border border-indigo-200 dark:border-indigo-700">
-                  <Switch checked={creditOnly} onCheckedChange={setCreditOnly} />
-                  <span className="text-sm font-medium">Credit only</span>
                 </div>
-              </CardContent>
-            </Card>
+              </Card>
 
-            <Card className="border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur hover:shadow-xl transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-700 dark:to-violet-600 rounded-lg">
-                    <CreditCard className="h-5 w-5 text-violet-700 dark:text-violet-100" />
-                  </div>
-                  Transactions
-                </CardTitle>
-                <CardDescription>Showing {filteredTransactions.length} transaction(s)</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700">
-                      <TableHead className="font-semibold">Date</TableHead>
-                      <TableHead className="font-semibold">Description</TableHead>
-                      <TableHead className="font-semibold">Type</TableHead>
-                      <TableHead className="text-right font-semibold">Amount</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredTransactions.map((tx, i) => (
-                      <TableRow 
-                        key={i} 
-                        className={`hover:bg-${tx.type === "Credit" ? "green" : "red"}-50/30 dark:hover:bg-${tx.type === "Credit" ? "green" : "red"}-900/20 transition-colors`}
-                      >
-                        <TableCell className="font-medium">{tx.date}</TableCell>
-                        <TableCell>{tx.description}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`${
-                              tx.type === "Credit" 
-                                ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-300 dark:border-green-700" 
-                                : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700"
-                            }`}
-                          >
-                            {tx.type}
-                          </Badge>
-                        </TableCell>
-                        <TableCell
-                          className={`text-right font-bold ${
-                            tx.amount > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                          }`}
-                        >
-                          {tx.amount > 0 ? "+" : ""}₹{Math.abs(tx.amount).toLocaleString()}
-                        </TableCell>
+              {/* Transactions Table */}
+              <Card className="border-blue-100 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                      <TableRow>
+                        <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Date</TableHead>
+                        <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Description</TableHead>
+                        <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Bank</TableHead>
+                        <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right pr-6 h-12">Amount</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredTransactions.length > 0 ? (
+                        filteredTransactions.map((tx, i) => (
+                          <TableRow key={i} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                            <TableCell className="pl-6 font-medium text-slate-500">{tx.date}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className={cn("p-1.5 rounded-full", 
+                                  tx.type === "Credit" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+                                )}>
+                                  {tx.type === "Credit" ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownLeft className="h-3 w-3" />}
+                                </div>
+                                <span className="font-medium text-slate-700 dark:text-slate-200">{tx.description}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-slate-500">{tx.bank}</TableCell>
+                            <TableCell className="text-right pr-6">
+                              <span className={cn("font-bold px-2 py-1 rounded-md text-sm", 
+                                tx.type === "Credit" 
+                                  ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300" 
+                                  : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                              )}>
+                                {tx.type === "Credit" ? "+" : ""}₹{Math.abs(tx.amount).toLocaleString()}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+                            No transactions found matching your filters.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </motion.div>
     </ClientLayout>
   )
 }
