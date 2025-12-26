@@ -67,20 +67,7 @@ export default function ClientInvestments() {
   return (
     <ClientLayout activeTab="/client/investments">
       <div className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0">
-        
-        {/* HEADER */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Investment Portfolio
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Overview of your assets, performance, and growth.
-          </p>
-        </motion.div>
+       
 
         {/* SUMMARY CARDS */}
         <div className="grid gap-4 md:grid-cols-3">
@@ -91,16 +78,16 @@ export default function ClientInvestments() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-lg transition-all duration-300 border-0">
               <div className="absolute top-0 right-0 p-3 opacity-10">
-                <Wallet className="h-24 w-24 text-blue-600" />
+                <Wallet className="h-24 w-24 text-white" />
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Value</CardTitle>
+                <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Total Value</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalInvestment.toLocaleString()}</div>
-                <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
+                <div className="text-3xl font-bold text-white">₹{totalInvestment.toLocaleString()}</div>
+                <div className="flex items-center gap-1 mt-1 text-sm text-white/90">
                   <Briefcase className="h-4 w-4" />
                   <span>Across 6 Instruments</span>
                 </div>
@@ -114,17 +101,17 @@ export default function ClientInvestments() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-400 to-teal-500 hover:shadow-lg transition-all duration-300 border-0">
               <div className="absolute top-0 right-0 p-3 opacity-10">
-                <TrendingUp className="h-24 w-24 text-sky-600" />
+                <TrendingUp className="h-24 w-24 text-white" />
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Avg. Returns</CardTitle>
+                <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Avg. Returns</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">+{avgReturns}%</div>
-                <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
-                  <ArrowUpRight className="h-4 w-4 text-green-500" />
+                <div className="text-3xl font-bold text-white">+{avgReturns}%</div>
+                <div className="flex items-center gap-1 mt-1 text-sm text-white/90">
+                  <ArrowUpRight className="h-4 w-4" />
                   <span>Annualized Growth</span>
                 </div>
               </CardContent>
@@ -137,16 +124,16 @@ export default function ClientInvestments() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-violet-400 to-purple-600 hover:shadow-lg transition-all duration-300 border-0">
               <div className="absolute top-0 right-0 p-3 opacity-10">
-                <PieChart className="h-24 w-24 text-indigo-600" />
+                <PieChart className="h-24 w-24 text-white" />
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Total Gains</CardTitle>
+                <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Total Gains</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">₹32,450</div>
-                <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
+                <div className="text-3xl font-bold text-white">₹32,450</div>
+                <div className="flex items-center gap-1 mt-1 text-sm text-white/90">
                   <span>Since Inception</span>
                 </div>
               </CardContent>

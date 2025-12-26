@@ -102,47 +102,39 @@ export default function SalaryAndBankAccounts() {
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
 
-        {/* HEADER SECTION */}
-        <motion.div variants={itemVariants}>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Financial Overview
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Track your earnings, bank balances, and recent financial activity.
-          </p>
-        </motion.div>
+        
 
         {/* SUMMARY CARDS */}
-        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2">
+        <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-2">
           
           {/* Salary Card - Indigo Theme */}
-          <Card className="relative overflow-hidden border-indigo-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Briefcase className="h-24 w-24 text-indigo-600" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Monthly Earnings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalSalary.toLocaleString()}</div>
-              <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
-                <TrendingUp className="h-4 w-4 text-green-500" />
-                <span>+2.5% from last month</span>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-indigo-400 to-indigo-600 hover:shadow-xl transition-all duration-300 rounded-3xl p-4">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-4 p-2 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <Briefcase className="h-5 w-5 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-xs font-medium mb-1 uppercase tracking-wider">Monthly Earnings</p>
+                <p className="text-white text-xl font-bold mb-1">₹{totalSalary.toLocaleString()}</p>
+                <div className="flex items-center gap-1 text-white/90 text-xs font-medium">
+                  <TrendingUp className="h-3 w-3" />
+                  <span>+2.5% from last month</span>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Bank Balance Card - Sky Theme */}
-          <Card className="relative overflow-hidden border-sky-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Wallet className="h-24 w-24 text-sky-600" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Net Liquid Assets</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalBankBalance.toLocaleString()}</div>
-              <p className="text-xs text-slate-500 mt-1">Available across all accounts</p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-cyan-400 to-blue-500 hover:shadow-xl transition-all duration-300 rounded-3xl p-4">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-4 p-2 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <Wallet className="h-5 w-5 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-xs font-medium mb-1 uppercase tracking-wider">Net Liquid Assets</p>
+                <p className="text-white text-xl font-bold mb-1">₹{totalBankBalance.toLocaleString()}</p>
+                <p className="text-white/90 text-xs font-medium">Available across all accounts</p>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

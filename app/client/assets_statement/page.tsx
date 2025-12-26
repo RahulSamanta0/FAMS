@@ -91,62 +91,53 @@ export default function ClientAssets() {
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
 
-        {/* HEADER */}
-        <motion.div variants={itemVariants}>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Assets Statement
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Detailed breakdown of your immovable and movable assets.
-          </p>
-        </motion.div>
 
         {/* SUMMARY CARDS */}
         <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
           
           {/* Total Net Worth */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Briefcase className="h-24 w-24 text-blue-600" />
+              <Briefcase className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Net Worth</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Total Net Worth</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">₹{totalAssets.toLocaleString()}</div>
-              <p className="text-xs text-slate-500 mt-1">Combined Asset Value</p>
+              <div className="text-3xl font-bold text-white">₹{totalAssets.toLocaleString()}</div>
+              <p className="text-xs text-white/90 mt-1">Combined Asset Value</p>
             </CardContent>
           </Card>
 
           {/* Immovable Total */}
-          <Card className="relative overflow-hidden border-indigo-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-400 to-teal-500 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Home className="h-24 w-24 text-indigo-600" />
+              <Home className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Immovable Assets</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Immovable Assets</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-indigo-700 dark:text-indigo-300">
+              <div className="text-3xl font-bold text-white">
                 ₹{totalImmovable.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Real Estate & Land</p>
+              <p className="text-xs text-white/90 mt-1">Real Estate & Land</p>
             </CardContent>
           </Card>
 
           {/* Movable Total */}
-          <Card className="relative overflow-hidden border-sky-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-violet-400 to-purple-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Car className="h-24 w-24 text-sky-600" />
+              <Car className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Movable Assets</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Movable Assets</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-3xl font-bold text-white">
                 ₹{totalMovable.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Vehicles & Valuables</p>
+              <p className="text-xs text-white/90 mt-1">Vehicles & Valuables</p>
             </CardContent>
           </Card>
         </motion.div>
