@@ -359,15 +359,8 @@ export default function GovernmentEmployeeRegistration() {
           </div>
 
           {/* Portal Navigation */}
-          <div className="hidden md:flex items-center gap-6 py-3 border-t border-gray-100">
-            <nav className="flex items-center gap-6">
-              <a href="#" className="text-sm font-medium text-[#06038D] hover:text-[#FF671F]">Home</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#06038D]">Services</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#06038D]">Documents</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#06038D]">Notifications</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#06038D]">Departments</a>
-              <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#06038D]">Contact</a>
-            </nav>
+<div>
+  <div></div>
             
             <div className="ml-auto flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-600">
