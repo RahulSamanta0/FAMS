@@ -6,40 +6,136 @@ import { motion, AnimatePresence } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { 
-  User, Lock, Mail, Phone, MapPin, Briefcase, 
-  Building, FileText, ArrowRight, ArrowLeft, 
-  CheckCircle, Calendar, IndianRupee, ShieldCheck, 
-  FileSignature, Fingerprint, Smartphone, FileLock2, Eye,
-  EyeOff, AlertCircle, Info, Loader2, Shield, Database,
-  Globe, Cpu, LockKeyhole, FileCheck, Clock, Server,
-  BarChart3, TrendingUp, BadgeCheck, CreditCard,
-  Home, Percent, Award, Upload, Download, Printer,
-  Search, Filter, Settings, HelpCircle, LogOut,
-  Bell, Menu, X, CheckSquare, Circle, Triangle,
-  ChevronRight, ChevronDown, ExternalLink, Link,
-  Copy, QrCode, Battery, Wifi, Shield as SecurityShield,
-  AlertTriangle, Info as InfoIcon
+  User, Mail, Phone, Briefcase, Building, Calendar, IndianRupee,
+  FileSignature, Fingerprint, CheckCircle, ArrowRight, ArrowLeft,
+  AlertCircle, Loader2, ShieldCheck, FileText, LogOut,
+  HelpCircle, Menu, X, ChevronRight, Database, Clock, Shield,
+  ClipboardCheck, FileCheck, Verified
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Switch } from '@/components/ui/switch'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
+}
+
+// Government Departments
+const DEPARTMENTS = [
+  "Ministry of Finance", "Ministry of Home Affairs", "Ministry of Defence",
+  "Ministry of Education", "Ministry of Health & Family Welfare", 
+  "Ministry of Agriculture & Farmers Welfare", "Ministry of Railways",
+  "Ministry of Road Transport & Highways", "Ministry of Civil Aviation",
+  "Ministry of Electronics & IT", "Ministry of Petroleum & Natural Gas",
+  "Ministry of Power", "Ministry of Commerce & Industry",
+  "Ministry of External Affairs", "Ministry of Law & Justice",
+  "Ministry of Rural Development", "Ministry of Urban Development",
+  "Ministry of Women & Child Development", "Ministry of Labour & Employment",
+  "Ministry of Environment, Forest & Climate Change"
+]
+
+// Government Designations
+const DESIGNATIONS = [
+  "Deputy Secretary", "Under Secretary", "Section Officer",
+  "Assistant Section Officer", "Director", "Joint Secretary",
+  "Additional Secretary", "Secretary", "Principal Secretary",
+  "Chief Secretary", "Deputy Director", "Assistant Director",
+  "Senior Consultant", "Consultant", "Technical Officer",
+  "Scientist", "Engineer", "Accountant", "Auditor",
+  "Administrative Officer", "Executive Engineer", "Medical Officer"
+]
+
+// Validation function
+const validateStep = (step: number, formData: any): Record<string, string> => {
+  const errors: Record<string, string> = {}
+
+  switch (step) {
+    case 1:
+      if (!formData.personal.fullName.trim()) {
+        errors.fullName = 'Full name is required'
+      } else if (formData.personal.fullName.trim().length < 3) {
+        errors.fullName = 'Name must be at least 3 characters'
+      }
+      
+      if (!formData.personal.email) {
+        errors.email = 'Email is required'
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.personal.email)) {
+        errors.email = 'Enter a valid email address'
+      }
+      
+      if (!formData.personal.phone) {
+        errors.phone = 'Phone number is required'
+      } else if (!/^[6-9]\d{9}$/.test(formData.personal.phone)) {
+        errors.phone = 'Enter a valid 10-digit phone number'
+      }
+      
+      if (!formData.personal.pan) {
+        errors.pan = 'PAN is required'
+      } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.personal.pan)) {
+        errors.pan = 'Enter a valid PAN (e.g., ABCDE1234F)'
+      }
+      
+      if (!formData.personal.aadhaar) {
+        errors.aadhaar = 'Aadhaar is required'
+      } else if (!/^\d{12}$/.test(formData.personal.aadhaar)) {
+        errors.aadhaar = 'Enter a valid 12-digit Aadhaar number'
+      }
+      
+      if (!formData.personal.dob) {
+        errors.dob = 'Date of birth is required'
+      } else {
+        const dob = new Date(formData.personal.dob)
+        const age = new Date().getFullYear() - dob.getFullYear()
+        if (age < 18 || age > 70) {
+          errors.dob = 'Age must be between 18 and 70 years'
+        }
+      }
+      break
+      
+    case 2:
+      if (!formData.employment.department) {
+        errors.department = 'Department is required'
+      }
+      
+      if (!formData.employment.designation) {
+        errors.designation = 'Designation is required'
+      }
+      
+      if (!formData.employment.employeeId) {
+        errors.employeeId = 'Employee ID is required'
+      }
+      
+      if (!formData.employment.dateOfJoining) {
+        errors.dateOfJoining = 'Date of joining is required'
+      }
+      
+      if (!formData.employment.salaryStructure.basic) {
+        errors.basic = 'Basic pay is required'
+      } else if (parseFloat(formData.employment.salaryStructure.basic) < 18000) {
+        errors.basic = 'Basic pay must be at least ₹18,000'
+      }
+      break
+      
+    case 3:
+      if (!formData.termsAccepted) {
+        errors.terms = 'You must accept the terms and conditions'
+      }
+      
+      if (!formData.declarationSigned) {
+        errors.declaration = 'You must sign the declaration'
+      }
+      break
+  }
+  
+  return errors
 }
 
 export default function GovernmentEmployeeRegistration() {
@@ -48,14 +144,12 @@ export default function GovernmentEmployeeRegistration() {
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
   const formRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const nationalEmblemRef = useRef<HTMLDivElement>(null)
-  const timelineRef = useRef<gsap.core.Timeline>()
+  const emblemRef = useRef<HTMLDivElement>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -63,123 +157,160 @@ export default function GovernmentEmployeeRegistration() {
       fullName: '',
       email: '',
       phone: '',
-      password: '',
-      confirmPassword: '',
       pan: '',
       aadhaar: '',
-      address: '',
       dob: '',
-      gender: '',
-      category: ''
     },
     employment: {
       department: '',
       designation: '',
       employeeId: '',
       dateOfJoining: '',
-      officeAddress: '',
-      reportingOfficer: '',
       salaryStructure: {
         basic: '',
         hra: '',
         da: '',
+        ta: '',
+        ma: '',
         otherAllowances: '',
+        grossSalary: '',
+        deductions: '',
         netSalary: '',
       }
-    }
+    },
+    termsAccepted: false,
+    declarationSigned: false
   })
 
   const totalSteps = 3
-  const departments = [
-    "Ministry of Finance", "Ministry of Home Affairs", "Ministry of Defence",
-    "Ministry of Education", "Ministry of Health & Family Welfare", 
-    "Ministry of Agriculture & Farmers Welfare", "Ministry of Railways",
-    "Ministry of Road Transport & Highways", "Ministry of Civil Aviation",
-    "Ministry of Electronics & IT", "Ministry of Petroleum & Natural Gas",
-    "Ministry of Power", "Ministry of Commerce & Industry",
-    "Ministry of External Affairs", "Ministry of Law & Justice",
-    "Ministry of Rural Development", "Ministry of Urban Development",
-    "Ministry of Women & Child Development", "Ministry of Labour & Employment",
-    "Ministry of Environment, Forest & Climate Change"
-  ]
 
-  // Government color scheme
-  const govtColors = {
-    saffron: '#FF671F',
-    white: '#FFFFFF',
-    green: '#046A38',
-    navy: '#06038D',
-    lightBlue: '#E2E8F0',
-    darkBlue: '#1E3A8A'
-  }
-
-  // GSAP Animations for Government Portal
+  // GSAP Animations
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    // National Emblem animation
-    if (nationalEmblemRef.current) {
-      gsap.from(nationalEmblemRef.current, {
-        duration: 1.5,
-        scale: 0,
-        rotation: 360,
-        ease: "back.out(1.7)"
+    // Initialize animations
+    const initAnimations = () => {
+      // National emblem entrance
+      if (emblemRef.current) {
+        gsap.from(emblemRef.current, {
+          duration: 1.5,
+          scale: 0,
+          rotation: 360,
+          ease: "back.out(1.7)",
+          onComplete: () => {
+            // Add continuous subtle rotation
+            gsap.to(emblemRef.current, {
+              rotation: 5,
+              duration: 3,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut"
+            })
+          }
+        })
+      }
+
+      // Header entrance
+      gsap.from(headerRef.current, {
+        duration: 1,
+        y: -100,
+        opacity: 0,
+        ease: "power3.out",
+        delay: 0.3
+      })
+
+      // Progress bar animation
+      gsap.to('.progress-fill', {
+        width: `${progress}%`,
+        duration: 0.8,
+        ease: "power2.out",
+        onUpdate: () => {
+          // Add glow effect when nearing completion
+          if (progress > 90) {
+            gsap.to('.progress-fill', {
+              boxShadow: '0 0 20px rgba(4, 106, 56, 0.5)',
+              duration: 0.5,
+              yoyo: true,
+              repeat: 1
+            })
+          }
+        }
+      })
+
+      // Flag color reveal
+      gsap.from('.flag-color', {
+        width: 0,
+        duration: 1,
+        stagger: {
+          each: 0.2,
+          from: "start"
+        },
+        ease: "power2.out"
       })
     }
 
-    // Government header animation
-    gsap.from(headerRef.current, {
-      duration: 1,
-      y: -50,
-      opacity: 0,
-      ease: "power3.out"
-    })
-
-    // Progress animation
-    gsap.to('.progress-fill', {
-      width: `${progress}%`,
-      duration: 0.8,
-      ease: "power2.out"
-    })
-
-    // Security indicator pulse
-    gsap.to('.security-pulse', {
-      scale: 1.2,
-      opacity: 0.5,
-      duration: 1,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    })
-
-    // National flag colors animation
-    gsap.from('.flag-color', {
-      width: 0,
-      duration: 1,
-      stagger: 0.3,
-      ease: "power2.out"
-    })
+    initAnimations()
 
     return () => {
-      if (timelineRef.current) timelineRef.current.kill()
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
-  }, [progress])
+  }, [])
+
+  // Update progress when step changes
+  useEffect(() => {
+    setProgress(((step - 1) / totalSteps) * 100)
+  }, [step])
 
   const handleNext = () => {
+    // Validate current step
+    const currentErrors = validateStep(step, formData)
+    
+    if (Object.keys(currentErrors).length > 0) {
+      setErrors(currentErrors)
+      toast.error('Validation Failed', {
+        description: 'Please correct the errors before proceeding',
+        icon: <AlertCircle className="h-5 w-5" />
+      })
+      
+      // Scroll to first error
+      const firstError = Object.keys(currentErrors)[0]
+      const element = document.querySelector(`[name="${firstError}"]`) || 
+                      document.querySelector(`[id="${firstError}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      return
+    }
+    
+    // Clear errors if validation passes
+    setErrors({})
+    
     if (step < totalSteps && !isAnimating) {
       setIsAnimating(true)
       
+      // Animate current step out
       gsap.to(`.step-${step}`, {
-        x: -50,
+        x: -100,
         opacity: 0,
-        duration: 0.4,
+        duration: 0.5,
         ease: "power2.in",
         onComplete: () => {
           setStep(step + 1)
-          setProgress(((step) / totalSteps) * 100)
+          setProgress((step / totalSteps) * 100)
           
-          // Government stamp animation
-          createStampAnimation()
+          // Animate new step in
+          gsap.fromTo(`.step-${step + 1}`,
+            { x: 100, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.5,
+              ease: "power2.out",
+              onComplete: () => {
+                setIsAnimating(false)
+              }
+            }
+          )
         }
       })
     }
@@ -189,88 +320,106 @@ export default function GovernmentEmployeeRegistration() {
     if (step > 1 && !isAnimating) {
       setIsAnimating(true)
       
+      // Clear errors when going back
+      setErrors({})
+      
       gsap.to(`.step-${step}`, {
-        x: 50,
+        x: 100,
         opacity: 0,
-        duration: 0.4,
+        duration: 0.5,
         ease: "power2.in",
         onComplete: () => {
           setStep(step - 1)
           setProgress(((step - 2) / totalSteps) * 100)
+          
+          gsap.fromTo(`.step-${step - 1}`,
+            { x: -100, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.5,
+              ease: "power2.out",
+              onComplete: () => {
+                setIsAnimating(false)
+              }
+            }
+          )
         }
       })
     }
   }
 
-  const createStampAnimation = () => {
-    const stamp = document.createElement('div')
-    stamp.className = 'absolute z-50 flex items-center justify-center'
-    stamp.innerHTML = `
-      <div class="relative">
-        <div class="w-20 h-20 bg-red-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-          <div class="text-white text-xs font-bold text-center">गणतंत्र<br/>भारत</div>
-        </div>
-        <div class="absolute inset-0 animate-ping bg-red-600 rounded-full opacity-30"></div>
-      </div>
-    `
+  // Auto-calculate salary
+  useEffect(() => {
+    const basic = parseFloat(formData.employment.salaryStructure.basic) || 0
+    const hra = basic * 0.24 // 24% of basic
+    const da = basic * 0.17 // 17% of basic
+    const ta = 3600 // Fixed travel allowance
+    const ma = 1800 // Fixed medical allowance
+    const otherAllowances = parseFloat(formData.employment.salaryStructure.otherAllowances) || 0
     
-    stamp.style.left = '50%'
-    stamp.style.top = '50%'
-    stamp.style.transform = 'translate(-50%, -50%)'
-    
-    document.querySelector('.form-container')?.appendChild(stamp)
-    
-    gsap.to(stamp, {
-      scale: 1.5,
-      opacity: 0,
-      duration: 1,
-      ease: "power2.out",
-      onComplete: () => stamp.remove()
-    })
-  }
+    const grossSalary = basic + hra + da + ta + ma + otherAllowances
+    const deductions = grossSalary * 0.10 // 10% deductions
+    const netSalary = grossSalary - deductions
 
+    setFormData(prev => ({
+      ...prev,
+      employment: {
+        ...prev.employment,
+        salaryStructure: {
+          ...prev.employment.salaryStructure,
+          hra: hra.toFixed(2),
+          da: da.toFixed(2),
+          ta: ta.toFixed(2),
+          ma: ma.toFixed(2),
+          grossSalary: grossSalary.toFixed(2),
+          deductions: deductions.toFixed(2),
+          netSalary: netSalary.toFixed(2)
+        }
+      }
+    }))
+  }, [formData.employment.salaryStructure.basic, formData.employment.salaryStructure.otherAllowances])
+
+  // Handle form submission
   const handleSubmit = async () => {
+    // Validate step 3
+    const currentErrors = validateStep(3, formData)
+    
+    if (Object.keys(currentErrors).length > 0) {
+      setErrors(currentErrors)
+      toast.error('Validation Failed', {
+        description: 'Please complete all required fields',
+        icon: <AlertCircle className="h-5 w-5" />
+      })
+      
+      // Scroll to errors
+      const firstError = Object.keys(currentErrors)[0]
+      const element = document.querySelector(`[name="${firstError}"]`) || 
+                      document.querySelector(`[id="${firstError}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      return
+    }
+
     setLoading(true)
-    
-    // Government submission animation
-    const timeline = gsap.timeline()
-    
-    timeline
-      .to('.submit-button', {
-        backgroundColor: govtColors.green,
-        duration: 0.3,
-        ease: "power2.inOut"
-      })
-      .to('.form-container', {
-        borderColor: govtColors.green,
-        duration: 0.5,
-        ease: "power2.out"
-      })
 
     try {
-      const response = await fetch('/api/government/register', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'X-Government-Portal': 'official'
-        },
-        body: JSON.stringify(formData)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      // Success
+      toast.success('Application Submitted Successfully', {
+        description: `Reference Number: GOV/EMP/${Date.now()}`,
+        duration: 5000,
+        icon: <Verified className="h-5 w-5" />
       })
 
-      if (response.ok) {
-        // Success with government seal
-        toast.success('Application Submitted Successfully', {
-          description: 'Reference Number: GOV/EMP/' + Date.now(),
-          duration: 5000,
-          icon: <ShieldCheck className="h-5 w-5" />
-        })
-        
-        setTimeout(() => {
-          router.push('/government/dashboard')
-        }, 2000)
-      } else {
-        throw new Error('Submission failed')
-      }
+      // Redirect after success
+      setTimeout(() => {
+        router.push('/government/dashboard')
+      }, 2000)
+
     } catch (error) {
       toast.error('Submission Failed', {
         description: 'Please contact your department administrator',
@@ -282,91 +431,580 @@ export default function GovernmentEmployeeRegistration() {
     }
   }
 
+  // Render step content
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return renderPersonalInfo()
+      case 2:
+        return renderEmploymentInfo()
+      case 3:
+        return renderReviewSubmit()
+      default:
+        return null
+    }
+  }
+
+  const renderPersonalInfo = () => (
+    <motion.div
+      key="step-1"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6 step-1"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Basic Information */}
+        <Card className="md:col-span-2">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+            <CardTitle className="text-blue-800 flex items-center gap-2">
+              <User className="h-5 w-5" /> Personal Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="fullName" className="flex items-center gap-2 mb-2">
+                  <User className="h-4 w-4" /> Full Name *
+                </Label>
+                <Input
+                  id="fullName"
+                  name="fullName"
+                  value={formData.personal.fullName}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personal: { ...prev.personal, fullName: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.fullName && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="dob" className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4" /> Date of Birth *
+                </Label>
+                <Input
+                  id="dob"
+                  name="dob"
+                  type="date"
+                  value={formData.personal.dob}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personal: { ...prev.personal, dob: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.dob && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="email" className="flex items-center gap-2 mb-2">
+                  <Mail className="h-4 w-4" /> Official Email *
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.personal.email}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personal: { ...prev.personal, email: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.email && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="phone" className="flex items-center gap-2 mb-2">
+                  <Phone className="h-4 w-4" /> Mobile Number *
+                </Label>
+                <div className="flex">
+                  <div className="flex items-center justify-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                    +91
+                  </div>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.personal.phone}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      personal: { ...prev.personal, phone: e.target.value }
+                    }))}
+                    className={cn(
+                      "rounded-l-none",
+                      errors.phone && "border-red-500 focus:border-red-500"
+                    )}
+                  />
+                </div>
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="pan" className="flex items-center gap-2 mb-2">
+                  <FileSignature className="h-4 w-4" /> PAN Number *
+                </Label>
+                <Input
+                  id="pan"
+                  name="pan"
+                  value={formData.personal.pan}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personal: { ...prev.personal, pan: e.target.value.toUpperCase() }
+                  }))}
+                  className={cn(
+                    "uppercase",
+                    errors.pan && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.pan && <p className="text-red-500 text-xs mt-1">{errors.pan}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="aadhaar" className="flex items-center gap-2 mb-2">
+                  <Fingerprint className="h-4 w-4" /> Aadhaar Number *
+                </Label>
+                <Input
+                  id="aadhaar"
+                  name="aadhaar"
+                  value={formData.personal.aadhaar}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personal: { ...prev.personal, aadhaar: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.aadhaar && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.aadhaar && <p className="text-red-500 text-xs mt-1">{errors.aadhaar}</p>}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </motion.div>
+  )
+
+  const renderEmploymentInfo = () => (
+    <motion.div
+      key="step-2"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6 step-2"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Department Information */}
+        <Card className="md:col-span-2">
+          <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50">
+            <CardTitle className="text-indigo-800 flex items-center gap-2">
+              <Building className="h-5 w-5" /> Employment Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="department" className="flex items-center gap-2 mb-2">
+                  <Building className="h-4 w-4" /> Ministry/Department *
+                </Label>
+                <Select
+                  value={formData.employment.department}
+                  onValueChange={(value) => setFormData(prev => ({
+                    ...prev,
+                    employment: { ...prev.employment, department: value }
+                  }))}
+                >
+                  <SelectTrigger id="department" className={cn(
+                    errors.department && "border-red-500 focus:border-red-500"
+                  )}>
+                    <SelectValue placeholder="Select Ministry/Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.map((dept) => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.department && <p className="text-red-500 text-xs mt-1">{errors.department}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="designation" className="flex items-center gap-2 mb-2">
+                  <Briefcase className="h-4 w-4" /> Designation *
+                </Label>
+                <Select
+                  value={formData.employment.designation}
+                  onValueChange={(value) => setFormData(prev => ({
+                    ...prev,
+                    employment: { ...prev.employment, designation: value }
+                  }))}
+                >
+                  <SelectTrigger id="designation" className={cn(
+                    errors.designation && "border-red-500 focus:border-red-500"
+                  )}>
+                    <SelectValue placeholder="Select Designation" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DESIGNATIONS.map((designation) => (
+                      <SelectItem key={designation} value={designation}>{designation}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.designation && <p className="text-red-500 text-xs mt-1">{errors.designation}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="employeeId" className="flex items-center gap-2 mb-2">
+                  <FileSignature className="h-4 w-4" /> Employee ID *
+                </Label>
+                <Input
+                  id="employeeId"
+                  name="employeeId"
+                  value={formData.employment.employeeId}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    employment: { ...prev.employment, employeeId: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.employeeId && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.employeeId && <p className="text-red-500 text-xs mt-1">{errors.employeeId}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="dateOfJoining" className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4" /> Date of Joining *
+                </Label>
+                <Input
+                  id="dateOfJoining"
+                  name="dateOfJoining"
+                  type="date"
+                  value={formData.employment.dateOfJoining}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    employment: { ...prev.employment, dateOfJoining: e.target.value }
+                  }))}
+                  className={cn(
+                    errors.dateOfJoining && "border-red-500 focus:border-red-500"
+                  )}
+                />
+                {errors.dateOfJoining && <p className="text-red-500 text-xs mt-1">{errors.dateOfJoining}</p>}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Salary Calculator */}
+        <Card className="md:col-span-2">
+          <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50">
+            <CardTitle className="text-emerald-800 flex items-center gap-2">
+              <IndianRupee className="h-5 w-5" /> Salary Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="basic" className="text-gray-700">Basic Pay *</Label>
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="basic"
+                    name="basic"
+                    type="number"
+                    value={formData.employment.salaryStructure.basic}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      employment: {
+                        ...prev.employment,
+                        salaryStructure: {
+                          ...prev.employment.salaryStructure,
+                          basic: e.target.value
+                        }
+                      }
+                    }))}
+                    className="pl-10"
+                    placeholder="50000"
+                  />
+                </div>
+                {errors.basic && <p className="text-red-500 text-xs mt-1">{errors.basic}</p>}
+              </div>
+
+              <div>
+                <Label className="text-gray-700">HRA (24%)</Label>
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    value={formData.employment.salaryStructure.hra}
+                    readOnly
+                    className="pl-10 bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-gray-700">DA (17%)</Label>
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    value={formData.employment.salaryStructure.da}
+                    readOnly
+                    className="pl-10 bg-gray-50"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Salary Summary */}
+            <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Gross Salary</p>
+                  <p className="text-xl font-bold text-green-700">
+                    ₹{parseFloat(formData.employment.salaryStructure.grossSalary || '0').toLocaleString('en-IN')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Deductions (10%)</p>
+                  <p className="text-xl font-bold text-red-700">
+                    ₹{parseFloat(formData.employment.salaryStructure.deductions || '0').toLocaleString('en-IN')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Net Salary</p>
+                  <p className="text-xl font-bold text-blue-700">
+                    ₹{parseFloat(formData.employment.salaryStructure.netSalary || '0').toLocaleString('en-IN')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </motion.div>
+  )
+
+  const renderReviewSubmit = () => (
+    <motion.div
+      key="step-3"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6 step-3"
+    >
+      {/* Success Preview */}
+      <div className="text-center mb-8">
+        <div className="relative inline-block">
+          <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle className="h-12 w-12 text-white" />
+          </div>
+        </div>
+        <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-800 to-green-800 bg-clip-text text-transparent mb-3">
+          Application Ready for Submission
+        </h3>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Your application has been validated and is ready for submission to the Government Database. 
+          Review all information before finalizing.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Personal Summary */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" /> Personal Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              {[
+                { label: 'Full Name', value: formData.personal.fullName },
+                { label: 'Email', value: formData.personal.email },
+                { label: 'Phone', value: formData.personal.phone },
+                { label: 'PAN', value: formData.personal.pan },
+                { label: 'Aadhaar', value: formData.personal.aadhaar },
+                { label: 'Date of Birth', value: formData.personal.dob }
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">{item.label}</span>
+                  <span className="font-medium text-gray-900">{item.value || 'Not provided'}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Employment Summary */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+            <CardTitle className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5" /> Employment Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              {[
+                { label: 'Department', value: formData.employment.department },
+                { label: 'Designation', value: formData.employment.designation },
+                { label: 'Employee ID', value: formData.employment.employeeId },
+                { label: 'Date of Joining', value: formData.employment.dateOfJoining },
+                { label: 'Basic Pay', value: `₹${formData.employment.salaryStructure.basic || '0'}` },
+                { label: 'Net Salary', value: `₹${formData.employment.salaryStructure.netSalary || '0'}` }
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">{item.label}</span>
+                  <span className="font-medium text-gray-900">{item.value || 'Not provided'}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Declaration */}
+        <Card className="lg:col-span-2 border-2 border-red-200 bg-gradient-to-r from-red-50 to-orange-50">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  name="terms"
+                  checked={formData.termsAccepted}
+                  onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
+                  className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <Label htmlFor="terms" className="text-gray-700">
+                    <strong>Terms & Conditions:</strong> I agree to abide by all government rules and regulations. 
+                    I understand that my data will be stored securely and used only for official purposes as per 
+                    the Government of India's data protection policies.
+                  </Label>
+                  {errors.terms && <p className="text-red-500 text-xs mt-1">{errors.terms}</p>}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="declaration"
+                  name="declaration"
+                  checked={formData.declarationSigned}
+                  onChange={(e) => setFormData(prev => ({ ...prev, declarationSigned: e.target.checked }))}
+                  className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <Label htmlFor="declaration" className="text-gray-700">
+                    <strong>Official Declaration:</strong> I hereby declare that all information provided is true, 
+                    complete, and correct to the best of my knowledge. I understand that providing false information 
+                    is punishable under IPC Section 177 and may result in disciplinary action, termination of 
+                    employment, and legal consequences.
+                  </Label>
+                  {errors.declaration && <p className="text-red-500 text-xs mt-1">{errors.declaration}</p>}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Submission Protocol */}
+      <Alert className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200">
+        <ShieldCheck className="h-5 w-5 text-green-600" />
+        <AlertTitle className="text-green-800 font-bold">Government Submission Protocol</AlertTitle>
+        <AlertDescription className="text-green-700 space-y-2">
+          <p>✓ Application will be encrypted and stored on secure government servers</p>
+          <p>✓ Acknowledgement with reference number will be sent to registered email</p>
+          <p>✓ Standard processing time: 3-5 working days</p>
+          <p>✓ Status tracking available using application reference number</p>
+          <p>✓ For queries, contact: 1800-11-1969 or support@digitalindia.gov.in</p>
+        </AlertDescription>
+      </Alert>
+    </motion.div>
+  )
+
   return (
-    <div className="min-h-screen bg-gray-50 government-portal">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
       {/* National Flag Header */}
-      <div className="h-2 flex">
-        <div className="flag-color flex-1 bg-[#FF671F]" />
-        <div className="flag-color flex-1 bg-white" />
-        <div className="flag-color flex-1 bg-[#046A38]" />
+      <div className="h-3 flex shadow-md">
+        <div className="flag-color flex-1 bg-gradient-to-r from-[#FF671F] to-[#FF8C42]" />
+        <div className="flag-color flex-1 bg-gradient-to-r from-white to-gray-100" />
+        <div className="flag-color flex-1 bg-gradient-to-r from-[#046A38] to-[#058C42]" />
       </div>
 
       {/* Official Government Header */}
-      <header ref={headerRef} className="bg-white border-b border-gray-200 shadow-sm">
+      <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
-            {/* Left: Government Identity */}
+            {/* Government Identity */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
               
               <div className="flex items-center gap-3">
-                {/* National Emblem */}
-                <div ref={nationalEmblemRef} className="relative">
-                  <div className="w-12 h-12 bg-[#06038D] rounded-full flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
-                      <div className="w-4 h-4 bg-white rounded-full"></div>
+                {/* Animated National Emblem */}
+                <div ref={emblemRef} className="relative">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#06038D] to-[#1E3A8A] rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-10 h-10 border-4 border-gold rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-white rounded-full"></div>
                     </div>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex items-baseline gap-2">
-                    <h1 className="text-xl font-bold text-[#06038D]">
+                  <div className="flex flex-col">
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-[#06038D] to-[#1E3A8A] bg-clip-text text-transparent">
                       भारत सरकार
                     </h1>
-                    <span className="text-xs text-gray-500">|</span>
-                    <span className="text-sm font-medium text-gray-700">GOVERNMENT OF INDIA</span>
+                    <p className="text-sm font-medium text-gray-700">GOVERNMENT OF INDIA</p>
+                    <p className="text-xs text-gray-500">Employee Self Registration Portal</p>
                   </div>
-                  <p className="text-sm text-gray-600">Employee Registration Portal</p>
                 </div>
               </div>
             </div>
 
-            {/* Center: Security Status */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-                <div className="security-pulse w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-green-700">Secure Session</span>
-                <ShieldCheck className="h-4 w-4 text-green-600" />
-              </div>
-            </div>
-
-            {/* Right: User Actions */}
+            {/* User Actions */}
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex items-center gap-2 text-gray-600 hover:text-[#06038D]"
-              >
-                <HelpCircle className="h-4 w-4" />
-                <span className="text-sm">Help Desk</span>
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="hidden md:flex items-center gap-2 text-gray-600 hover:text-[#06038D]"
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                      <span className="text-sm">Help Desk</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Contact: 1800-11-1969</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#06038D] text-[#06038D] hover:bg-[#06038D] hover:text-white"
+                className="border-[#06038D] text-[#06038D] hover:bg-[#06038D] hover:text-white transition-all"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Exit Portal
               </Button>
-            </div>
-          </div>
-
-          {/* Portal Navigation */}
-<div>
-  <div></div>
-            
-            <div className="ml-auto flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Bell className="h-4 w-4" />
-                <span>Last Updated: {new Date().toLocaleDateString('en-IN')}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -375,139 +1013,68 @@ export default function GovernmentEmployeeRegistration() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         {/* Portal Breadcrumb */}
-        <div className="mb-6">
-          <nav className="flex items-center gap-2 text-sm text-gray-600">
-            <a href="#" className="hover:text-[#06038D]">Home</a>
-            <ChevronRight className="h-3 w-3" />
-            <a href="#" className="hover:text-[#06038D]">Employee Services</a>
-            <ChevronRight className="h-3 w-3" />
-            <a href="#" className="hover:text-[#06038D]">Registration</a>
-            <ChevronRight className="h-3 w-3" />
-            <span className="font-medium text-[#06038D]">New Employee Registration</span>
+        <div className="mb-8">
+          <nav className="flex items-center gap-2 text-sm">
+            {[
+              { label: 'Home', active: false },
+              { label: 'Employee Services', active: false },
+              { label: 'Registration', active: false },
+              { label: 'New Employee Registration', active: true }
+            ].map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                {index > 0 && <ChevronRight className="h-3 w-3 text-gray-400" />}
+                <span className={cn(
+                  "px-3 py-1 rounded-full",
+                  item.active 
+                    ? "bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium"
+                    : "text-gray-600 hover:text-blue-600"
+                )}>
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </nav>
         </div>
 
-        {/* Portal Title with Official Stamp */}
+        {/* Portal Title with Status */}
         <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-[#06038D] mb-2">
-                Employee Self Registration Portal
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-[#06038D] via-[#1E3A8A] to-[#046A38] bg-clip-text text-transparent">
+                Government Employee Registration Portal
               </h2>
               <p className="text-gray-600">
-                Ministry of Personnel, Public Grievances and Pensions
+                Ministry of Personnel, Public Grievances and Pensions | Department of Administrative Reforms
               </p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700">
+            <div className="flex flex-wrap gap-3">
+              <Badge className="bg-gradient-to-r from-blue-600 to-blue-800 text-white border-none px-4 py-2">
                 <Shield className="h-3 w-3 mr-2" />
                 Official Government Portal
               </Badge>
-              <Badge variant="outline" className="bg-green-50 border-green-200 text-green-700">
+              <Badge className="bg-gradient-to-r from-green-600 to-emerald-700 text-white border-none px-4 py-2">
                 <Database className="h-3 w-3 mr-2" />
-                Data Protected
+                Data Encrypted & Protected
+              </Badge>
+              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none px-4 py-2">
+                <Clock className="h-3 w-3 mr-2" />
+                Processing Time: 3-5 Days
               </Badge>
             </div>
           </div>
-        </div>
-
-        {/* Government Information Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-blue-200 bg-blue-50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#06038D] rounded-lg flex items-center justify-center">
-                  <InfoIcon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#06038D]">Important Notice</h4>
-                  <p className="text-sm text-gray-600">Read before proceeding</p>
-                </div>
-              </div>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
-                  <span>Use official government email only</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
-                  <span>Information verified with Aadhaar database</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
-                  <span>Data encrypted as per government standards</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-green-200 bg-green-50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#046A38] rounded-lg flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#046A38]">Processing Time</h4>
-                  <p className="text-sm text-gray-600">Service Level Agreement</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700">Verification</span>
-                    <span className="font-medium text-[#046A38]">24-48 hours</span>
-                  </div>
-                  <Progress value={60} className="h-1" />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700">Account Activation</span>
-                    <span className="font-medium text-[#046A38]">3-5 working days</span>
-                  </div>
-                  <Progress value={30} className="h-1" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-orange-200 bg-orange-50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#FF671F] rounded-lg flex items-center justify-center">
-                  <Phone className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#FF671F]">Support Contact</h4>
-                  <p className="text-sm text-gray-600">Government Help Desk</p>
-                </div>
-              </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">Toll Free: 1800-11-1969</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">support@digitalindia.gov.in</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">www.digitalindia.gov.in</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Main Registration Container */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar - Registration Steps */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-8 border-gray-200">
-              <CardHeader className="bg-[#06038D] text-white">
-                <CardTitle className="text-lg">Registration Steps</CardTitle>
+            <Card className="sticky top-24 border-2 border-gray-200 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-[#06038D] to-[#1E3A8A] text-white">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5" />
+                  Registration Steps
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y divide-gray-100">
@@ -519,29 +1086,29 @@ export default function GovernmentEmployeeRegistration() {
                     <div
                       key={stepItem.number}
                       className={cn(
-                        "p-4 flex items-center gap-3",
-                        stepItem.status === 'current' && "bg-blue-50",
-                        stepItem.status === 'complete' && "bg-green-50"
+                        "p-4 flex items-center gap-3 transition-all",
+                        stepItem.status === 'current' && "bg-gradient-to-r from-blue-50 to-cyan-50",
+                        stepItem.status === 'complete' && "bg-gradient-to-r from-green-50 to-emerald-50"
                       )}
                     >
                       <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                        stepItem.status === 'complete' && "bg-green-100 text-green-700",
-                        stepItem.status === 'current' && "bg-[#06038D] text-white",
+                        "w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all",
+                        stepItem.status === 'complete' && "bg-green-100 text-green-700 shadow-sm",
+                        stepItem.status === 'current' && "bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg",
                         stepItem.status === 'pending' && "bg-gray-100 text-gray-500"
                       )}>
                         {stepItem.status === 'complete' ? (
-                          <CheckCircle className="h-4 w-4" />
+                          <CheckCircle className="h-5 w-5" />
                         ) : (
                           stepItem.number
                         )}
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <div className="font-medium text-gray-900">{stepItem.label}</div>
                         <div className="text-xs text-gray-500">
-                          {stepItem.status === 'complete' && 'Completed'}
-                          {stepItem.status === 'current' && 'In Progress'}
-                          {stepItem.status === 'pending' && 'Pending'}
+                          {stepItem.status === 'complete' && '✓ Completed'}
+                          {stepItem.status === 'current' && '🔄 In Progress'}
+                          {stepItem.status === 'pending' && '⏳ Pending'}
                         </div>
                       </div>
                     </div>
@@ -550,47 +1117,26 @@ export default function GovernmentEmployeeRegistration() {
                 
                 {/* Progress Summary */}
                 <div className="p-4 border-t border-gray-100">
-                  <div className="mb-2">
-                    <div className="flex justify-between text-sm mb-1">
+                  <div className="mb-3">
+                    <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-700">Registration Progress</span>
-                      <span className="font-medium text-[#06038D]">{Math.round(progress)}%</span>
+                      <span className="font-bold text-blue-700">{Math.round(progress)}%</span>
                     </div>
-                    <Progress value={progress} className="h-2" />
+                    <div className="relative h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="progress-fill absolute left-0 top-0 h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-700 ease-out"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Estimated completion: {step === 3 ? 'Ready to submit' : `${3 - step} steps remaining`}
+                  <div className="text-xs text-gray-500">
+                    {step === totalSteps ? (
+                      <span className="text-green-600 font-medium">✓ Ready to submit</span>
+                    ) : (
+                      `${totalSteps - step} steps remaining`
+                    )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Government Guidelines */}
-            <Card className="mt-6 border-gray-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-orange-500" />
-                  Important Guidelines
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="space-y-2 text-xs text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <Circle className="h-2 w-2 text-gray-400 mt-1" />
-                    <span>Fill all fields as per government records</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Circle className="h-2 w-2 text-gray-400 mt-1" />
-                    <span>Keep supporting documents ready</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Circle className="h-2 w-2 text-gray-400 mt-1" />
-                    <span>Use strong password (min 12 characters)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Circle className="h-2 w-2 text-gray-400 mt-1" />
-                    <span>Save your application reference number</span>
-                  </li>
-                </ul>
               </CardContent>
             </Card>
           </div>
@@ -602,9 +1148,9 @@ export default function GovernmentEmployeeRegistration() {
               initial={false}
               className="form-container"
             >
-              <Card className="border-2 border-gray-300 shadow-sm bg-white">
-                {/* Form Header with Government Style */}
-                <CardHeader className="bg-gradient-to-r from-[#06038D] to-[#1E3A8A] text-white border-b-4 border-[#FF671F]">
+              <Card className="border-2 border-gray-300 shadow-2xl bg-white/95 backdrop-blur-sm">
+                {/* Form Header */}
+                <CardHeader className="bg-gradient-to-r from-[#06038D] via-[#1E3A8A] to-[#046A38] text-white border-b-4 border-gold">
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-xl flex items-center gap-3">
@@ -622,598 +1168,20 @@ export default function GovernmentEmployeeRegistration() {
                         </>}
                       </CardTitle>
                       <CardDescription className="text-blue-200">
-                        Government of India - Official Registration Form
+                        Government of India - Official Registration Portal | Form: GOI/EMP/FORM/2024
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary" className="bg-white text-[#06038D]">
-                      Form No: GOI/EMP/FORM/2024
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-white/20 backdrop-blur-sm border-white/30">
+                        Step {step} of {totalSteps}
+                      </Badge>
+                    </div>
                   </div>
                 </CardHeader>
                 
-                <CardContent className="p-8">
+                <CardContent className="p-6">
                   <AnimatePresence mode="wait">
-                    {/* Step 1: Personal Information */}
-                    {step === 1 && (
-                      <motion.div
-                        key="step-1"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8 step-1"
-                      >
-                        {/* Government Warning */}
-                        <Alert className="bg-red-50 border-red-200">
-                          <AlertTriangle className="h-5 w-5 text-red-600" />
-                          <AlertTitle className="text-red-800">Government Notice</AlertTitle>
-                          <AlertDescription className="text-red-700">
-                            Providing false information is punishable under Indian Penal Code Section 177
-                          </AlertDescription>
-                        </Alert>
-
-                        <div className="space-y-8">
-                          {/* Basic Information Section */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Basic Information
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <User className="h-4 w-4" /> Full Name (As per Aadhaar) *
-                                </Label>
-                                <Input
-                                  value={formData.personal.fullName}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, fullName: e.target.value }
-                                  }))}
-                                  placeholder="Enter full name"
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Calendar className="h-4 w-4" /> Date of Birth *
-                                </Label>
-                                <Input
-                                  type="date"
-                                  value={formData.personal.dob}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, dob: e.target.value }
-                                  }))}
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <User className="h-4 w-4" /> Gender *
-                                </Label>
-                                <Select
-                                  value={formData.personal.gender}
-                                  onValueChange={(value) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, gender: value }
-                                  }))}
-                                >
-                                  <SelectTrigger className="border-gray-300 focus:border-[#06038D]">
-                                    <SelectValue placeholder="Select gender" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <User className="h-4 w-4" /> Category *
-                                </Label>
-                                <Select
-                                  value={formData.personal.category}
-                                  onValueChange={(value) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, category: value }
-                                  }))}
-                                >
-                                  <SelectTrigger className="border-gray-300 focus:border-[#06038D]">
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="general">General</SelectItem>
-                                    <SelectItem value="obc">OBC</SelectItem>
-                                    <SelectItem value="sc">SC</SelectItem>
-                                    <SelectItem value="st">ST</SelectItem>
-                                    <SelectItem value="ews">EWS</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Contact Information Section */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Contact Information
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Mail className="h-4 w-4" /> Official Email ID *
-                                </Label>
-                                <Input
-                                  type="email"
-                                  value={formData.personal.email}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, email: e.target.value }
-                                  }))}
-                                  placeholder="name@gov.in"
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Use government provided email only</p>
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Phone className="h-4 w-4" /> Mobile Number *
-                                </Label>
-                                <div className="flex">
-                                  <div className="flex items-center justify-center px-3 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md text-gray-600">
-                                    +91
-                                  </div>
-                                  <Input
-                                    type="tel"
-                                    value={formData.personal.phone}
-                                    onChange={(e) => setFormData(prev => ({
-                                      ...prev,
-                                      personal: { ...prev.personal, phone: e.target.value }
-                                    }))}
-                                    placeholder="9876543210"
-                                    className="rounded-l-none border-gray-300 focus:border-[#06038D]"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="md:col-span-2">
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <MapPin className="h-4 w-4" /> Permanent Address *
-                                </Label>
-                                <Textarea
-                                  value={formData.personal.address}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, address: e.target.value }
-                                  }))}
-                                  placeholder="Complete permanent address as per government records"
-                                  rows={3}
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Government ID Section */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Government Identification
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <FileSignature className="h-4 w-4" /> PAN Number *
-                                </Label>
-                                <Input
-                                  value={formData.personal.pan}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, pan: e.target.value.toUpperCase() }
-                                  }))}
-                                  placeholder="ABCDE1234F"
-                                  className="uppercase border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Fingerprint className="h-4 w-4" /> Aadhaar Number *
-                                </Label>
-                                <Input
-                                  value={formData.personal.aadhaar}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    personal: { ...prev.personal, aadhaar: e.target.value }
-                                  }))}
-                                  placeholder="1234 5678 9012"
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Security Section */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Security Credentials
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Lock className="h-4 w-4" /> Create Password *
-                                </Label>
-                                <div className="relative">
-                                  <Input
-                                    type={showPassword ? "text" : "password"}
-                                    value={formData.personal.password}
-                                    onChange={(e) => setFormData(prev => ({
-                                      ...prev,
-                                      personal: { ...prev.personal, password: e.target.value }
-                                    }))}
-                                    placeholder="Minimum 12 characters"
-                                    className="border-gray-300 focus:border-[#06038D] pr-10"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                  >
-                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                  </Button>
-                                </div>
-                                <div className="mt-2 text-xs text-gray-500">
-                                  <p>• Minimum 12 characters</p>
-                                  <p>• Include uppercase, lowercase, numbers, and special characters</p>
-                                </div>
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Lock className="h-4 w-4" /> Confirm Password *
-                                </Label>
-                                <div className="relative">
-                                  <Input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    value={formData.personal.confirmPassword}
-                                    onChange={(e) => setFormData(prev => ({
-                                      ...prev,
-                                      personal: { ...prev.personal, confirmPassword: e.target.value }
-                                    }))}
-                                    placeholder="Re-enter password"
-                                    className="border-gray-300 focus:border-[#06038D] pr-10"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                  >
-                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Step 2: Employment Details */}
-                    {step === 2 && (
-                      <motion.div
-                        key="step-2"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8 step-2"
-                      >
-                        {/* Government Notice */}
-                        <Alert className="bg-blue-50 border-blue-200">
-                          <InfoIcon className="h-5 w-5 text-blue-600" />
-                          <AlertTitle className="text-blue-800">Employment Verification</AlertTitle>
-                          <AlertDescription className="text-blue-700">
-                            Details will be verified with the concerned Ministry/Department
-                          </AlertDescription>
-                        </Alert>
-
-                        <div className="space-y-8">
-                          {/* Department Information */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Department Information
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Building className="h-4 w-4" /> Ministry/Department *
-                                </Label>
-                                <Select
-                                  value={formData.employment.department}
-                                  onValueChange={(value) => setFormData(prev => ({
-                                    ...prev,
-                                    employment: { ...prev.employment, department: value }
-                                  }))}
-                                >
-                                  <SelectTrigger className="border-gray-300 focus:border-[#06038D]">
-                                    <SelectValue placeholder="Select Ministry/Department" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {departments.map((dept) => (
-                                      <SelectItem key={dept} value={dept}>
-                                        {dept}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Briefcase className="h-4 w-4" /> Designation/Post *
-                                </Label>
-                                <Input
-                                  value={formData.employment.designation}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    employment: { ...prev.employment, designation: e.target.value }
-                                  }))}
-                                  placeholder="Official designation"
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <BadgeCheck className="h-4 w-4" /> Employee ID *
-                                </Label>
-                                <Input
-                                  value={formData.employment.employeeId}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    employment: { ...prev.employment, employeeId: e.target.value }
-                                  }))}
-                                  placeholder="Government employee ID"
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div>
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <Calendar className="h-4 w-4" /> Date of Joining *
-                                </Label>
-                                <Input
-                                  type="date"
-                                  value={formData.employment.dateOfJoining}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    employment: { ...prev.employment, dateOfJoining: e.target.value }
-                                  }))}
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-
-                              <div className="md:col-span-2">
-                                <Label className="flex items-center gap-2 mb-2 text-gray-700">
-                                  <MapPin className="h-4 w-4" /> Office Address *
-                                </Label>
-                                <Textarea
-                                  value={formData.employment.officeAddress}
-                                  onChange={(e) => setFormData(prev => ({
-                                    ...prev,
-                                    employment: { ...prev.employment, officeAddress: e.target.value }
-                                  }))}
-                                  placeholder="Complete office address"
-                                  rows={2}
-                                  className="border-gray-300 focus:border-[#06038D]"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Salary Structure */}
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#06038D] mb-4 pb-2 border-b border-gray-200">
-                              Salary Structure (Monthly)
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                              {[
-                                { id: 'basic', label: 'Basic Pay', icon: IndianRupee },
-                                { id: 'hra', label: 'HRA', icon: Home },
-                                { id: 'da', label: 'DA', icon: Percent },
-                                { id: 'otherAllowances', label: 'Other Allowances', icon: Award },
-                                { id: 'netSalary', label: 'Net Salary', icon: TrendingUp }
-                              ].map((field) => (
-                                <div key={field.id}>
-                                  <Label className="text-gray-700">{field.label} *</Label>
-                                  <div className="relative">
-                                    <field.icon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                      type="number"
-                                      value={formData.employment.salaryStructure[field.id as keyof typeof formData.employment.salaryStructure]}
-                                      onChange={(e) => setFormData(prev => ({
-                                        ...prev,
-                                        employment: {
-                                          ...prev.employment,
-                                          salaryStructure: {
-                                            ...prev.employment.salaryStructure,
-                                            [field.id]: e.target.value
-                                          }
-                                        }
-                                      }))}
-                                      placeholder={`Enter ${field.label}`}
-                                      className="pl-10 border-gray-300 focus:border-[#06038D]"
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Step 3: Review & Submit */}
-                    {step === 3 && (
-                      <motion.div
-                        key="step-3"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8 step-3"
-                      >
-                        {/* Success Preview */}
-                        <div className="text-center mb-8">
-                          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-                            <CheckCircle className="h-10 w-10 text-green-600" />
-                          </div>
-                          <h3 className="text-2xl font-bold text-[#06038D] mb-3">Application Ready for Submission</h3>
-                          <p className="text-gray-600">
-                            Review all information before final submission to Government Database
-                          </p>
-                        </div>
-
-                        {/* Application Summary */}
-                        <div className="space-y-6">
-                          {/* Personal Details Summary */}
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="flex items-center gap-2 text-[#06038D]">
-                                <User className="h-5 w-5" /> Personal Information Summary
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Full Name:</span>
-                                    <span className="font-medium">{formData.personal.fullName || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Date of Birth:</span>
-                                    <span className="font-medium">{formData.personal.dob || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Gender:</span>
-                                    <span className="font-medium">{formData.personal.gender || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Category:</span>
-                                    <span className="font-medium">{formData.personal.category || 'Not provided'}</span>
-                                  </div>
-                                </div>
-                                <div className="space-y-2">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">PAN:</span>
-                                    <span className="font-medium">{formData.personal.pan || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Aadhaar:</span>
-                                    <span className="font-medium">{formData.personal.aadhaar || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Email:</span>
-                                    <span className="font-medium">{formData.personal.email || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Phone:</span>
-                                    <span className="font-medium">{formData.personal.phone || 'Not provided'}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Employment Details Summary */}
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="flex items-center gap-2 text-[#06038D]">
-                                <Briefcase className="h-5 w-5" /> Employment Information Summary
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Department:</span>
-                                    <span className="font-medium">{formData.employment.department || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Designation:</span>
-                                    <span className="font-medium">{formData.employment.designation || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Employee ID:</span>
-                                    <span className="font-medium">{formData.employment.employeeId || 'Not provided'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Date of Joining:</span>
-                                    <span className="font-medium">{formData.employment.dateOfJoining || 'Not provided'}</span>
-                                  </div>
-                                </div>
-                                <div className="space-y-2">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Basic Pay:</span>
-                                    <span className="font-medium">₹{formData.employment.salaryStructure.basic || '0'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">HRA:</span>
-                                    <span className="font-medium">₹{formData.employment.salaryStructure.hra || '0'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">DA:</span>
-                                    <span className="font-medium">{formData.employment.salaryStructure.da || '0'}%</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-600">Net Salary:</span>
-                                    <span className="font-medium">₹{formData.employment.salaryStructure.netSalary || '0'}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Declaration */}
-                          <Card className="border-red-200 bg-red-50">
-                            <CardContent className="p-6">
-                              <div className="flex items-start gap-4">
-                                <div className="flex-shrink-0">
-                                  <input
-                                    type="checkbox"
-                                    id="declaration"
-                                    className="h-5 w-5 rounded border-gray-300 text-[#06038D] focus:ring-[#06038D]"
-                                    required
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="declaration" className="text-gray-700">
-                                    <strong>Declaration:</strong> I hereby declare that the information furnished above is true, complete and correct to the best of my knowledge and belief. I understand that in the event of any information being found false or incorrect at any stage, my application is liable to be rejected/cancelled and appropriate disciplinary action may be taken against me as per Government rules and regulations.
-                                  </Label>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Government Submission Notice */}
-                          <Alert className="bg-green-50 border-green-200">
-                            <ShieldCheck className="h-5 w-5 text-green-600" />
-                            <AlertTitle className="text-green-800">Government Submission Protocol</AlertTitle>
-                            <AlertDescription className="text-green-700">
-                              • Your application will be encrypted and stored on secure government servers<br/>
-                              • You will receive an acknowledgment with reference number<br/>
-                              • Processing time: 3-5 working days<br/>
-                              • Status can be tracked using your application reference number
-                            </AlertDescription>
-                          </Alert>
-                        </div>
-                      </motion.div>
-                    )}
+                    {renderStepContent()}
                   </AnimatePresence>
 
                   {/* Navigation Buttons */}
@@ -1224,7 +1192,7 @@ export default function GovernmentEmployeeRegistration() {
                       onClick={handleBack}
                       disabled={step === 1 || isAnimating}
                       className={cn(
-                        "border-gray-300 text-gray-700 hover:bg-gray-50",
+                        "border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-8 py-3",
                         step === 1 && "opacity-50 cursor-not-allowed"
                       )}
                     >
@@ -1236,7 +1204,7 @@ export default function GovernmentEmployeeRegistration() {
                         type="button"
                         onClick={handleNext}
                         disabled={isAnimating}
-                        className="bg-[#06038D] hover:bg-[#1E3A8A] text-white px-8"
+                        className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-10 py-3 shadow-lg hover:shadow-xl transition-all"
                       >
                         Continue <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -1244,17 +1212,22 @@ export default function GovernmentEmployeeRegistration() {
                       <Button
                         type="button"
                         onClick={handleSubmit}
-                        disabled={loading || isAnimating}
-                        className="submit-button bg-[#046A38] hover:bg-[#03582D] text-white px-8"
+                        disabled={loading || isAnimating || !formData.termsAccepted || !formData.declarationSigned}
+                        className={cn(
+                          "submit-button px-10 py-3 shadow-lg hover:shadow-xl transition-all",
+                          "bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white",
+                          (!formData.termsAccepted || !formData.declarationSigned) && "opacity-50 cursor-not-allowed"
+                        )}
                       >
                         {loading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Processing...
+                            Processing Submission...
                           </>
                         ) : (
                           <>
-                            <FileCheck className="h-4 w-4 mr-2" /> Submit to Government Database
+                            <ShieldCheck className="h-4 w-4 mr-2" /> 
+                            Submit to Government Database
                           </>
                         )}
                       </Button>
@@ -1263,109 +1236,106 @@ export default function GovernmentEmployeeRegistration() {
                 </CardContent>
               </Card>
             </motion.div>
-
-            {/* Government Footer Note */}
-            <div className="mt-6 text-center text-sm text-gray-500">
-              <p>This is an official Government of India portal. All transactions are monitored and logged.</p>
-              <p className="mt-1">© {new Date().getFullYear()} National Informatics Centre, Government of India</p>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Government Footer */}
-      <footer className="mt-12 bg-[#06038D] text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-semibold mb-4">Government of India</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-white">President of India</a></li>
-                <li><a href="#" className="hover:text-white">Prime Minister of India</a></li>
-                <li><a href="#" className="hover:text-white">Cabinet Ministers</a></li>
-                <li><a href="#" className="hover:text-white">Parliament of India</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-white">Digital India</a></li>
-                <li><a href="#" className="hover:text-white">MyGov.in</a></li>
-                <li><a href="#" className="hover:text-white">e-Governance</a></li>
-                <li><a href="#" className="hover:text-white">Grievance Redressal</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Departments</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-white">Ministry List</a></li>
-                <li><a href="#" className="hover:text-white">State Governments</a></li>
-                <li><a href="#" className="hover:text-white">Autonomous Bodies</a></li>
-                <li><a href="#" className="hover:text-white">PSUs</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact & Help</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Help Desk: 1800-11-1969</li>
-                <li>Email: support@digitalindia.gov.in</li>
-                <li>Website: www.india.gov.in</li>
-                <li>Emergency: 24x7 Support</li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-blue-800 text-center text-sm text-gray-400">
-            <p>© {new Date().getFullYear()} Government of India. All Rights Reserved.</p>
-            <p className="mt-2">This site is designed, developed and hosted by National Informatics Centre</p>
+      <footer className="mt-12 bg-gradient-to-b from-[#06038D] to-[#0A0569] text-white">
+        <div className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+            {[
+              {
+                title: 'Government of India',
+                links: ['President of India', 'Prime Minister of India', 'Cabinet Ministers', 'Parliament of India']
+              },
+              {
+                title: 'Digital Services',
+                links: ['Digital India', 'MyGov.in', 'e-Governance', 'Grievance Redressal']
+              },
+              {
+                title: 'Departments',
+                links: ['Ministry List', 'State Governments', 'Autonomous Bodies', 'Public Sector Units']
+              },
+              {
+                title: 'Contact & Support',
+                links: ['Help Desk: 1800-11-1969', 'Email: support@digitalindia.gov.in', 'Website: www.india.gov.in', 'Emergency: 24x7 Support']
+              }
+            ].map((section, index) => (
+              <div key={index} className="space-y-4">
+                <h4 className="font-bold text-lg mb-4 text-white">{section.title}</h4>
+                <ul className="space-y-3">
+                  {section.links.map((link, linkIndex) => (
+                    <li key={linkIndex}>
+                      <a href="#" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                        <ChevronRight className="h-3 w-3" />
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </footer>
 
-      {/* Custom Government Styles */}
+      {/* Custom Styles */}
       <style jsx global>{`
         .government-portal {
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          position: relative;
+          overflow-x: hidden;
         }
-        
+
         .progress-fill {
-          transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
         }
-        
-        .security-pulse {
-          animation: pulse 2s infinite;
+
+        .progress-fill::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+          );
+          animation: shimmer 2s infinite;
         }
-        
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
         }
-        
-        /* Government seal animation */
-        @keyframes seal-rotate {
+
+        .flag-color {
+          animation: slide-in 1s ease-out forwards;
+        }
+
+        @keyframes slide-in {
+          from { transform: translateY(-100%); }
+          to { transform: translateY(0); }
+        }
+
+        /* Form focus styles */
+        input:focus, select:focus, textarea:focus {
+          box-shadow: 0 0 0 3px rgba(6, 3, 141, 0.1);
+          border-color: #06038D;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        
-        /* National flag animation */
-        .flag-color {
-          animation: flag-expand 1s ease-out forwards;
-        }
-        
-        @keyframes flag-expand {
-          from { width: 0; }
-          to { width: 100%; }
-        }
-        
-        /* Government form styling */
-        input:focus, select:focus, textarea:focus {
-          box-shadow: 0 0 0 3px rgba(6, 3, 141, 0.1);
-        }
-        
-        /* Government badge styling */
-        .government-badge {
-          background: linear-gradient(135deg, #06038D 0%, #1E3A8A 100%);
-          color: white;
-          border: none;
+
+        .animate-spin {
+          animation: spin 1s linear infinite;
         }
       `}</style>
     </div>
