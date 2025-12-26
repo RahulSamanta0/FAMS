@@ -81,6 +81,65 @@ export default function ClientReports() {
     incomeTaxReports[1].taxableIncome -
     incomeTaxReports[0].taxableIncome
 
+  const handleDownloadReport = () => {
+    // Generate comprehensive financial report
+    const reportContent = `
+=================================================================
+              CONSOLIDATED FINANCIAL REPORT
+=================================================================
+Generated on: ${new Date().toLocaleDateString('en-IN', { 
+  day: '2-digit', 
+  month: 'long', 
+  year: 'numeric' 
+})}
+
+-----------------------------------------------------------------
+                    INCOME TAX HISTORY
+-----------------------------------------------------------------
+${incomeTaxReports.map(r => 
+  `${r.year}
+  Taxable Income: ₹${r.taxableIncome.toLocaleString('en-IN')}
+  Tax Paid:       ₹${r.taxPaid.toLocaleString('en-IN')}`
+).join('\n\n')}
+
+Year-over-Year Change: ₹${Math.abs(yoyChange).toLocaleString('en-IN')} (${yoyChange >= 0 ? 'Increase' : 'Decrease'})
+
+-----------------------------------------------------------------
+                 WHITE INCOME SOURCES
+-----------------------------------------------------------------
+${whiteIncomeSummary.map(i => 
+  `${i.source.padEnd(20)} ₹${i.amount.toLocaleString('en-IN')}`
+).join('\n')}
+
+Total White Income:      ₹${totalWhiteIncome.toLocaleString('en-IN')}
+
+-----------------------------------------------------------------
+                   ASSET DECLARATIONS
+-----------------------------------------------------------------
+${assetStatements.map(a => 
+  `${a.asset.padEnd(25)} [${a.category}]
+  Declared Value: ₹${a.value.toLocaleString('en-IN')}`
+).join('\n\n')}
+
+Total Declared Assets:   ₹${totalAssets.toLocaleString('en-IN')}
+
+=================================================================
+           This report is valid for CA filing purposes
+=================================================================
+    `.trim()
+
+    // Create and trigger download
+    const blob = new Blob([reportContent], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Financial_Report_${new Date().toISOString().split('T')[0]}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <ClientLayout activeTab="/client/reports">
       <motion.div 
@@ -120,9 +179,12 @@ export default function ClientReports() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap items-center gap-4">
-              <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-none dark:text-white">
+              <Button 
+                onClick={handleDownloadReport}
+                className="bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-none dark:text-white"
+              >
                 <Download className="h-4 w-4 mr-2" />
-                Download Consolidated PDF
+                Download Consolidated Report
               </Button>
               <span className="text-sm font-medium text-slate-500 bg-white/50 px-3 py-1 rounded-full border border-indigo-100 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400">
                 Valid for CA Filing
@@ -297,7 +359,7 @@ export default function ClientReports() {
             <CardContent className="grid gap-8 md:grid-cols-2 p-6">
               
               {/* Line Chart */}
-              <div className="h-72 bg-white/50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="h-72 bg-white dark:bg-slate-800 p-4 rounded-xl border-2 border-slate-300 dark:border-slate-600 shadow-sm">
                 <h4 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-blue-500" /> Taxable Income Trend
                 </h4>
@@ -310,8 +372,8 @@ export default function ClientReports() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
-                    <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                    <XAxis dataKey="year" axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                    <YAxis axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
                     <Tooltip 
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                     />
@@ -321,15 +383,15 @@ export default function ClientReports() {
               </div>
 
               {/* Bar Chart */}
-              <div className="h-72 bg-white/50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="h-72 bg-white dark:bg-slate-800 p-4 rounded-xl border-2 border-slate-300 dark:border-slate-600 shadow-sm">
                 <h4 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-indigo-500" /> Tax Paid History
                 </h4>
                 <ResponsiveContainer width="100%" height="90%">
                   <BarChart data={incomeTaxReports}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
-                    <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                    <XAxis dataKey="year" axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                    <YAxis axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
                     <Tooltip 
                       cursor={{fill: 'transparent'}}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
