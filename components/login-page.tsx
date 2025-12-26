@@ -9,7 +9,9 @@ import { Label } from "@/components/ui/label"
 import { 
   Loader2, CheckCircle2, LockKeyhole, Eye, EyeOff,
   ArrowRight, AlertCircle, UserCircle, ShieldCheck,
-  Building2, IndianRupee, Shield, Key, Users, Settings
+  Building2, IndianRupee, Shield, Key, Users, Settings,
+  GraduationCap, Briefcase, Banknote, Globe,
+  Smartphone, Mail, CreditCard, TrendingUp
 } from "lucide-react"
 import { setUserData } from "@/lib/cookies"
 import { useToast } from "@/hooks/use-toast"
@@ -25,6 +27,8 @@ interface UserType {
   role: string
   icon: any
   color: string
+  gradient: string
+  bgColor: string
   description: string
 }
 
@@ -33,16 +37,20 @@ const USER_TYPES: UserType[] = [
     id: 1,
     name: "Government Employee",
     role: "client",
-    icon: Users,
-    color: "from-blue-600 to-blue-800",
+    icon: Briefcase,
+    color: "text-indigo-600",
+    gradient: "from-indigo-500 to-purple-500",
+    bgColor: "bg-indigo-50",
     description: "Access salary, taxes, pensions, and financial management"
   },
   {
     id: 2,
     name: "Financial Advisor",
     role: "admin",
-    icon: Settings,
-    color: "from-emerald-600 to-green-700",
+    icon: GraduationCap,
+    color: "text-teal-600",
+    gradient: "from-teal-500 to-emerald-500",
+    bgColor: "bg-teal-50",
     description: "Administrative access for certified advisors"
   },
 ]
@@ -62,25 +70,30 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
 
   // Government Banner Component
   const GovernmentBanner = () => (
-    <div className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 py-3 border-b border-blue-700">
+    <div className="w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 py-3 border-b border-slate-700/50">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <div className="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                <div className="w-3 h-3 border border-white rounded-full" />
+            <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-6 h-6 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center">
+                <div className="w-3 h-3 border border-white/90 rounded-full" />
               </div>
             </div>
             <div className="text-white">
-              <div className="font-bold text-sm">भारत सरकार | GOVERNMENT OF INDIA</div>
-              <div className="text-xs opacity-90">Ministry of Finance - ArthYantra Portal</div>
+              <div className="font-bold text-sm tracking-wide">भारत सरकार | GOVERNMENT OF INDIA</div>
+              <div className="text-xs opacity-80">Ministry of Finance - Financial Intelligence Platform</div>
             </div>
           </div>
-          <div className="text-white text-xs bg-white/10 px-3 py-1 rounded-full">
-            <span className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              Secure Access v2.1
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="text-white/80 text-xs bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+              <span className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                Secure Session Active
+              </span>
+            </div>
+            <div className="hidden sm:block text-xs text-white/60">
+              Last Sync: {new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         </div>
       </div>
@@ -101,27 +114,30 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
             <button
               key={userType.id}
               onClick={() => setSelectedUserType(userType.id)}
-              className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 ${
+              className={`flex-1 p-5 rounded-xl border transition-all duration-300 ${
                 isSelected 
-                  ? `border-blue-500 bg-gradient-to-br ${userType.color} bg-opacity-10 shadow-md` 
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  ? `border-${userType.color.split('-')[1]}-300 shadow-lg ${userType.bgColor} border-2` 
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${userType.color} flex items-center justify-center shadow-sm`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${userType.gradient} flex items-center justify-center shadow-md`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-left flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className={`font-semibold ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>
-                      {userType.role === 'client' ? 'Client Portal' : 'Admin Portal'}
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <h3 className={`font-semibold text-base ${isSelected ? userType.color : 'text-gray-800'}`}>
+                      {userType.role === 'client' ? 'Employee Portal' : 'Advisor Portal'}
                     </h3>
                     {isSelected && (
-                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mb-2">
                     {userType.name}
+                  </p>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    {userType.description}
                   </p>
                 </div>
               </div>
@@ -134,35 +150,84 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
 
   // Security Indicator Component
   const SecurityIndicator = () => (
-    <div className="flex items-center justify-center gap-2 mb-6">
-      <div className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-2 rounded-full border border-blue-200">
-        <Shield className="h-4 w-4 text-blue-600" />
-        <span className="text-sm font-medium text-blue-700">
-          ISO 27001 Certified • 256-bit Encryption
-        </span>
+    <div className="flex items-center justify-center mb-6">
+      <div className="inline-flex items-center gap-3 bg-gradient-to-r from-slate-50 to-gray-50 px-5 py-3 rounded-xl border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Shield className="h-5 w-5 text-emerald-600" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
+          </div>
+          <span className="text-sm font-medium text-slate-700">
+            256-bit SSL Encryption
+          </span>
+        </div>
+        <div className="h-4 w-px bg-gray-300" />
+        <div className="text-xs text-gray-500 font-medium">
+          ISO 27001:2022 Certified
+        </div>
       </div>
     </div>
   )
 
   // Footer Component
   const Footer = () => (
-    <div className="w-full mt-8">
-      <div className="text-center text-xs text-gray-500 space-y-1">
-        <div className="flex items-center justify-center gap-4">
-          <span className="flex items-center gap-1">
-            <IndianRupee className="w-3 h-3" />
+    <div className="w-full mt-10">
+      <div className="text-center text-xs text-gray-500 space-y-3">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
             Official Government Portal
           </span>
-          <span>•</span>
-          <span>🇮🇳 Servers in India</span>
+          <span className="text-gray-300">•</span>
+          <span className="flex items-center gap-1.5">
+            <Globe className="w-3 h-3" />
+            Servers in India 🇮🇳
+          </span>
+          <span className="text-gray-300">•</span>
+          <span className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            Live System
+          </span>
         </div>
-        <div>
+        <div className="text-gray-600">
           © {new Date().getFullYear()} Ministry of Finance, Government of India. All rights reserved.
         </div>
-        <div className="text-gray-400">
-          For assistance: helpdesk@finance.gov.in • Toll Free: 1800-11-2024
+        <div className="text-gray-400 text-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+            <span>For technical assistance: </span>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <Mail className="w-3 h-3" />
+                support@finance.gov.in
+              </span>
+              <span className="hidden sm:inline text-gray-300">•</span>
+              <span className="flex items-center gap-1">
+                <Smartphone className="w-3 h-3" />
+                Toll Free: 1800-11-2024
+              </span>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  )
+
+  // Features Grid Component
+  const FeaturesGrid = () => (
+    <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {[
+        { icon: Banknote, label: 'Salary Management', color: 'text-blue-600' },
+        { icon: CreditCard, label: 'Tax Planning', color: 'text-emerald-600' },
+        { icon: TrendingUp, label: 'Investment', color: 'text-purple-600' },
+        { icon: ShieldCheck, label: 'Pension', color: 'text-amber-600' },
+      ].map((feature, index) => (
+        <div key={index} className="text-center p-4 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${feature.color.replace('text-', '')}-50 mb-3`}>
+            <feature.icon className={`w-5 h-5 ${feature.color}`} />
+          </div>
+          <div className="text-xs font-medium text-gray-700">{feature.label}</div>
+        </div>
+      ))}
     </div>
   )
 
@@ -199,7 +264,7 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
       toast({
         title: "Access Granted",
         description: `Welcome to ${userTypeData?.name} Portal`,
-        className: "bg-green-50 text-green-800 border-green-200",
+        className: "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 border-emerald-200",
       })
 
       // Route to appropriate dashboard
@@ -223,7 +288,7 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 via-white to-blue-50/20"
+      className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-slate-50"
     >
       {/* Government Banner */}
       <GovernmentBanner />
@@ -233,28 +298,33 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
         <div className="w-full max-w-2xl">
           <Card 
             ref={cardRef}
-            className="border-0 shadow-xl rounded-xl overflow-hidden bg-white"
+            className="border-0 shadow-2xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm"
           >
-            <CardHeader className="pb-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 via-white to-blue-50">
+            <CardHeader className="pb-8 pt-10 px-10 border-b border-gray-100 bg-gradient-to-b from-white to-gray-50">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md">
-                    <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
-                      <div className="w-3 h-3 bg-white rounded-full" />
+                {/* Logo and Title */}
+                <div className="flex flex-col items-center gap-4 mb-6">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center shadow-xl">
+                      <div className="w-10 h-10 border-2 border-white/20 rounded-full flex items-center justify-center">
+                        <div className="w-5 h-5 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-white" />
                     </div>
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-bold text-gray-900">
+                    <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">
                       Arthayantra 
                     </CardTitle>
-                    <CardDescription className="text-gray-600">
-                      Government Financial Management System
+                    <CardDescription className="text-gray-600 text-base mt-2">
+                      Government Financial Intelligence Platform
                     </CardDescription>
                   </div>
                 </div>
                 
                 {/* Security Indicator */}
-
                 <SecurityIndicator />
                 
                 {/* User Type Selector */}
@@ -262,55 +332,67 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="p-8">
+            <CardContent className="p-10">
               {/* Login Form */}
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-7">
                 {/* Selected Portal Info */}
-                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-blue-50/30 rounded-lg border border-blue-200">
-                  <div className="flex items-center gap-3">
+                <div className="mb-6 p-5 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                  <div className="flex items-center gap-4">
                     {selectedUserTypeData && (() => {
                       const Icon = selectedUserTypeData.icon
-                      return <Icon className="w-5 h-5 text-blue-600" />
+                      return (
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${selectedUserTypeData.gradient} shadow-md`}>
+                          <Icon className="w-6 h-6 text-white" />
+                        </div>
+                      )
                     })()}
                     <div>
-                      <div className="text-sm font-semibold text-blue-800">
-                        {selectedUserTypeData?.role === 'client' ? 'Client Portal' : 'Admin Portal'}
+                      <div className="text-sm font-semibold text-gray-800 mb-1">
+                        {selectedUserTypeData?.role === 'client' ? 'Employee Portal Access' : 'Advisor Portal Access'}
                       </div>
-                      <div className="text-xs text-blue-600">
-                        {selectedUserTypeData?.name}
+                      <div className="text-xs text-gray-600">
+                        {selectedUserTypeData?.description}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Username Field */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <Label htmlFor="username" className="text-sm font-medium text-gray-700">
                     <div className="flex items-center gap-2 mb-1">
-                      <UserCircle className="w-4 h-4 text-blue-600" />
-                      {selectedUserType === 1 ? 'Government ID / Email' : 'Advisor ID'}
+                      <UserCircle className="w-4 h-4 text-slate-600" />
+                      <span>
+                        {selectedUserType === 1 ? 'Government Employee ID' : 'Financial Advisor ID'}
+                      </span>
                     </div>
                   </Label>
                   <Input
                     id="username"
                     placeholder={
                       selectedUserType === 1 
-                        ? "e.g., DOE12345 or name@department.gov.in"
-                        : "Enter your advisor ID"
+                        ? "Enter your government employee ID"
+                        : "Enter your certified advisor ID"
                     }
-                    className="h-11 bg-white border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="h-12 bg-white border border-gray-300 focus:border-indigo-400 focus:ring-3 focus:ring-indigo-100 rounded-lg transition-all"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoComplete="username"
                     required
                   />
+                  <div className="text-xs text-gray-500 mt-1">
+                    {selectedUserType === 1 
+                      ? "Format: GOV-XXXXX or official email"
+                      : "Format: AD-XXXXX or registered email"
+                    }
+                  </div>
                 </div>
                 
                 {/* Password Field */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                     <div className="flex items-center gap-2 mb-1">
-                      <LockKeyhole className="w-4 h-4 text-blue-600" />
+                      <LockKeyhole className="w-4 h-4 text-slate-600" />
                       Password
                     </div>
                   </Label>
@@ -318,8 +400,8 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      className="h-11 bg-white border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 pr-10"
+                      placeholder="Enter your secure password"
+                      className="h-12 bg-white border border-gray-300 focus:border-indigo-400 focus:ring-3 focus:ring-indigo-100 rounded-lg pr-12 transition-all"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="current-password"
@@ -328,29 +410,37 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
+                  </div>
+                  <div className="text-xs text-gray-500 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                    Minimum 8 characters with special characters
                   </div>
                 </div>
 
                 {/* Login Button */}
-                <div className="pt-4">
+                <div className="pt-6">
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base font-medium shadow-md hover:shadow-lg transition-all"
+                    className="w-full h-14 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-slate-950 text-white text-base font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                         Authenticating...
                       </>
                     ) : (
                       <>
-                        <Key className="mr-2 h-5 w-5" />
-                        Login to {selectedUserTypeData?.role === 'client' ? 'Client' : 'Admin'} Portal
+                        <Key className="mr-3 h-5 w-5" />
+                        {selectedUserTypeData?.role === 'client' ? 'Access Employee Portal' : 'Access Advisor Portal'}
                       </>
                     )}
                   </Button>
@@ -361,27 +451,28 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
                   <Button
                     type="button"
                     variant="link"
-                    className="text-sm text-gray-500 hover:text-blue-600"
+                    className="text-sm text-gray-600 hover:text-indigo-600 hover:no-underline"
                     onClick={() => {
                       toast({
                         title: "Help Requested",
-                        description: "IT support team has been notified. You will receive an email shortly.",
+                        description: "Our support team has been notified. You will receive assistance shortly.",
+                        className: "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800 border-blue-200",
                       })
                     }}
                   >
-                    <AlertCircle className="mr-1 h-4 w-4" />
-                    Forgot Password or Need Help?
+                    <AlertCircle className="mr-2 h-4 w-4" />
+                    Need help with login credentials?
                   </Button>
                 </div>
 
                 {/* Security Notice */}
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <div className="flex items-start gap-3 bg-gradient-to-r from-gray-50 to-gray-50/30 p-4 rounded-lg border border-gray-200">
-                    <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs text-gray-700">
-                      <span className="font-medium">Security Notice:</span> This portal is for authorized government personnel only. 
-                      Unauthorized access attempts are logged and may be prosecuted under the IT Act, 2000. 
-                      All data is encrypted and stored on secure Indian government servers.
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                  <div className="flex items-start gap-4 bg-gradient-to-r from-slate-50 to-gray-50 p-5 rounded-xl border border-gray-200">
+                    <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-gray-700 leading-relaxed">
+                      <span className="font-semibold text-gray-900">Security Protocol Active:</span> This portal is exclusively for authorized personnel. 
+                      All access attempts are monitored, logged, and protected under the Information Technology Act, 2000. 
+                      Your session is encrypted end-to-end and stored securely on government-certified infrastructure.
                     </div>
                   </div>
                 </div>
@@ -389,19 +480,33 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
             </CardContent>
           </Card>
 
-          {/* Status Indicators */}
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              <span>System: Active</span>
+          {/* Features Grid */}
+          <FeaturesGrid />
+
+          {/* System Status */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="font-medium">System Status:</span>
+                <span className="text-emerald-600 font-semibold">Operational</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-              <span>Last Updated: {new Date().toLocaleDateString('en-IN')}</span>
+            <div className="hidden sm:block h-4 w-px bg-gray-300" />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                <span className="font-medium">Users Online:</span>
+                <span className="font-semibold">3,142</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-              <span>Users Online: 2,847</span>
+            <div className="hidden sm:block h-4 w-px bg-gray-300" />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span className="font-medium">Response Time:</span>
+                <span className="font-semibold">{"< 200ms"}</span>
+              </div>
             </div>
           </div>
 
@@ -410,10 +515,19 @@ export function LoginPage({ onBack, onLogin }: LoginPageProps) {
         </div>
       </div>
 
-      {/* Background Decorative Elements */}
+      {/* Background Elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl" />
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-gray-50" />
+        
+        {/* Geometric patterns */}
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gradient-to-br from-emerald-100/30 to-teal-100/30 rounded-full blur-3xl" />
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" 
+          style={{ opacity: 0.3 }}
+        />
       </div>
     </div>
   )
