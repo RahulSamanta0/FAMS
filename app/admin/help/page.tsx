@@ -1,918 +1,804 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
+import { motion } from "framer-motion"
 import { AdminLayout } from "@/components/admin-layout"
-import { 
-  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle 
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Textarea } from "@/components/ui/textarea"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { 
-  Search, Filter, MessageSquare, AlertCircle, CheckCircle, Clock,
-  User, Mail, Calendar, Paperclip, Send, Download, MoreVertical,
-  ChevronRight, Users, BarChart, TrendingUp, RefreshCw, Eye,
-  Shield, Zap, ExternalLink, Tag, FileText, Phone, Copy
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Search,
+  Filter,
+  Users,
+  MessageSquare,
+  Mail,
+  Phone,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Shield,
+  Zap,
+  Headphones,
+  FileText,
+  Download,
+  MoreVertical,
+  Eye,
+  TrendingUp,
+  TrendingDown,
+  Star,
+  Calendar,
+  Bell,
+  Activity,
+  UserCheck,
+  MessageCircle,
+  ShieldCheck,
+  RefreshCw,
+  ExternalLink
 } from "lucide-react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import { toast } from "sonner"
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { cn } from "@/lib/utils"
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
+/* ---------------- ANIMATION VARIANTS ---------------- */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
 }
 
-// Mock data for tickets
-const mockTickets = [
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
+
+/* ---------------- MOCK DATA ---------------- */
+
+// Support Tickets
+const supportTickets = [
   {
-    id: 'SUP-2024-001',
-    clientId: 'CL001',
-    clientName: 'Rajesh Kumar',
-    clientEmail: 'rajesh.kumar@gov.in',
-    clientPhone: '+91 9876543210',
-    subject: 'Unable to upload income tax documents',
-    description: 'Getting error "File size exceeds limit" when trying to upload PDF documents for ITR filing. File size is 8MB, should be within limits.',
-    category: 'technical',
-    priority: 'high',
-    status: 'open',
-    createdAt: '2024-01-15 14:30',
-    updatedAt: '2024-01-15 15:45',
-    assignedTo: 'Admin 1',
-    messages: [
-      {
-        id: 'MSG001',
-        sender: 'client',
-        senderName: 'Rajesh Kumar',
-        message: 'I am unable to upload my Form 16 documents. Getting error message about file size.',
-        timestamp: '2024-01-15 14:30',
-        attachments: []
-      }
-    ],
-    attachments: [
-      { name: 'screenshot_1.png', size: '2.1 MB' },
-      { name: 'error_log.txt', size: '15 KB' }
-    ]
+    id: "TKT-2025-001",
+    clientName: "Rajesh Kumar",
+    department: "Education",
+    subject: "Unable to upload income tax documents",
+    priority: "high",
+    status: "open",
+    assignedTo: "Admin 1",
+    createdAt: "2025-01-15 14:30",
+    lastUpdate: "2 hours ago",
+    category: "technical",
+    responseTime: "45 min",
+    satisfaction: null
   },
   {
-    id: 'SUP-2024-002',
-    clientId: 'CL002',
-    clientName: 'Priya Sharma',
-    clientEmail: 'priya.sharma@gov.in',
-    clientPhone: '+91 8765432109',
-    subject: 'Investment portfolio not updating',
-    description: 'Mutual fund investments from last week are not reflecting in my portfolio. Showing old values.',
-    category: 'data_sync',
-    priority: 'high',
-    status: 'in_progress',
-    createdAt: '2024-01-14 10:15',
-    updatedAt: '2024-01-15 09:30',
-    assignedTo: 'Admin 2',
-    messages: [
-      {
-        id: 'MSG002',
-        sender: 'client',
-        senderName: 'Priya Sharma',
-        message: 'My mutual fund investments from January 10th are not showing up in the dashboard.',
-        timestamp: '2024-01-14 10:15',
-        attachments: []
-      },
-      {
-        id: 'MSG003',
-        sender: 'admin',
-        senderName: 'Support Team',
-        message: 'We are checking with our data provider. The sync may be delayed due to weekend processing.',
-        timestamp: '2024-01-14 15:30',
-        attachments: []
-      }
-    ],
-    attachments: []
+    id: "TKT-2025-002",
+    clientName: "Priya Sharma",
+    department: "Health",
+    subject: "Investment portfolio not updating",
+    priority: "high",
+    status: "in_progress",
+    assignedTo: "Admin 2",
+    createdAt: "2025-01-14 10:15",
+    lastUpdate: "1 day ago",
+    category: "data_sync",
+    responseTime: "1.2 hours",
+    satisfaction: null
   },
   {
-    id: 'SUP-2024-003',
-    clientId: 'CL003',
-    clientName: 'Amit Patel',
-    clientEmail: 'amit.patel@gov.in',
-    clientPhone: '+91 7654321098',
-    subject: 'Insurance premium payment failed',
-    description: 'Tried to pay insurance premium but payment failed after OTP verification. Amount debited but not showing in portal.',
-    category: 'billing',
-    priority: 'critical',
-    status: 'open',
-    createdAt: '2024-01-15 09:45',
-    updatedAt: '2024-01-15 09:45',
+    id: "TKT-2025-003",
+    clientName: "Amit Patel",
+    department: "Revenue",
+    subject: "Insurance premium payment failed",
+    priority: "critical",
+    status: "open",
     assignedTo: null,
-    messages: [
-      {
-        id: 'MSG004',
-        sender: 'client',
-        senderName: 'Amit Patel',
-        message: 'Payment of ₹25,000 for LIC premium failed but amount was debited from my account.',
-        timestamp: '2024-01-15 09:45',
-        attachments: [
-          { name: 'payment_receipt.pdf', size: '1.5 MB' }
-        ]
-      }
-    ],
-    attachments: [
-      { name: 'payment_receipt.pdf', size: '1.5 MB' }
-    ]
+    createdAt: "2025-01-15 09:45",
+    lastUpdate: "Just now",
+    category: "billing",
+    responseTime: "15 min",
+    satisfaction: null
   },
   {
-    id: 'SUP-2024-004',
-    clientId: 'CL004',
-    clientName: 'Sunita Verma',
-    clientEmail: 'sunita.verma@gov.in',
-    clientPhone: '+91 6543210987',
-    subject: 'Request for tax saving investment suggestions',
-    description: 'Need recommendations for tax saving investments under 80C. Budget: ₹1.5 lakhs.',
-    category: 'investment_advice',
-    priority: 'medium',
-    status: 'resolved',
-    createdAt: '2024-01-13 11:20',
-    updatedAt: '2024-01-14 16:15',
-    assignedTo: 'Admin 1',
-    messages: [
-      {
-        id: 'MSG005',
-        sender: 'client',
-        senderName: 'Sunita Verma',
-        message: 'Can you suggest best options for tax saving investments? I have ₹1.5L available.',
-        timestamp: '2024-01-13 11:20',
-        attachments: []
-      },
-      {
-        id: 'MSG006',
-        sender: 'admin',
-        senderName: 'Support Team',
-        message: 'We recommend ELSS mutual funds, PPF, and NPS for your profile. Detailed report attached.',
-        timestamp: '2024-01-14 14:00',
-        attachments: [
-          { name: 'investment_report.pdf', size: '3.2 MB' }
-        ]
-      },
-      {
-        id: 'MSG007',
-        sender: 'client',
-        senderName: 'Sunita Verma',
-        message: 'Thank you! The suggestions were very helpful.',
-        timestamp: '2024-01-14 16:15',
-        attachments: []
-      }
-    ],
-    attachments: [
-      { name: 'investment_report.pdf', size: '3.2 MB' }
-    ]
+    id: "TKT-2025-004",
+    clientName: "Sunita Verma",
+    department: "Finance",
+    subject: "Request for tax saving investment suggestions",
+    priority: "medium",
+    status: "resolved",
+    assignedTo: "Admin 1",
+    createdAt: "2025-01-13 11:20",
+    lastUpdate: "2 days ago",
+    category: "investment_advice",
+    responseTime: "2.3 hours",
+    satisfaction: 5
   },
   {
-    id: 'SUP-2024-005',
-    clientId: 'CL005',
-    clientName: 'Rahul Mehta',
-    clientEmail: 'rahul.mehta@gov.in',
-    clientPhone: '+91 7432165098',
-    subject: 'Cannot access monthly financial report',
-    description: 'Getting "Access Denied" error when trying to download monthly financial report PDF.',
-    category: 'access',
-    priority: 'medium',
-    status: 'open',
-    createdAt: '2024-01-15 08:30',
-    updatedAt: '2024-01-15 08:30',
+    id: "TKT-2025-005",
+    clientName: "Rahul Mehta",
+    department: "Defense",
+    subject: "Cannot access monthly financial report",
+    priority: "medium",
+    status: "open",
     assignedTo: null,
-    messages: [
-      {
-        id: 'MSG008',
-        sender: 'client',
-        senderName: 'Rahul Mehta',
-        message: 'Cannot download my financial report for December 2023.',
-        timestamp: '2024-01-15 08:30',
-        attachments: []
-      }
-    ],
-    attachments: []
+    createdAt: "2025-01-15 08:30",
+    lastUpdate: "3 hours ago",
+    category: "access",
+    responseTime: "1.8 hours",
+    satisfaction: null
   }
 ]
 
-const ticketStats = {
-  total: 156,
-  open: 12,
-  inProgress: 8,
-  resolved: 136,
-  critical: 3,
-  avgResponseTime: '2.4 hours',
-  satisfactionRate: '96.2%'
-}
+// Support Statistics
+const supportStats = [
+  { title: "Open Tickets", value: "12", change: "+2", icon: AlertCircle, color: "from-red-500 to-orange-500", bg: "from-red-50 to-orange-50" },
+  { title: "In Progress", value: "8", change: "-1", icon: Clock, color: "from-amber-500 to-yellow-500", bg: "from-amber-50 to-yellow-50" },
+  { title: "Resolved", value: "136", change: "+24", icon: CheckCircle, color: "from-emerald-500 to-green-500", bg: "from-emerald-50 to-green-50" },
+  { title: "Avg Response Time", value: "2.4h", change: "-0.3h", icon: Activity, color: "from-blue-500 to-cyan-500", bg: "from-blue-50 to-cyan-50" },
+  { title: "Satisfaction Rate", value: "96.2%", change: "+1.5%", icon: Star, color: "from-purple-500 to-violet-500", bg: "from-purple-50 to-violet-50" },
+  { title: "Team Online", value: "4/5", change: "Active", icon: UserCheck, color: "from-indigo-500 to-blue-500", bg: "from-indigo-50 to-blue-50" },
+]
 
-export default function AdminSupportDashboard() {
-  const [tickets, setTickets] = useState(mockTickets)
-  const [selectedTicket, setSelectedTicket] = useState<any>(mockTickets[0])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [filterPriority, setFilterPriority] = useState('all')
-  const [replyMessage, setReplyMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  
-  const ticketRefs = useRef<HTMLDivElement[]>([])
-  const messageRefs = useRef<HTMLDivElement[]>([])
+// Team Members
+const teamMembers = [
+  { name: "Admin 1", role: "Senior Support", status: "online", tickets: 45, responseTime: "1.2h", satisfaction: "96%", lastActive: "Now" },
+  { name: "Admin 2", role: "Support Specialist", status: "online", tickets: 38, responseTime: "1.8h", satisfaction: "94%", lastActive: "5 min ago" },
+  { name: "Admin 3", role: "Technical Support", status: "away", tickets: 42, responseTime: "1.5h", satisfaction: "95%", lastActive: "30 min ago" },
+  { name: "Admin 4", role: "Billing Support", status: "offline", tickets: 29, responseTime: "2.3h", satisfaction: "91%", lastActive: "2 hours ago" },
+  { name: "Admin 5", role: "Investment Advisor", status: "online", tickets: 31, responseTime: "1.4h", satisfaction: "97%", lastActive: "Now" },
+]
 
-  useEffect(() => {
-    // Animate ticket cards
-    ticketRefs.current.forEach((card, index) => {
-      if (card) {
-        gsap.fromTo(card,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            delay: index * 0.05,
-            ease: "power2.out"
-          }
-        )
-      }
-    })
+// Knowledge Base Articles
+const knowledgeBase = [
+  { id: "KB-001", title: "How to handle ITR filing errors", category: "tax", views: 245, updated: "2 days ago", helpful: "92%", status: "published" },
+  { id: "KB-002", title: "Investment portfolio sync guide", category: "investment", views: 189, updated: "1 week ago", helpful: "88%", status: "published" },
+  { id: "KB-003", title: "White income conversion process", category: "reporting", views: 156, updated: "3 days ago", helpful: "95%", status: "draft" },
+  { id: "KB-004", title: "Asset declaration workflow", category: "assets", views: 132, updated: "2 weeks ago", helpful: "85%", status: "published" },
+  { id: "KB-005", title: "Insurance premium tracking", category: "insurance", views: 98, updated: "4 days ago", helpful: "90%", status: "published" },
+]
 
-    // Animate messages when ticket changes
-    messageRefs.current.forEach((msg, index) => {
-      if (msg) {
-        gsap.fromTo(msg,
-          { opacity: 0, x: -20 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.3,
-            delay: index * 0.1,
-            ease: "back.out(1.2)"
-          }
-        )
-      }
-    })
+/* ---------------- COMPONENT ---------------- */
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, [selectedTicket])
+export default function AdminHelpSupport() {
+  const [tickets, setTickets] = useState(supportTickets)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterStatus, setFilterStatus] = useState("all")
+  const [filterPriority, setFilterPriority] = useState("all")
+  const [selectedTicket, setSelectedTicket] = useState(supportTickets[0])
+  const [autoAssign, setAutoAssign] = useState(true)
+  const [systemAlerts, setSystemAlerts] = useState(true)
 
-  const handleSelectTicket = (ticket: any) => {
-    gsap.to('#ticket-details', {
-      opacity: 0,
-      duration: 0.2,
-      onComplete: () => {
-        setSelectedTicket(ticket)
-        setReplyMessage('')
-        gsap.fromTo('#ticket-details',
-          { opacity: 0, x: 20 },
-          { opacity: 1, x: 0, duration: 0.3 }
-        )
-      }
-    })
-  }
-
-  const handleSendReply = () => {
-    if (!replyMessage.trim()) {
-      toast.error('Please enter a message')
-      return
-    }
-
-    setIsLoading(true)
-    
-    // Simulate API call
-    setTimeout(() => {
-      const newMessage = {
-        id: `MSG${Date.now()}`,
-        sender: 'admin',
-        senderName: 'Support Team',
-        message: replyMessage,
-        timestamp: new Date().toLocaleString('en-IN', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        attachments: []
-      }
-
-      const updatedTickets = tickets.map(ticket => {
-        if (ticket.id === selectedTicket.id) {
-          return {
-            ...ticket,
-            messages: [...ticket.messages, newMessage],
-            status: ticket.status === 'open' ? 'in_progress' : ticket.status,
-            updatedAt: new Date().toLocaleString('en-IN', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            }),
-            assignedTo: 'Admin 1'
-          }
-        }
-        return ticket
-      })
-
-      setTickets(updatedTickets)
-      setSelectedTicket(prev => ({
-        ...prev,
-        messages: [...prev.messages, newMessage],
-        status: prev.status === 'open' ? 'in_progress' : prev.status,
-        updatedAt: new Date().toLocaleString('en-IN', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        assignedTo: 'Admin 1'
-      }))
-      
-      setReplyMessage('')
-      setIsLoading(false)
-      
-      toast.success('Reply sent successfully')
-      
-      // Animate new message
-      const newMsgElement = document.getElementById(`msg-${newMessage.id}`)
-      if (newMsgElement) {
-        gsap.fromTo(newMsgElement,
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.3 }
-        )
-      }
-    }, 500)
-  }
-
-  const handleUpdateStatus = (newStatus: string) => {
-    const updatedTickets = tickets.map(ticket => {
-      if (ticket.id === selectedTicket.id) {
-        return { ...ticket, status: newStatus }
-      }
-      return ticket
-    })
-
-    setTickets(updatedTickets)
-    setSelectedTicket(prev => ({ ...prev, status: newStatus }))
-    
-    toast.success(`Ticket status updated to ${newStatus.replace('_', ' ')}`)
-  }
-
-  const handleAssignToMe = () => {
-    const updatedTickets = tickets.map(ticket => {
-      if (ticket.id === selectedTicket.id) {
-        return { ...ticket, assignedTo: 'Admin 1' }
-      }
-      return ticket
-    })
-
-    setTickets(updatedTickets)
-    setSelectedTicket(prev => ({ ...prev, assignedTo: 'Admin 1' }))
-    
-    toast.success('Ticket assigned to you')
-  }
-
+  // Filter tickets
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = 
       ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.id.toLowerCase().includes(searchTerm.toLowerCase())
+      ticket.department.toLowerCase().includes(searchTerm.toLowerCase())
     
-    const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus
-    const matchesPriority = filterPriority === 'all' || ticket.priority === filterPriority
+    const matchesStatus = filterStatus === "all" || ticket.status === filterStatus
+    const matchesPriority = filterPriority === "all" || ticket.priority === filterPriority
     
     return matchesSearch && matchesStatus && matchesPriority
   })
 
+  // Status and priority colors
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-red-100 text-red-800 hover:bg-red-100'
-      case 'in_progress': return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-      case 'resolved': return 'bg-green-100 text-green-800 hover:bg-green-100'
-      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+      case "open": return "bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400"
+      case "in_progress": return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400"
+      case "resolved": return "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400"
+      default: return "bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-900/20 dark:text-gray-400"
     }
   }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'bg-red-600 text-white'
-      case 'high': return 'bg-orange-500 text-white'
-      case 'medium': return 'bg-yellow-500 text-gray-900'
-      case 'low': return 'bg-blue-500 text-white'
-      default: return 'bg-gray-500 text-white'
+      case "critical": return "bg-red-600 text-white"
+      case "high": return "bg-orange-500 text-white"
+      case "medium": return "bg-yellow-500 text-gray-900"
+      case "low": return "bg-blue-500 text-white"
+      default: return "bg-gray-500 text-white"
     }
   }
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'technical': return <Zap className="h-4 w-4" />
-      case 'billing': return <FileText className="h-4 w-4" />
-      case 'investment_advice': return <TrendingUp className="h-4 w-4" />
-      case 'data_sync': return <RefreshCw className="h-4 w-4" />
-      case 'access': return <Shield className="h-4 w-4" />
-      default: return <MessageSquare className="h-4 w-4" />
+  const handleAssignTicket = (ticketId: string, adminName: string) => {
+    setTickets(prev => prev.map(ticket => 
+      ticket.id === ticketId ? { ...ticket, assignedTo: adminName, status: "in_progress" } : ticket
+    ))
+    if (selectedTicket.id === ticketId) {
+      setSelectedTicket(prev => ({ ...prev, assignedTo: adminName, status: "in_progress" }))
+    }
+  }
+
+  const handleResolveTicket = (ticketId: string) => {
+    setTickets(prev => prev.map(ticket => 
+      ticket.id === ticketId ? { ...ticket, status: "resolved" } : ticket
+    ))
+    if (selectedTicket.id === ticketId) {
+      setSelectedTicket(prev => ({ ...prev, status: "resolved" }))
     }
   }
 
   return (
-    <AdminLayout activeTab="Help">
-      <div className="space-y-6">
-      {/* Header with Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Open Tickets</p>
-                <p className="text-2xl font-bold">{ticketStats.open}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <Clock className="h-3 w-3 text-gray-500" />
-                  <span className="text-xs text-gray-500">Avg: {ticketStats.avgResponseTime}</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-red-100 p-3">
-                <AlertCircle className="h-6 w-6 text-red-600" />
-              </div>
+    <AdminLayout activeTab="/admin/help">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
+      >
+
+        {/* HEADER */}
+        <motion.div variants={itemVariants}>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+                Help & Support Center
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">
+                Manage client support tickets and team performance
+              </p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">In Progress</p>
-                <p className="text-2xl font-bold">{ticketStats.inProgress}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <Users className="h-3 w-3 text-gray-500" />
-                  <span className="text-xs text-gray-500">8 assigned</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-yellow-100 p-3">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
+            
+            <div className="flex items-center gap-3">
+              <Button variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export Report
+              </Button>
+              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600">
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Resolved</p>
-                <p className="text-2xl font-bold">{ticketStats.resolved}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <CheckCircle className="h-3 w-3 text-green-500" />
-                  <span className="text-xs text-gray-500">{ticketStats.satisfactionRate} satisfaction</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-green-100 p-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Critical Priority</p>
-                <p className="text-2xl font-bold">{ticketStats.critical}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <AlertCircle className="h-3 w-3 text-red-500" />
-                  <span className="text-xs text-red-600">Needs attention</span>
-                </div>
-              </div>
-              <div className="rounded-lg bg-orange-100 p-3">
-                <AlertCircle className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Ticket List */}
-        <div className="lg:col-span-1 space-y-4">
-          {/* Filters */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search tickets..."
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs">Status</Label>
-                    <Select value={filterStatus} onValueChange={setFilterStatus}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="resolved">Resolved</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs">Priority</Label>
-                    <Select value={filterPriority} onValueChange={setFilterPriority}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Priority</SelectItem>
-                        <SelectItem value="critical">Critical</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Ticket List */}
-          <Card className="h-[calc(100vh-350px)] overflow-hidden">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between">
-                <span>Support Tickets</span>
-                <Badge variant="outline">{filteredTickets.length}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-y-auto h-full">
-                {filteredTickets.map((ticket, index) => (
-                  <div
-                    key={ticket.id}
-                    ref={el => { if (el) ticketRefs.current[index] = el }}
-                    onClick={() => handleSelectTicket(ticket)}
-                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
-                      selectedTicket?.id === ticket.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold truncate">{ticket.subject}</h4>
-                        <p className="text-sm text-gray-600 truncate">{ticket.clientName}</p>
-                      </div>
-                      <Badge className={getStatusColor(ticket.status)}>
-                        {ticket.status.replace('_', ' ')}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {getCategoryIcon(ticket.category)}
-                        <span className="text-xs text-gray-500">{ticket.id}</span>
-                      </div>
-                      <Badge className={getPriorityColor(ticket.priority)} size="sm">
-                        {ticket.priority}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <Calendar className="h-3 w-3" />
-                        {ticket.createdAt.split(' ')[0]}
-                      </div>
-                      {ticket.assignedTo && (
-                        <span className="text-xs font-medium text-gray-700">
-                          {ticket.assignedTo}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Column - Ticket Details */}
-        <div className="lg:col-span-2">
-          <Card id="ticket-details" className="h-[calc(100vh-350px)] overflow-hidden flex flex-col">
-            {!selectedTicket ? (
-              <CardContent className="flex-1 flex items-center justify-center text-gray-500">
-                <div className="text-center">
-                  <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p>Select a ticket to view details</p>
-                </div>
-              </CardContent>
-            ) : (
-              <>
-                {/* Ticket Header */}
-                <CardHeader className="pb-4 border-b">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-xl">{selectedTicket.subject}</CardTitle>
-                        <Badge className={getPriorityColor(selectedTicket.priority)}>
-                          {selectedTicket.priority}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Badge variant="outline" className={getStatusColor(selectedTicket.status)}>
-                            {selectedTicket.status.replace('_', ' ')}
-                          </Badge>
-                          <span className="text-sm text-gray-600">ID: {selectedTicket.id}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigator.clipboard.writeText(selectedTicket.id)}
-                          >
-                            <Copy className="h-4 w-4 mr-2" /> Copy ID
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem onClick={handleAssignToMe}>
-                                Assign to me
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleUpdateStatus('in_progress')}>
-                                Mark as In Progress
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleUpdateStatus('resolved')}>
-                                Mark as Resolved
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem>
-                                <Download className="h-4 w-4 mr-2" /> Export Ticket
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
+        {/* STATS CARDS */}
+        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {supportStats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <Card key={index} className={cn(
+                "relative overflow-hidden border-0 shadow-lg transition-all duration-300",
+                "bg-gradient-to-br",
+                stat.bg,
+                "dark:bg-slate-900 dark:border-slate-800"
+              )}>
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-r opacity-0 hover:opacity-10 transition-opacity duration-500",
+                  stat.color
+                )} />
+                
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={cn(
+                      "rounded-lg p-2 text-white shadow-md",
+                      "bg-gradient-to-r",
+                      stat.color
+                    )}>
+                      <Icon className="h-4 w-4" />
                     </div>
                   </div>
                 </CardHeader>
-
-                <div className="flex-1 overflow-hidden flex flex-col">
-                  {/* Client Info */}
-                  <div className="p-6 border-b bg-gray-50">
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarFallback className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                          {selectedTicket.clientName.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h4 className="font-semibold">{selectedTicket.clientName}</h4>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-1">
-                          <span className="flex items-center gap-1">
-                            <Mail className="h-3 w-3" /> {selectedTicket.clientEmail}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Phone className="h-3 w-3" /> {selectedTicket.clientPhone}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Tag className="h-3 w-3" /> Client ID: {selectedTicket.clientId}
-                          </span>
-                        </div>
-                      </div>
-                      {selectedTicket.assignedTo && (
-                        <Badge variant="outline" className="bg-blue-50">
-                          Assigned to: {selectedTicket.assignedTo}
-                        </Badge>
-                      )}
-                    </div>
+                
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {stat.value}
                   </div>
-
-                  {/* Description */}
-                  <div className="p-6 border-b">
-                    <h4 className="font-semibold mb-2">Issue Description</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{selectedTicket.description}</p>
-                    
-                    {selectedTicket.attachments.length > 0 && (
-                      <div className="mt-4">
-                        <h5 className="text-sm font-medium mb-2 flex items-center gap-2">
-                          <Paperclip className="h-4 w-4" /> Attachments
-                        </h5>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedTicket.attachments.map((file: any, index: number) => (
-                            <Badge key={index} variant="outline" className="gap-2">
-                              <FileText className="h-3 w-3" />
-                              {file.name}
-                              <span className="text-gray-500">({file.size})</span>
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                    {stat.change.startsWith('+') ? (
+                      <TrendingUp className="h-3 w-3 text-green-500" />
+                    ) : stat.change.startsWith('-') ? (
+                      <TrendingDown className="h-3 w-3 text-red-500" />
+                    ) : (
+                      <Activity className="h-3 w-3 text-blue-500" />
                     )}
-                  </div>
+                    {stat.change}
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </motion.div>
 
-                  {/* Conversation */}
-                  <div className="flex-1 overflow-hidden flex flex-col">
-                    <div className="p-6 border-b">
-                      <h4 className="font-semibold mb-4">Conversation</h4>
-                      <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
-                        {selectedTicket.messages.map((msg: any, index: number) => (
-                          <div
-                            key={msg.id}
-                            id={`msg-${msg.id}`}
-                            ref={el => { if (el) messageRefs.current[index] = el }}
-                            className={`p-4 rounded-lg ${
-                              msg.sender === 'admin' 
-                                ? 'bg-blue-50 border border-blue-200 ml-8' 
-                                : 'bg-gray-50 border border-gray-200 mr-8'
-                            }`}
+        {/* MAIN CONTENT */}
+        <Tabs defaultValue="tickets" className="space-y-6">
+          <TabsList className="grid w-full md:w-auto grid-cols-3">
+            <TabsTrigger value="tickets" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Tickets
+            </TabsTrigger>
+            <TabsTrigger value="team" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Team
+            </TabsTrigger>
+            <TabsTrigger value="knowledge" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Knowledge Base
+            </TabsTrigger>
+          </TabsList>
+
+          {/* TICKETS TAB */}
+          <TabsContent value="tickets" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Ticket List */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Filters */}
+                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                          placeholder="Search tickets..."
+                          className="pl-10"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block text-slate-700 dark:text-slate-300">
+                            Status
+                          </label>
+                          <Select value={filterStatus} onValueChange={setFilterStatus}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="All status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Status</SelectItem>
+                              <SelectItem value="open">Open</SelectItem>
+                              <SelectItem value="in_progress">In Progress</SelectItem>
+                              <SelectItem value="resolved">Resolved</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium mb-2 block text-slate-700 dark:text-slate-300">
+                            Priority
+                          </label>
+                          <Select value={filterPriority} onValueChange={setFilterPriority}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="All priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Priority</SelectItem>
+                              <SelectItem value="critical">Critical</SelectItem>
+                              <SelectItem value="high">High</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="low">Low</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Tickets Table */}
+                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-slate-800 dark:text-white">Support Tickets</CardTitle>
+                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                          {filteredTickets.length} tickets found
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="p-0">
+                    <Table>
+                      <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                        <TableRow>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Ticket ID</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Client</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Subject</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Priority</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Status</TableHead>
+                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Assigned To</TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody>
+                        {filteredTickets.map((ticket, index) => (
+                          <TableRow 
+                            key={ticket.id}
+                            onClick={() => setSelectedTicket(ticket)}
+                            className={cn(
+                              "hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800 cursor-pointer",
+                              selectedTicket?.id === ticket.id && "bg-blue-50 dark:bg-blue-900/20"
+                            )}
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <Avatar className="h-6 w-6">
-                                  <AvatarFallback className={
-                                    msg.sender === 'admin' 
-                                      ? 'bg-blue-600 text-white' 
-                                      : 'bg-gray-600 text-white'
-                                  }>
-                                    {msg.senderName.split(' ').map(n => n[0]).join('')}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="font-medium text-sm">{msg.senderName}</span>
-                                <Badge variant="outline" size="sm" className={
-                                  msg.sender === 'admin' 
-                                    ? 'border-blue-200 text-blue-700' 
-                                    : 'border-gray-200 text-gray-700'
-                                }>
-                                  {msg.sender === 'admin' ? 'Support' : 'Client'}
+                            <TableCell className="pl-6 py-4 font-mono text-sm text-slate-500 dark:text-slate-400">
+                              {ticket.id}
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="flex flex-col">
+                                <span className="font-medium text-slate-900 dark:text-slate-100">{ticket.clientName}</span>
+                                <Badge variant="outline" className="w-fit mt-1 text-xs border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-400">
+                                  {ticket.department}
                                 </Badge>
                               </div>
-                              <span className="text-xs text-gray-500">{msg.timestamp}</span>
-                            </div>
-                            <p className="text-gray-800">{msg.message}</p>
-                            
-                            {msg.attachments && msg.attachments.length > 0 && (
-                              <div className="mt-3 pt-3 border-t">
-                                <div className="flex flex-wrap gap-2">
-                                  {msg.attachments.map((file: any, idx: number) => (
-                                    <Badge key={idx} variant="outline" className="gap-1">
-                                      <Paperclip className="h-3 w-3" />
-                                      {file.name}
-                                    </Badge>
-                                  ))}
-                                </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="max-w-[200px]">
+                                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                                  {ticket.subject}
+                                </p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                  {ticket.lastUpdate}
+                                </p>
                               </div>
-                            )}
-                          </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <Badge className={getPriorityColor(ticket.priority)}>
+                                {ticket.priority}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <Badge variant="outline" className={getStatusColor(ticket.status)}>
+                                {ticket.status.replace("_", " ")}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="pr-6 py-4">
+                              {ticket.assignedTo ? (
+                                <span className="font-medium text-slate-700 dark:text-slate-300">
+                                  {ticket.assignedTo}
+                                </span>
+                              ) : (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleAssignTicket(ticket.id, "Admin 1")
+                                  }}
+                                >
+                                  Assign
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
                         ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Ticket Details */}
+              <div className="space-y-6">
+                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-slate-800 dark:text-white">Ticket Details</CardTitle>
+                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                          {selectedTicket?.id}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="p-6 space-y-6">
+                    {/* Client Info */}
+                    <div>
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Client Information</h4>
+                      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">Name</span>
+                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.clientName}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">Department</span>
+                          <Badge variant="outline">{selectedTicket.department}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">Response Time</span>
+                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.responseTime}</span>
+                        </div>
+                        {selectedTicket.satisfaction && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">Satisfaction</span>
+                            <div className="flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={cn(
+                                  "h-4 w-4",
+                                  i < selectedTicket.satisfaction 
+                                    ? "text-yellow-500 fill-yellow-500" 
+                                    : "text-slate-300 dark:text-slate-600"
+                                )} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Reply Section */}
-                    <div className="p-6">
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="reply" className="mb-2 block">
-                            Reply to Client
-                          </Label>
-                          <Textarea
-                            id="reply"
-                            placeholder="Type your reply here..."
-                            className="min-h-[120px]"
-                            value={replyMessage}
-                            onChange={(e) => setReplyMessage(e.target.value)}
-                            disabled={isLoading}
-                          />
-                        </div>
+                    {/* Quick Actions */}
+                    <div>
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Quick Actions</h4>
+                      <div className="space-y-3">
+                        {!selectedTicket.assignedTo && (
+                          <Button 
+                            className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600"
+                            onClick={() => handleAssignTicket(selectedTicket.id, "Admin 1")}
+                          >
+                            <UserCheck className="h-4 w-4" />
+                            Assign to Me
+                          </Button>
+                        )}
                         
+                        {selectedTicket.status !== "resolved" && (
+                          <Button 
+                            variant="outline" 
+                            className="w-full gap-2"
+                            onClick={() => handleResolveTicket(selectedTicket.id)}
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                            Mark as Resolved
+                          </Button>
+                        )}
+
+                        <Button variant="outline" className="w-full gap-2">
+                          <MessageCircle className="h-4 w-4" />
+                          Send Message
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Ticket Info */}
+                    <div>
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Ticket Information</h4>
+                      <div className="space-y-3 text-sm">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" disabled={isLoading}>
-                              <Paperclip className="h-4 w-4 mr-2" /> Attach File
-                            </Button>
-                            <Button variant="outline" size="sm" disabled={isLoading}>
-                              <ExternalLink className="h-4 w-4 mr-2" /> Insert Template
-                            </Button>
-                          </div>
-                          
-                          <div className="flex items-center gap-3">
-                            {selectedTicket.status !== 'resolved' && (
-                              <Button
-                                variant="outline"
-                                onClick={() => handleUpdateStatus('resolved')}
-                                disabled={isLoading}
-                              >
-                                <CheckCircle className="h-4 w-4 mr-2" /> Mark Resolved
-                              </Button>
-                            )}
-                            
-                            <Button
-                              onClick={handleSendReply}
-                              disabled={isLoading || !replyMessage.trim()}
-                              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
-                            >
-                              {isLoading ? (
-                                <>
-                                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                  Sending...
-                                </>
-                              ) : (
-                                <>
-                                  <Send className="h-4 w-4 mr-2" /> Send Reply
-                                </>
-                              )}
-                            </Button>
-                          </div>
+                          <span className="text-slate-600 dark:text-slate-400">Category:</span>
+                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.category}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">Created:</span>
+                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.createdAt}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">Last Update:</span>
+                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.lastUpdate}</span>
                         </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+
+                {/* System Settings */}
+                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-slate-800 dark:text-white">System Settings</CardTitle>
+                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                          Support system configuration
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">Auto Assign Tickets</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Automatically assign new tickets</p>
+                      </div>
+                      <Switch checked={autoAssign} onCheckedChange={setAutoAssign} />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">System Alerts</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Receive critical system notifications</p>
+                      </div>
+                      <Switch checked={systemAlerts} onCheckedChange={setSystemAlerts} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* TEAM TAB */}
+          <TabsContent value="team" className="space-y-6">
+            <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl text-slate-800 dark:text-white">Support Team</CardTitle>
+                    <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                      Team performance and availability
+                    </CardDescription>
                   </div>
                 </div>
-              </>
-            )}
-          </Card>
-        </div>
-      </div>
+              </CardHeader>
 
-      {/* Performance Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart className="h-5 w-5" /> Support Performance
-          </CardTitle>
-          <CardDescription>Weekly ticket resolution metrics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Response Rate</span>
-                <span className="text-sm font-bold text-green-600">98.2%</span>
-              </div>
-              <Progress value={98.2} className="h-2" />
-            </div>
-            
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Resolution Time</span>
-                <span className="text-sm font-bold text-blue-600">3.2h</span>
-              </div>
-              <Progress value={85} className="h-2" />
-            </div>
-            
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Customer Satisfaction</span>
-                <span className="text-sm font-bold text-yellow-600">4.7/5</span>
-              </div>
-              <Progress value={94} className="h-2" />
-            </div>
-            
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">First Contact Resolution</span>
-                <span className="text-sm font-bold text-purple-600">72%</span>
-              </div>
-              <Progress value={72} className="h-2" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                    <TableRow>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Team Member</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Role</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Status</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Tickets</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Response Time</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Satisfaction</TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {teamMembers.map((member, index) => (
+                      <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                        <TableCell className="pl-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                                {member.name.split(' ').map(n => n[0]).join('')}
+                              </div>
+                              <div className={cn(
+                                "absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900",
+                                member.status === "online" ? "bg-green-500" :
+                                member.status === "away" ? "bg-yellow-500" : "bg-slate-400"
+                              )} />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-slate-100">{member.name}</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400">{member.lastActive}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-slate-700 dark:text-slate-300">
+                          {member.role}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={cn(
+                            "capitalize",
+                            member.status === "online" ? "border-green-200 text-green-700 dark:border-green-800 dark:text-green-400" :
+                            member.status === "away" ? "border-yellow-200 text-yellow-700 dark:border-yellow-800 dark:text-yellow-400" :
+                            "border-slate-200 text-slate-700 dark:border-slate-800 dark:text-slate-400"
+                          )}>
+                            {member.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                          {member.tickets}
+                        </TableCell>
+                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                          {member.responseTime}
+                        </TableCell>
+                        <TableCell className="pr-6">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                              <span className="font-medium text-slate-900 dark:text-slate-100">{member.satisfaction}</span>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* KNOWLEDGE BASE TAB */}
+          <TabsContent value="knowledge" className="space-y-6">
+            <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl text-slate-800 dark:text-white">Knowledge Base</CardTitle>
+                      <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                        Documentation and support articles
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600">
+                    <FileText className="h-4 w-4" />
+                    Add Article
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
+                    <TableRow>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Article ID</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Title</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Category</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Views</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Helpful</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {knowledgeBase.map((article, index) => (
+                      <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
+                        <TableCell className="pl-6 py-4 font-mono text-sm text-slate-500 dark:text-slate-400">
+                          {article.id}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="max-w-[300px]">
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {article.title}
+                            </p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                              Updated {article.updated}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Badge variant="outline">{article.category}</Badge>
+                        </TableCell>
+                        <TableCell className="py-4 font-medium text-slate-900 dark:text-slate-100">
+                          {article.views}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                                style={{ width: article.helpful }}
+                              />
+                            </div>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              {article.helpful}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="pr-6 py-4">
+                          <Badge variant="outline" className={
+                            article.status === "published" 
+                              ? "border-green-200 text-green-700 dark:border-green-800 dark:text-green-400"
+                              : "border-yellow-200 text-yellow-700 dark:border-yellow-800 dark:text-yellow-400"
+                          }>
+                            {article.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </motion.div>
     </AdminLayout>
   )
 }

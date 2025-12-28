@@ -530,29 +530,25 @@ export default function GovernmentLandingPage() {
                 whileTap={{ scale: 0.95 }}
               >
                 <Link href="/Registration">
-                  <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50">
+                  <Button variant="outline" className="border-blue-500 text-blue-600">
                     Register
                   </Button>
                 </Link>
               </motion.div>
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }}
-                animate={{ 
-                  boxShadow: ["0 0 0 0 rgba(59, 130, 246, 0)", "0 0 0 10px rgba(59, 130, 246, 0)", "0 0 0 0 rgba(59, 130, 246, 0)"]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Link href="/login">
-                  <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg">
-                    Employee Login
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </motion.div>
+             <div className="flex items-center gap-3"> 
+  {/* Register Button Code */}
+  <motion.div 
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    <Link href="/login">
+      <Button variant="outline" className="w-full border-blue-500 text-blue-600 bg-blue-50">
+        Employee Login
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    </Link>
+  </motion.div>
+</div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -598,7 +594,8 @@ export default function GovernmentLandingPage() {
                       </Button>
                     </Link>
                     <Link href="/login" className="flex-1" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white">Login</Button>
+                      <Button variant="outline" className="w-full border-blue-500 text-blue-600">
+                        Login</Button>
                     </Link>
                   </div>
                 </div>
@@ -1491,7 +1488,7 @@ export default function GovernmentLandingPage() {
               </motion.div>
               
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 shadow-xl">
                   Schedule a Demo
                 </Button>
               </motion.div>
@@ -1612,44 +1609,7 @@ export default function GovernmentLandingPage() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 border-t border-gray-800">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="text-sm text-gray-400 text-center md:text-left">
-                © {new Date().getFullYear()} Arthayantra. Ministry of Finance, Government of India.
-                <div className="mt-2 text-xs text-gray-500">
-                  This portal is intended for authorized government personnel only.
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-4">
-                {['Privacy Policy', 'Terms of Service', 'Disclaimer', 'Accessibility'].map((item) => (
-                  <Link 
-                    key={item} 
-                    href="#" 
-                    className="text-xs text-gray-400 hover:text-white transition-colors"
-                  >
-                    {item}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            
-            {/* Security Badges */}
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <div className="px-4 py-2 bg-gray-800/50 rounded-full border border-gray-700 text-xs">
-                🇮🇳 Made in India
-              </div>
-              <div className="px-4 py-2 bg-gray-800/50 rounded-full border border-gray-700 text-xs">
-                🔐 256-bit Encryption
-              </div>
-              <div className="px-4 py-2 bg-gray-800/50 rounded-full border border-gray-700 text-xs">
-                ⚡ GDPR Compliant
-              </div>
-              <div className="px-4 py-2 bg-gray-800/50 rounded-full border border-gray-700 text-xs">
-                📜 IT Act 2000
-              </div>
-            </div>
-          </div>
+     
         </div>
       </footer>
     </div>
