@@ -60,7 +60,6 @@ const menuItems = [
     children: [
       { icon: UserCheck, label: "Approved Clients", href: "/admin/clients/approved" },
       { icon: ClipboardList, label: "Pending Approvals", href: "/admin/clients/pending" },
-      { icon: Users, label: "All Clients", href: "/admin/clients/all" },
       { icon: FileUser, label: "Client Fact Sheets", href: "/admin/clients/factsheets" },
     ]
   },
@@ -100,20 +99,8 @@ const menuItems = [
     label: "Analytics", 
     href: "/admin/analytics",
     children: [
-      { icon: Bot, label: "AI Assistant", href: "/admin/analytics/ai" },
       { icon: LineChart, label: "Market Analysis", href: "/admin/analytics/market" },
       { icon: Target, label: "Performance Metrics", href: "/admin/analytics/metrics" },
-    ]
-  },
-  { 
-    icon: Settings, 
-    label: "Settings", 
-    href: "/admin/settings",
-    children: [
-      { icon: Users, label: "User Management", href: "/admin/settings/users" },
-      { icon: Shield, label: "Security Settings", href: "/admin/settings/security" },
-      { icon: Database, label: "Integration Settings", href: "/admin/settings/integrations" },
-      { icon: Landmark, label: "Compliance Rules", href: "/admin/settings/compliance" },
     ]
   },
   { icon: HelpCircle, label: "Help & Support", href: "/admin/help" },

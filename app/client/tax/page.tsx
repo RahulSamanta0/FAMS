@@ -80,64 +80,64 @@ export default function ClientTax() {
         <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-4">
           
           {/* Gross Income */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Wallet className="h-16 w-16 text-blue-600" />
+              <Wallet className="h-16 w-16 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Gross Income</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Gross Income</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">₹{grossIncome.toLocaleString()}</div>
-              <p className="text-xs text-slate-500 mt-1">Annual Projected</p>
+              <div className="text-2xl font-bold text-white">₹{grossIncome.toLocaleString()}</div>
+              <p className="text-xs text-white/90 mt-1">Annual Projected</p>
             </CardContent>
           </Card>
 
           {/* Deductions */}
-          <Card className="relative overflow-hidden border-emerald-100 bg-gradient-to-br from-emerald-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-400 to-teal-500 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <PiggyBank className="h-16 w-16 text-emerald-600" />
+              <PiggyBank className="h-16 w-16 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Deductions</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Deductions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+              <div className="text-2xl font-bold text-white">
                 ₹{totalDeductions.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Total Exemptions</p>
+              <p className="text-xs text-white/90 mt-1">Total Exemptions</p>
             </CardContent>
           </Card>
 
           {/* Taxable Income */}
-          <Card className="relative overflow-hidden border-indigo-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-violet-400 to-purple-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Coins className="h-16 w-16 text-indigo-600" />
+              <Coins className="h-16 w-16 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Taxable Income</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Taxable Income</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold text-white">
                 ₹{taxableIncome.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">After Deductions</p>
+              <p className="text-xs text-white/90 mt-1">After Deductions</p>
             </CardContent>
           </Card>
 
           {/* Estimated Tax */}
-          <Card className="relative overflow-hidden border-red-100 bg-gradient-to-br from-red-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-400 to-amber-500 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Receipt className="h-16 w-16 text-red-600" />
+              <Receipt className="h-16 w-16 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">Est. Tax</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Est. Tax</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-700 dark:text-red-300">
+              <div className="text-2xl font-bold text-white">
                 ₹{estimatedTax.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">FY 2024-25</p>
+              <p className="text-xs text-white/90 mt-1">FY 2024-25</p>
             </CardContent>
           </Card>
         </motion.div>

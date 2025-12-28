@@ -1,801 +1,858 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Search,
-  Filter,
-  Users,
-  MessageSquare,
-  Mail,
-  Phone,
+import { 
+  Search, 
+  HelpCircle, 
+  MessageSquare, 
+  Phone, 
+  Mail, 
+  FileText, 
+  Video, 
+  BookOpen,
+  ChevronRight,
+  ExternalLink,
+  Download,
   Clock,
+  User,
   CheckCircle,
   AlertCircle,
-  XCircle,
+  Lightbulb,
   Shield,
-  Zap,
-  Headphones,
-  FileText,
-  Download,
-  MoreVertical,
-  Eye,
-  TrendingUp,
-  TrendingDown,
+  BarChart,
+  Users,
+  Settings,
+  Globe,
+  Bookmark,
   Star,
-  Calendar,
-  Bell,
-  Activity,
-  UserCheck,
-  MessageCircle,
-  ShieldCheck,
-  RefreshCw,
-  ExternalLink
+  ThumbsUp,
+  Eye 
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+/* ---------------- MOCK DATA ---------------- */
+
+const faqCategories = [
+  { id: "general", name: "General", icon: HelpCircle, count: 8 },
+  { id: "clients", name: "Client Management", icon: Users, count: 12 },
+  { id: "investments", name: "Investments", icon: BarChart, count: 10 },
+  { id: "insurance", name: "Insurance", icon: Shield, count: 6 },
+  { id: "tax", name: "Tax & Compliance", icon: FileText, count: 9 },
+  { id: "settings", name: "System Settings", icon: Settings, count: 7 },
+]
+
+const faqs = [
+  {
+    id: 1,
+    category: "general",
+    question: "How do I reset my admin password?",
+    answer: "You can reset your password by clicking on 'Forgot Password' on the login page. An email with reset instructions will be sent to your registered email address. For security reasons, password resets are only valid for 24 hours.",
+    helpful: 42,
+    tags: ["security", "login", "account"]
+  },
+  {
+    id: 2,
+    category: "clients",
+    question: "How to approve a new client application?",
+    answer: "Navigate to 'Pending Clients' from the sidebar. Review the client's submitted documents, verify KYC details, and click 'Approve Client'. You can also add review notes and request additional documents if needed.",
+    helpful: 56,
+    tags: ["onboarding", "approval", "clients"]
+  },
+  {
+    id: 3,
+    category: "investments",
+    question: "How to view client investment portfolios?",
+    answer: "Go to 'Client Fact Sheets' and select a client. Switch to the 'Investments' tab to see their complete portfolio, including mutual funds, stocks, FDs, and other investments with current values and returns.",
+    helpful: 38,
+    tags: ["portfolio", "investments", "reports"]
+  },
+  {
+    id: 4,
+    category: "tax",
+    question: "How does the tax calculation work?",
+    answer: "The system automatically calculates tax liability based on client's income, deductions, and selected tax regime. You can view tax calculations under the 'Tax' tab in client fact sheets. All calculations follow current IT department guidelines.",
+    helpful: 29,
+    tags: ["tax", "calculation", "compliance"]
+  },
+  {
+    id: 5,
+    category: "settings",
+    question: "How to configure system notifications?",
+    answer: "Go to 'Settings' > 'Notification Settings'. Here you can customize email alerts, push notifications, and reminders for various events like premium due dates, SIP payments, and tax deadlines.",
+    helpful: 34,
+    tags: ["notifications", "settings", "alerts"]
+  },
+  {
+    id: 6,
+    category: "insurance",
+    question: "How to add new insurance policies for clients?",
+    answer: "In the client fact sheet, go to the 'Insurance' tab and click 'Add New Policy'. Enter policy details including provider, sum assured, premium amount, and maturity date. The system will automatically track renewal dates.",
+    helpful: 27,
+    tags: ["insurance", "policies", "add"]
+  },
+  {
+    id: 7,
+    category: "general",
+    question: "What are the system requirements?",
+    answer: "The system works on modern browsers (Chrome 90+, Firefox 88+, Safari 14+). Minimum screen resolution: 1280x720. For optimal performance, ensure you have a stable internet connection with minimum 5 Mbps speed.",
+    helpful: 18,
+    tags: ["requirements", "browser", "performance"]
+  },
+  {
+    id: 8,
+    category: "clients",
+    question: "How to export client reports?",
+    answer: "You can export individual client reports from their fact sheet page using the 'Export Fact Sheet' button. For bulk exports, use the 'Export All' option in the client directory. Reports are available in CSV and PDF formats.",
+    helpful: 45,
+    tags: ["export", "reports", "data"]
+  }
+]
+
+const videoTutorials = [
+  {
+    id: 1,
+    title: "Client Onboarding Process",
+    duration: "8:42",
+    category: "Clients",
+    views: "1.2K",
+    thumbnail: "📋"
+  },
+  {
+    id: 2,
+    title: "Investment Portfolio Management",
+    duration: "12:15",
+    category: "Investments",
+    views: "2.4K",
+    thumbnail: "📊"
+  },
+  {
+    id: 3,
+    title: "Tax Filing & Compliance",
+    duration: "15:30",
+    category: "Tax",
+    views: "3.1K",
+    thumbnail: "📝"
+  },
+  {
+    id: 4,
+    title: "System Settings Guide",
+    duration: "6:25",
+    category: "Settings",
+    views: "0.9K",
+    thumbnail: "⚙️"
+  },
+  {
+    id: 5,
+    title: "White Money Conversion",
+    duration: "10:10",
+    category: "Compliance",
+    views: "1.8K",
+    thumbnail: "💰"
+  },
+  {
+    id: 6,
+    title: "Report Generation & Export",
+    duration: "7:55",
+    category: "Reports",
+    views: "1.5K",
+    thumbnail: "📈"
+  }
+]
+
+const documentation = [
+  {
+    id: 1,
+    title: "Admin Dashboard Guide",
+    description: "Complete guide to navigating and using the admin dashboard",
+    pages: 24,
+    lastUpdated: "2024-12-01",
+    icon: BookOpen
+  },
+  {
+    id: 2,
+    title: "Client Management Manual",
+    description: "Detailed instructions for managing client profiles and approvals",
+    pages: 32,
+    lastUpdated: "2024-11-28",
+    icon: Users
+  },
+  {
+    id: 3,
+    title: "Financial Reports Guide",
+    description: "How to generate and interpret financial reports",
+    pages: 18,
+    lastUpdated: "2024-12-10",
+    icon: BarChart
+  },
+  {
+    id: 4,
+    title: "Compliance & Tax Handbook",
+    description: "Tax compliance guidelines and white money conversion",
+    pages: 42,
+    lastUpdated: "2024-11-15",
+    icon: Shield
+  },
+  {
+    id: 5,
+    title: "System Integration Guide",
+    description: "API documentation and third-party integrations",
+    pages: 28,
+    lastUpdated: "2024-12-05",
+    icon: Settings
+  },
+  {
+    id: 6,
+    title: "Troubleshooting Manual",
+    description: "Common issues and their solutions",
+    pages: 16,
+    lastUpdated: "2024-11-20",
+    icon: HelpCircle
+  }
+]
+
+const supportContacts = [
+  {
+    type: "Technical Support",
+    contact: "+91 1800 123 4567",
+    hours: "24/7",
+    icon: Phone,
+    description: "For technical issues and system errors"
+  },
+  {
+    type: "Email Support",
+    contact: "support@arthyantra.com",
+    hours: "Mon-Sat, 9 AM - 6 PM",
+    icon: Mail,
+    description: "General queries and assistance"
+  },
+  {
+    type: "Compliance Help",
+    contact: "compliance@arthyantra.com",
+    hours: "Mon-Fri, 10 AM - 5 PM",
+    icon: Shield,
+    description: "Tax and compliance related queries"
+  },
+  {
+    type: "Training",
+    contact: "training@arthyantra.com",
+    hours: "By appointment",
+    icon: Video,
+    description: "System training and onboarding"
+  }
+]
 
 /* ---------------- ANIMATION VARIANTS ---------------- */
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
 }
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12
+    }
+  }
 }
 
-/* ---------------- MOCK DATA ---------------- */
+export default function HelpSupportPage() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState("all")
+  const [ticketSubject, setTicketSubject] = useState("")
+  const [ticketMessage, setTicketMessage] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-// Support Tickets
-const supportTickets = [
-  {
-    id: "TKT-2025-001",
-    clientName: "Rajesh Kumar",
-    department: "Education",
-    subject: "Unable to upload income tax documents",
-    priority: "high",
-    status: "open",
-    assignedTo: "Admin 1",
-    createdAt: "2025-01-15 14:30",
-    lastUpdate: "2 hours ago",
-    category: "technical",
-    responseTime: "45 min",
-    satisfaction: null
-  },
-  {
-    id: "TKT-2025-002",
-    clientName: "Priya Sharma",
-    department: "Health",
-    subject: "Investment portfolio not updating",
-    priority: "high",
-    status: "in_progress",
-    assignedTo: "Admin 2",
-    createdAt: "2025-01-14 10:15",
-    lastUpdate: "1 day ago",
-    category: "data_sync",
-    responseTime: "1.2 hours",
-    satisfaction: null
-  },
-  {
-    id: "TKT-2025-003",
-    clientName: "Amit Patel",
-    department: "Revenue",
-    subject: "Insurance premium payment failed",
-    priority: "critical",
-    status: "open",
-    assignedTo: null,
-    createdAt: "2025-01-15 09:45",
-    lastUpdate: "Just now",
-    category: "billing",
-    responseTime: "15 min",
-    satisfaction: null
-  },
-  {
-    id: "TKT-2025-004",
-    clientName: "Sunita Verma",
-    department: "Finance",
-    subject: "Request for tax saving investment suggestions",
-    priority: "medium",
-    status: "resolved",
-    assignedTo: "Admin 1",
-    createdAt: "2025-01-13 11:20",
-    lastUpdate: "2 days ago",
-    category: "investment_advice",
-    responseTime: "2.3 hours",
-    satisfaction: 5
-  },
-  {
-    id: "TKT-2025-005",
-    clientName: "Rahul Mehta",
-    department: "Defense",
-    subject: "Cannot access monthly financial report",
-    priority: "medium",
-    status: "open",
-    assignedTo: null,
-    createdAt: "2025-01-15 08:30",
-    lastUpdate: "3 hours ago",
-    category: "access",
-    responseTime: "1.8 hours",
-    satisfaction: null
-  }
-]
-
-// Support Statistics
-const supportStats = [
-  { title: "Open Tickets", value: "12", change: "+2", icon: AlertCircle, color: "from-red-500 to-orange-500", bg: "from-red-50 to-orange-50" },
-  { title: "In Progress", value: "8", change: "-1", icon: Clock, color: "from-amber-500 to-yellow-500", bg: "from-amber-50 to-yellow-50" },
-  { title: "Resolved", value: "136", change: "+24", icon: CheckCircle, color: "from-emerald-500 to-green-500", bg: "from-emerald-50 to-green-50" },
-  { title: "Avg Response Time", value: "2.4h", change: "-0.3h", icon: Activity, color: "from-blue-500 to-cyan-500", bg: "from-blue-50 to-cyan-50" },
-  { title: "Satisfaction Rate", value: "96.2%", change: "+1.5%", icon: Star, color: "from-purple-500 to-violet-500", bg: "from-purple-50 to-violet-50" },
-  { title: "Team Online", value: "4/5", change: "Active", icon: UserCheck, color: "from-indigo-500 to-blue-500", bg: "from-indigo-50 to-blue-50" },
-]
-
-// Team Members
-const teamMembers = [
-  { name: "Admin 1", role: "Senior Support", status: "online", tickets: 45, responseTime: "1.2h", satisfaction: "96%", lastActive: "Now" },
-  { name: "Admin 2", role: "Support Specialist", status: "online", tickets: 38, responseTime: "1.8h", satisfaction: "94%", lastActive: "5 min ago" },
-  { name: "Admin 3", role: "Technical Support", status: "away", tickets: 42, responseTime: "1.5h", satisfaction: "95%", lastActive: "30 min ago" },
-  { name: "Admin 4", role: "Billing Support", status: "offline", tickets: 29, responseTime: "2.3h", satisfaction: "91%", lastActive: "2 hours ago" },
-  { name: "Admin 5", role: "Investment Advisor", status: "online", tickets: 31, responseTime: "1.4h", satisfaction: "97%", lastActive: "Now" },
-]
-
-// Knowledge Base Articles
-const knowledgeBase = [
-  { id: "KB-001", title: "How to handle ITR filing errors", category: "tax", views: 245, updated: "2 days ago", helpful: "92%", status: "published" },
-  { id: "KB-002", title: "Investment portfolio sync guide", category: "investment", views: 189, updated: "1 week ago", helpful: "88%", status: "published" },
-  { id: "KB-003", title: "White income conversion process", category: "reporting", views: 156, updated: "3 days ago", helpful: "95%", status: "draft" },
-  { id: "KB-004", title: "Asset declaration workflow", category: "assets", views: 132, updated: "2 weeks ago", helpful: "85%", status: "published" },
-  { id: "KB-005", title: "Insurance premium tracking", category: "insurance", views: 98, updated: "4 days ago", helpful: "90%", status: "published" },
-]
-
-/* ---------------- COMPONENT ---------------- */
-
-export default function AdminHelpSupport() {
-  const [tickets, setTickets] = useState(supportTickets)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [filterPriority, setFilterPriority] = useState("all")
-  const [selectedTicket, setSelectedTicket] = useState(supportTickets[0])
-  const [autoAssign, setAutoAssign] = useState(true)
-  const [systemAlerts, setSystemAlerts] = useState(true)
-
-  // Filter tickets
-  const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = 
-      ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.department.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFaqs = faqs.filter(faq => {
+    const matchesSearch = searchQuery === "" || 
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     
-    const matchesStatus = filterStatus === "all" || ticket.status === filterStatus
-    const matchesPriority = filterPriority === "all" || ticket.priority === filterPriority
+    const matchesCategory = activeCategory === "all" || faq.category === activeCategory
     
-    return matchesSearch && matchesStatus && matchesPriority
+    return matchesSearch && matchesCategory
   })
 
-  // Status and priority colors
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "open": return "bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400"
-      case "in_progress": return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400"
-      case "resolved": return "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400"
-      default: return "bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-900/20 dark:text-gray-400"
+  const handleSubmitTicket = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!ticketSubject || !ticketMessage) {
+      alert("Please fill in all fields")
+      return
     }
+    
+    setIsSubmitting(true)
+    // Simulate API call
+    setTimeout(() => {
+      alert("Support ticket submitted successfully! We'll contact you within 24 hours.")
+      setTicketSubject("")
+      setTicketMessage("")
+      setIsSubmitting(false)
+    }, 1000)
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "critical": return "bg-red-600 text-white"
-      case "high": return "bg-orange-500 text-white"
-      case "medium": return "bg-yellow-500 text-gray-900"
-      case "low": return "bg-blue-500 text-white"
-      default: return "bg-gray-500 text-white"
-    }
-  }
-
-  const handleAssignTicket = (ticketId: string, adminName: string) => {
-    setTickets(prev => prev.map(ticket => 
-      ticket.id === ticketId ? { ...ticket, assignedTo: adminName, status: "in_progress" } : ticket
-    ))
-    if (selectedTicket.id === ticketId) {
-      setSelectedTicket(prev => ({ ...prev, assignedTo: adminName, status: "in_progress" }))
-    }
-  }
-
-  const handleResolveTicket = (ticketId: string) => {
-    setTickets(prev => prev.map(ticket => 
-      ticket.id === ticketId ? { ...ticket, status: "resolved" } : ticket
-    ))
-    if (selectedTicket.id === ticketId) {
-      setSelectedTicket(prev => ({ ...prev, status: "resolved" }))
-    }
+  const handleDownloadGuide = () => {
+    alert("Downloading complete user guide...")
   }
 
   return (
     <AdminLayout activeTab="/admin/help">
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
-
         {/* HEADER */}
-        <motion.div variants={itemVariants}>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Help & Support Center
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">
-                Manage client support tickets and team performance
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Export Report
-              </Button>
-              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600">
-                <RefreshCw className="h-4 w-4" />
-                Refresh
-              </Button>
-            </div>
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Help & Support</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
+              Get assistance, browse documentation, and contact support
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleDownloadGuide}
+              variant="outline"
+              className="border-slate-200 dark:border-slate-700"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download Guide
+            </Button>
+            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Live Chat
+            </Button>
           </div>
         </motion.div>
 
-        {/* STATS CARDS */}
-        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {supportStats.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <Card key={index} className={cn(
-                "relative overflow-hidden border-0 shadow-lg transition-all duration-300",
-                "bg-gradient-to-br",
-                stat.bg,
-                "dark:bg-slate-900 dark:border-slate-800"
-              )}>
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-r opacity-0 hover:opacity-10 transition-opacity duration-500",
-                  stat.color
-                )} />
-                
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                      {stat.title}
-                    </CardTitle>
-                    <div className={cn(
-                      "rounded-lg p-2 text-white shadow-md",
-                      "bg-gradient-to-r",
-                      stat.color
-                    )}>
-                      <Icon className="h-4 w-4" />
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stat.value}
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                    {stat.change.startsWith('+') ? (
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                    ) : stat.change.startsWith('-') ? (
-                      <TrendingDown className="h-3 w-3 text-red-500" />
-                    ) : (
-                      <Activity className="h-3 w-3 text-blue-500" />
-                    )}
-                    {stat.change}
-                  </p>
-                </CardContent>
-              </Card>
-            )
-          })}
+        {/* QUICK HELP CARDS */}
+        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-4">
+          
+          {/* Quick Support Card */}
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:shadow-2xl transition-all duration-500 group">
+            <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+              <div className="absolute -right-6 -top-6 text-[12rem] leading-none">🆘</div>
+            </div>
+            <CardHeader className="pb-2 relative z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Quick Support</CardTitle>
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
+                  <HelpCircle className="h-4 w-4 text-white" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="text-2xl font-bold text-white mb-2 drop-shadow-lg">24/7 Available</div>
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-white/80" />
+                <span className="text-sm text-white/90">
+                  Call: 1800 123 4567
+                </span>
+              </div>
+              <div className="mt-4">
+                <Button className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/40">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Start Chat
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Documentation Card */}
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 hover:shadow-2xl transition-all duration-500 group">
+            <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+              <div className="absolute -right-6 -top-6 text-[12rem] leading-none">📚</div>
+            </div>
+            <CardHeader className="pb-2 relative z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Documentation</CardTitle>
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
+                  <BookOpen className="h-4 w-4 text-white" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                {documentation.length} Guides
+              </div>
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-white/80" />
+                <span className="text-sm text-white/90">
+                  Complete user manuals
+                </span>
+              </div>
+              <div className="mt-4">
+                <Button className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/40">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Browse Docs
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tutorials Card */}
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-violet-500 via-purple-600 to-violet-700 hover:shadow-2xl transition-all duration-500 group">
+            <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+              <div className="absolute -right-6 -top-6 text-[12rem] leading-none">🎬</div>
+            </div>
+            <CardHeader className="pb-2 relative z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Video Tutorials</CardTitle>
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
+                  <Video className="h-4 w-4 text-white" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                {videoTutorials.length}+ Videos
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-white/80" />
+                <span className="text-sm text-white/90">
+                  Step-by-step guides
+                </span>
+              </div>
+              <div className="mt-4">
+                <Button className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/40">
+                  <Video className="h-4 w-4 mr-2" />
+                  Watch Tutorials
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* FAQ Card */}
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-amber-500 via-orange-600 to-amber-600 hover:shadow-2xl transition-all duration-500 group">
+            <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+              <div className="absolute -right-6 -top-6 text-[12rem] leading-none">❓</div>
+            </div>
+            <CardHeader className="pb-2 relative z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">FAQs</CardTitle>
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
+                  <Lightbulb className="h-4 w-4 text-white" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                {faqs.length} Answers
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-white/80" />
+                <span className="text-sm text-white/90">
+                  Common questions solved
+                </span>
+              </div>
+              <div className="mt-4">
+                <Button className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/40">
+                  <HelpCircle className="h-4 w-4 mr-2" />
+                  Browse FAQs
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
-        {/* MAIN CONTENT */}
-        <Tabs defaultValue="tickets" className="space-y-6">
-          <TabsList className="grid w-full md:w-auto grid-cols-3">
-            <TabsTrigger value="tickets" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Tickets
+        {/* MAIN CONTENT TABS */}
+        <Tabs defaultValue="faqs" className="w-full">
+          <TabsList className="grid grid-cols-4 w-full bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-6">
+            <TabsTrigger value="faqs" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <HelpCircle className="h-4 w-4 mr-2" />
+              FAQs
             </TabsTrigger>
-            <TabsTrigger value="team" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Team
+            <TabsTrigger value="documentation" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Documentation
             </TabsTrigger>
-            <TabsTrigger value="knowledge" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Knowledge Base
+            <TabsTrigger value="tutorials" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Video className="h-4 w-4 mr-2" />
+              Tutorials
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Phone className="h-4 w-4 mr-2" />
+              Contact Support
             </TabsTrigger>
           </TabsList>
 
-          {/* TICKETS TAB */}
-          <TabsContent value="tickets" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Ticket List */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Filters */}
-                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                          placeholder="Search tickets..."
-                          className="pl-10"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block text-slate-700 dark:text-slate-300">
-                            Status
-                          </label>
-                          <Select value={filterStatus} onValueChange={setFilterStatus}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="All status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">All Status</SelectItem>
-                              <SelectItem value="open">Open</SelectItem>
-                              <SelectItem value="in_progress">In Progress</SelectItem>
-                              <SelectItem value="resolved">Resolved</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium mb-2 block text-slate-700 dark:text-slate-300">
-                            Priority
-                          </label>
-                          <Select value={filterPriority} onValueChange={setFilterPriority}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="All priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">All Priority</SelectItem>
-                              <SelectItem value="critical">Critical</SelectItem>
-                              <SelectItem value="high">High</SelectItem>
-                              <SelectItem value="medium">Medium</SelectItem>
-                              <SelectItem value="low">Low</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+          {/* FAQS TAB */}
+          <TabsContent value="faqs" className="space-y-6">
+            {/* Search and Filter */}
+            <motion.div variants={itemVariants}>
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-blue-900/10 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                    <div className="relative w-full md:w-96">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        type="search"
+                        placeholder="Search FAQs..."
+                        className="pl-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Tickets Table */}
-                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                        <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl text-slate-800 dark:text-white">Support Tickets</CardTitle>
-                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
-                          {filteredTickets.length} tickets found
-                        </CardDescription>
-                      </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={activeCategory === "all" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setActiveCategory("all")}
+                      >
+                        All Questions
+                      </Button>
+                      {faqCategories.map((cat) => (
+                        <Button
+                          key={cat.id}
+                          variant={activeCategory === cat.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setActiveCategory(cat.id)}
+                        >
+                          <cat.icon className="h-3 w-3 mr-2" />
+                          {cat.name} ({cat.count})
+                        </Button>
+                      ))}
                     </div>
-                  </CardHeader>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-                  <CardContent className="p-0">
-                    <Table>
-                      <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
-                        <TableRow>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Ticket ID</TableHead>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Client</TableHead>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Subject</TableHead>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Priority</TableHead>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Status</TableHead>
-                          <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Assigned To</TableHead>
-                        </TableRow>
-                      </TableHeader>
-
-                      <TableBody>
-                        {filteredTickets.map((ticket, index) => (
-                          <TableRow 
-                            key={ticket.id}
-                            onClick={() => setSelectedTicket(ticket)}
-                            className={cn(
-                              "hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800 cursor-pointer",
-                              selectedTicket?.id === ticket.id && "bg-blue-50 dark:bg-blue-900/20"
-                            )}
-                          >
-                            <TableCell className="pl-6 py-4 font-mono text-sm text-slate-500 dark:text-slate-400">
-                              {ticket.id}
-                            </TableCell>
-                            <TableCell className="py-4">
-                              <div className="flex flex-col">
-                                <span className="font-medium text-slate-900 dark:text-slate-100">{ticket.clientName}</span>
-                                <Badge variant="outline" className="w-fit mt-1 text-xs border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-400">
-                                  {ticket.department}
-                                </Badge>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-4">
-                              <div className="max-w-[200px]">
-                                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">
-                                  {ticket.subject}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                  {ticket.lastUpdate}
-                                </p>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-4">
-                              <Badge className={getPriorityColor(ticket.priority)}>
-                                {ticket.priority}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="py-4">
-                              <Badge variant="outline" className={getStatusColor(ticket.status)}>
-                                {ticket.status.replace("_", " ")}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="pr-6 py-4">
-                              {ticket.assignedTo ? (
-                                <span className="font-medium text-slate-700 dark:text-slate-300">
-                                  {ticket.assignedTo}
-                                </span>
-                              ) : (
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleAssignTicket(ticket.id, "Admin 1")
-                                  }}
-                                >
-                                  Assign
-                                </Button>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+            {/* FAQ Categories */}
+            <motion.div variants={itemVariants}>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {faqCategories.map((cat) => (
+                  <Card 
+                    key={cat.id}
+                    className={cn(
+                      "cursor-pointer transition-all hover:shadow-lg border-2",
+                      activeCategory === cat.id 
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/10" 
+                        : "border-slate-100 dark:border-slate-800"
+                    )}
+                    onClick={() => setActiveCategory(cat.id)}
+                  >
+                    <CardContent className="p-4 flex flex-col items-center text-center">
+                      <div className={cn(
+                        "p-3 rounded-lg mb-3",
+                        activeCategory === cat.id 
+                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" 
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      )}>
+                        <cat.icon className="h-6 w-6" />
+                      </div>
+                      <h3 className="font-semibold text-slate-900 dark:text-white">{cat.name}</h3>
+                      <p className="text-sm text-slate-500 mt-1">{cat.count} questions</p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
+            </motion.div>
 
-              {/* Ticket Details */}
-              <div className="space-y-6">
-                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                        <Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl text-slate-800 dark:text-white">Ticket Details</CardTitle>
-                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
-                          {selectedTicket?.id}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="p-6 space-y-6">
-                    {/* Client Info */}
-                    <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Client Information</h4>
-                      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Name</span>
-                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.clientName}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Department</span>
-                          <Badge variant="outline">{selectedTicket.department}</Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Response Time</span>
-                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.responseTime}</span>
-                        </div>
-                        {selectedTicket.satisfaction && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-slate-600 dark:text-slate-400">Satisfaction</span>
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={cn(
-                                  "h-4 w-4",
-                                  i < selectedTicket.satisfaction 
-                                    ? "text-yellow-500 fill-yellow-500" 
-                                    : "text-slate-300 dark:text-slate-600"
-                                )} />
+            {/* FAQ List */}
+            <motion.div variants={itemVariants}>
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-blue-900/10 backdrop-blur-sm">
+                <CardHeader className="border-b border-slate-100/50 dark:border-slate-800">
+                  <CardTitle className="text-2xl text-blue-900 dark:text-white">
+                    Frequently Asked Questions
+                  </CardTitle>
+                  <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                    {filteredFaqs.length} questions found
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {filteredFaqs.map((faq, index) => (
+                      <motion.div
+                        key={faq.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <Badge variant="outline" className={
+                                faq.category === "general" ? "bg-blue-50 text-blue-600 border-blue-200" :
+                                faq.category === "clients" ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
+                                faq.category === "investments" ? "bg-amber-50 text-amber-600 border-amber-200" :
+                                "bg-violet-50 text-violet-600 border-violet-200"
+                              }>
+                                {faqCategories.find(cat => cat.id === faq.category)?.name || faq.category}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-sm text-slate-500">
+                                <ThumbsUp className="h-3 w-3" />
+                                <span>{faq.helpful} found this helpful</span>
+                              </div>
+                            </div>
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+                              {faq.question}
+                            </h3>
+                            <p className="text-slate-600 dark:text-slate-400 mb-4">
+                              {faq.answer}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {faq.tags.map((tag, idx) => (
+                                <span key={idx} className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded">
+                                  #{tag}
+                                </span>
                               ))}
                             </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Quick Actions</h4>
-                      <div className="space-y-3">
-                        {!selectedTicket.assignedTo && (
-                          <Button 
-                            className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600"
-                            onClick={() => handleAssignTicket(selectedTicket.id, "Admin 1")}
-                          >
-                            <UserCheck className="h-4 w-4" />
-                            Assign to Me
+                          <Button variant="ghost" size="sm" className="ml-4">
+                            <Bookmark className="h-4 w-4" />
                           </Button>
-                        )}
-                        
-                        {selectedTicket.status !== "resolved" && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full gap-2"
-                            onClick={() => handleResolveTicket(selectedTicket.id)}
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                            Mark as Resolved
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          {/* DOCUMENTATION TAB */}
+          <TabsContent value="documentation" className="space-y-6">
+            <motion.div variants={itemVariants}>
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-emerald-50/30 dark:from-slate-900 dark:to-emerald-900/10 backdrop-blur-sm">
+                <CardHeader className="border-b border-slate-100/50 dark:border-slate-800">
+                  <CardTitle className="text-2xl text-emerald-900 dark:text-white">
+                    User Documentation
+                  </CardTitle>
+                  <CardDescription className="text-emerald-600/80 dark:text-slate-400">
+                    Complete guides and manuals for all features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {documentation.map((doc) => {
+                      const Icon = doc.icon
+                      return (
+                        <Card key={doc.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                                <Icon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                              </div>
+                              <Badge variant="outline" className="bg-slate-50 text-slate-600 dark:bg-slate-800">
+                                {doc.pages} pages
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-slate-900 dark:text-white text-lg mb-2">
+                              {doc.title}
+                            </h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+                              {doc.description}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-slate-500">
+                                Updated: {doc.lastUpdated}
+                              </span>
+                              <Button variant="ghost" size="sm" className="group-hover:bg-emerald-50 group-hover:text-emerald-600">
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          {/* TUTORIALS TAB */}
+          <TabsContent value="tutorials" className="space-y-6">
+            <motion.div variants={itemVariants}>
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-violet-50/30 dark:from-slate-900 dark:to-violet-900/10 backdrop-blur-sm">
+                <CardHeader className="border-b border-slate-100/50 dark:border-slate-800">
+                  <CardTitle className="text-2xl text-violet-900 dark:text-white">
+                    Video Tutorials
+                  </CardTitle>
+                  <CardDescription className="text-violet-600/80 dark:text-slate-400">
+                    Step-by-step video guides for all features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {videoTutorials.map((video) => (
+                      <Card key={video.id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
+                        <div className="relative aspect-video bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-6xl">
+                          {video.thumbnail}
+                          <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+                            {video.duration}
+                          </div>
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline" className="bg-violet-50 text-violet-600 border-violet-200 dark:bg-violet-900/20">
+                              {video.category}
+                            </Badge>
+                            <div className="flex items-center gap-1 text-sm text-slate-500">
+                              <Eye className="h-3 w-3" />
+                              <span>{video.views}</span>
+                            </div>
+                          </div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white mb-3">
+                            {video.title}
+                          </h3>
+                          <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white">
+                            <Video className="h-4 w-4 mr-2" />
+                            Watch Tutorial
                           </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          {/* CONTACT SUPPORT TAB */}
+          <TabsContent value="contact" className="space-y-6">
+            <motion.div variants={itemVariants} className="grid lg:grid-cols-3 gap-6">
+              {/* Contact Information */}
+              <div className="lg:col-span-2">
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-blue-900/10 backdrop-blur-sm h-full">
+                  <CardHeader className="border-b border-slate-100/50 dark:border-slate-800">
+                    <CardTitle className="text-2xl text-blue-900 dark:text-white">
+                      Contact Support
+                    </CardTitle>
+                    <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                      Get in touch with our support team
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <form onSubmit={handleSubmitTicket} className="space-y-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+                            Subject
+                          </label>
+                          <Input
+                            placeholder="What do you need help with?"
+                            value={ticketSubject}
+                            onChange={(e) => setTicketSubject(e.target.value)}
+                            className="bg-white dark:bg-slate-800"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+                            Describe your issue
+                          </label>
+                          <Textarea
+                            placeholder="Please provide as much detail as possible..."
+                            className="min-h-[200px] bg-white dark:bg-slate-800"
+                            value={ticketMessage}
+                            onChange={(e) => setTicketMessage(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+                            Priority
+                          </label>
+                          <div className="flex gap-3">
+                            <Button type="button" variant="outline" className="flex-1">
+                              Low
+                            </Button>
+                            <Button type="button" variant="outline" className="flex-1 border-amber-200 text-amber-600">
+                              Medium
+                            </Button>
+                            <Button type="button" variant="outline" className="flex-1 border-red-200 text-red-600">
+                              High
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Clock className="h-4 w-4 mr-2 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Submit Support Ticket
+                          </>
                         )}
-
-                        <Button variant="outline" className="w-full gap-2">
-                          <MessageCircle className="h-4 w-4" />
-                          Send Message
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Ticket Info */}
-                    <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Ticket Information</h4>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">Category:</span>
-                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.category}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">Created:</span>
-                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.createdAt}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">Last Update:</span>
-                          <span className="font-medium text-slate-900 dark:text-white">{selectedTicket.lastUpdate}</span>
-                        </div>
-                      </div>
-                    </div>
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
+              </div>
 
-                {/* System Settings */}
-                <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-                  <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                        <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl text-slate-800 dark:text-white">System Settings</CardTitle>
-                        <CardDescription className="text-blue-600/80 dark:text-slate-400">
-                          Support system configuration
-                        </CardDescription>
-                      </div>
-                    </div>
+              {/* Support Contacts */}
+              <div>
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-slate-50/30 dark:from-slate-900 dark:to-slate-900/10 backdrop-blur-sm h-full">
+                  <CardHeader className="border-b border-slate-100/50 dark:border-slate-800">
+                    <CardTitle className="text-xl text-slate-900 dark:text-white">
+                      Support Channels
+                    </CardTitle>
                   </CardHeader>
-
-                  <CardContent className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900 dark:text-white">Auto Assign Tickets</p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Automatically assign new tickets</p>
-                      </div>
-                      <Switch checked={autoAssign} onCheckedChange={setAutoAssign} />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900 dark:text-white">System Alerts</p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Receive critical system notifications</p>
-                      </div>
-                      <Switch checked={systemAlerts} onCheckedChange={setSystemAlerts} />
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {supportContacts.map((contact, idx) => {
+                        const Icon = contact.icon
+                        return (
+                          <div key={idx} className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-slate-900 dark:text-white">
+                                  {contact.type}
+                                </h4>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                  {contact.description}
+                                </p>
+                                <div className="flex items-center justify-between mt-3">
+                                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                                    {contact.contact}
+                                  </span>
+                                  <Badge variant="outline" className="bg-slate-50 text-slate-600 dark:bg-slate-800">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {contact.hours}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          </TabsContent>
-
-          {/* TEAM TAB */}
-          <TabsContent value="team" className="space-y-6">
-            <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-              <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl text-slate-800 dark:text-white">Support Team</CardTitle>
-                    <CardDescription className="text-blue-600/80 dark:text-slate-400">
-                      Team performance and availability
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
-                    <TableRow>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Team Member</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Role</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Status</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Tickets</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Response Time</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Satisfaction</TableHead>
-                    </TableRow>
-                  </TableHeader>
-
-                  <TableBody>
-                    {teamMembers.map((member, index) => (
-                      <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
-                        <TableCell className="pl-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
-                                {member.name.split(' ').map(n => n[0]).join('')}
-                              </div>
-                              <div className={cn(
-                                "absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900",
-                                member.status === "online" ? "bg-green-500" :
-                                member.status === "away" ? "bg-yellow-500" : "bg-slate-400"
-                              )} />
-                            </div>
-                            <div>
-                              <p className="font-medium text-slate-900 dark:text-slate-100">{member.name}</p>
-                              <p className="text-sm text-slate-500 dark:text-slate-400">{member.lastActive}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-slate-700 dark:text-slate-300">
-                          {member.role}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={cn(
-                            "capitalize",
-                            member.status === "online" ? "border-green-200 text-green-700 dark:border-green-800 dark:text-green-400" :
-                            member.status === "away" ? "border-yellow-200 text-yellow-700 dark:border-yellow-800 dark:text-yellow-400" :
-                            "border-slate-200 text-slate-700 dark:border-slate-800 dark:text-slate-400"
-                          )}>
-                            {member.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
-                          {member.tickets}
-                        </TableCell>
-                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
-                          {member.responseTime}
-                        </TableCell>
-                        <TableCell className="pr-6">
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                              <span className="font-medium text-slate-900 dark:text-slate-100">{member.satisfaction}</span>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* KNOWLEDGE BASE TAB */}
-          <TabsContent value="knowledge" className="space-y-6">
-            <Card className="border-slate-200 dark:border-slate-800 shadow-md bg-white dark:bg-slate-900">
-              <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                      <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl text-slate-800 dark:text-white">Knowledge Base</CardTitle>
-                      <CardDescription className="text-blue-600/80 dark:text-slate-400">
-                        Documentation and support articles
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600">
-                    <FileText className="h-4 w-4" />
-                    Add Article
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-blue-50/50 dark:bg-slate-900/80">
-                    <TableRow>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-6 h-12">Article ID</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Title</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Category</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Views</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12">Helpful</TableHead>
-                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 h-12 pr-6">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-
-                  <TableBody>
-                    {knowledgeBase.map((article, index) => (
-                      <TableRow key={index} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group border-b border-slate-100 dark:border-slate-800">
-                        <TableCell className="pl-6 py-4 font-mono text-sm text-slate-500 dark:text-slate-400">
-                          {article.id}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="max-w-[300px]">
-                            <p className="font-medium text-slate-900 dark:text-slate-100">
-                              {article.title}
-                            </p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                              Updated {article.updated}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <Badge variant="outline">{article.category}</Badge>
-                        </TableCell>
-                        <TableCell className="py-4 font-medium text-slate-900 dark:text-slate-100">
-                          {article.views}
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
-                                style={{ width: article.helpful }}
-                              />
-                            </div>
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                              {article.helpful}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="pr-6 py-4">
-                          <Badge variant="outline" className={
-                            article.status === "published" 
-                              ? "border-green-200 text-green-700 dark:border-green-800 dark:text-green-400"
-                              : "border-yellow-200 text-yellow-700 dark:border-yellow-800 dark:text-yellow-400"
-                          }>
-                            {article.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            </motion.div>
           </TabsContent>
         </Tabs>
       </motion.div>

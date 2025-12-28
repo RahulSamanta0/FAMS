@@ -114,60 +114,51 @@ export default function ClientInsurance() {
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
 
-        {/* HEADER */}
-        <motion.div variants={itemVariants}>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Insurance & Claims
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Manage your policies, premiums, and claim history.
-          </p>
-        </motion.div>
 
         {/* SUMMARY CARDS */}
         <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
           
           {/* Total Policies Card */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <ShieldCheck className="h-24 w-24 text-blue-600" />
+              <ShieldCheck className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Policies</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Total Policies</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">{policies.length}</div>
-              <p className="text-xs text-slate-500 mt-1">Active Plans</p>
+              <div className="text-3xl font-bold text-white">{policies.length}</div>
+              <p className="text-xs text-white/90 mt-1">Active Plans</p>
             </CardContent>
           </Card>
 
           {/* Total Coverage Card */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-sky-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-400 to-teal-500 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Activity className="h-24 w-24 text-sky-600" />
+              <Activity className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wider">Total Coverage</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Total Coverage</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-3xl font-bold text-white">
                 ₹{totalCoverage.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Sum Assured</p>
+              <p className="text-xs text-white/90 mt-1">Sum Assured</p>
             </CardContent>
           </Card>
 
           {/* Premium Due Card */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-indigo-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-violet-400 to-purple-600 hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Calendar className="h-24 w-24 text-indigo-600" />
+              <Calendar className="h-24 w-24 text-white" />
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Next Premium Due</CardTitle>
+              <CardTitle className="text-sm font-medium text-white/80 uppercase tracking-wider">Next Premium Due</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white">15 Jul 2025</div>
-              <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+              <div className="text-3xl font-bold text-white">15 Jul 2025</div>
+              <div className="flex items-center gap-1 mt-1 text-xs text-white/90">
                 <Bell className="h-3 w-3" />
                 <span>Reminder Set</span>
               </div>

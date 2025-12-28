@@ -1,883 +1,733 @@
 "use client"
 
-import { useState, useMemo } from 'react'
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
 import {
-  Users,
-  UserCheck,
   TrendingUp,
   TrendingDown,
-  DollarSign,
-  Activity,
-  Download,
-  MoreVertical,
-  FileText,
-  Shield,
-  PieChart as PieChartIcon,
-  BarChart3,
-  LineChart as LineChartIcon,
-  Search,
-  Bell,
-  Target,
-  Award,
-  UserPlus,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Building2,
-  IndianRupee,
-  CreditCard,
-  ShieldCheck,
-  Calendar,
-  Eye,
-  Filter,
-  ArrowUpRight,
-  ArrowDownRight,
-  Zap,
-  Star,
-  FileBarChart,
-  TrendingUp as ChartUp,
-  TrendingDown as ChartDown,
-  Users as UsersIcon,
   Wallet,
+  ArrowUpRight,
   Briefcase,
-  Landmark,
-  Home,
-  Car,
-  Gem,
-  Database,
-  Smartphone,
-  Mail,
-  Phone,
-  MessageSquare,
-  Settings,
-  HelpCircle,
-  ChevronRight,
-  ChevronLeft,
-  RefreshCw,
-  ExternalLink,
-  Percent,
-  Target as TargetIcon
-} from "lucide-react"
-
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  LineChart,
-  Line,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
   PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip as RechartsTooltip,
-  AreaChart,
-  Area,
-  RadialBarChart,
-  RadialBar,
-  ScatterChart,
-  Scatter,
-  ZAxis
-} from "recharts"
+  Download,
+  Filter,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  BarChart3,
+  LineChart,
+  Percent,
+  Calendar,
+  Shield,
+  Clock,
+  Sparkles
+} from "lucide-react"
+import { cn } from "@/lib/utils"
 
-// Animation Variants
+/* ---------------- MOCK DATA ---------------- */
+
+const investments = [
+  { 
+    id: 1, 
+    type: "SIP", 
+    name: "HDFC Balanced Advantage Fund", 
+    amount: 50000, 
+    returns: 12.5, 
+    status: "Active",
+    category: "Mutual Fund",
+    startDate: "2023-01-15",
+    duration: "5 Years",
+    risk: "Medium",
+    growth: 12000
+  },
+  { 
+    id: 2, 
+    type: "Mutual Fund", 
+    name: "SBI Blue Chip Fund", 
+    amount: 75000, 
+    returns: 15.2, 
+    status: "Active",
+    category: "Equity",
+    startDate: "2022-08-20",
+    duration: "7 Years",
+    risk: "High",
+    growth: 18000
+  },
+  { 
+    id: 3, 
+    type: "Fixed Deposit", 
+    name: "State Bank FD - 5 Year", 
+    amount: 100000, 
+    returns: 6.5, 
+    status: "Active",
+    category: "Fixed Income",
+    startDate: "2023-03-10",
+    duration: "5 Years",
+    risk: "Low",
+    growth: 6500
+  },
+  { 
+    id: 4, 
+    type: "Stocks", 
+    name: "TCS Limited", 
+    amount: 35000, 
+    returns: -2.3, 
+    status: "Hold",
+    category: "Equity",
+    startDate: "2023-06-05",
+    duration: "Long Term",
+    risk: "High",
+    growth: -800
+  },
+  { 
+    id: 5, 
+    type: "Stocks", 
+    name: "Infosys Limited", 
+    amount: 40000, 
+    returns: 8.7, 
+    status: "Active",
+    category: "Equity",
+    startDate: "2023-02-28",
+    duration: "Long Term",
+    risk: "High",
+    growth: 3480
+  },
+  { 
+    id: 6, 
+    type: "PPF", 
+    name: "Public Provident Fund", 
+    amount: 150000, 
+    returns: 7.1, 
+    status: "Active",
+    category: "Government",
+    startDate: "2021-04-01",
+    duration: "15 Years",
+    risk: "Low",
+    growth: 10650
+  },
+  { 
+    id: 7, 
+    type: "NPS", 
+    name: "National Pension Scheme", 
+    amount: 80000, 
+    returns: 9.2, 
+    status: "Active",
+    category: "Retirement",
+    startDate: "2022-11-15",
+    duration: "Until Retirement",
+    risk: "Medium",
+    growth: 7360
+  },
+  { 
+    id: 8, 
+    type: "Gold ETF", 
+    name: "Gold BeES", 
+    amount: 45000, 
+    returns: 11.4, 
+    status: "Active",
+    category: "Commodity",
+    startDate: "2023-05-20",
+    duration: "3 Years",
+    risk: "Medium",
+    growth: 5130
+  },
+]
+
+/* ---------------- ANIMATION VARIANTS ---------------- */
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-  },
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
-  }
-}
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } }
-}
-
-// Mock Data - More realistic and comprehensive
-const generateTimeSeriesData = (months: number, baseValue: number, growthRate: number) => {
-  const monthsList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return Array.from({ length: months }, (_, i) => ({
-    month: monthsList[i % 12],
-    value: Math.round(baseValue * Math.pow(1 + growthRate, i)),
-    target: Math.round(baseValue * Math.pow(1 + growthRate * 0.8, i))
-  }))
-}
-
-const clientGrowthData = generateTimeSeriesData(12, 1000, 0.08)
-const investmentGrowthData = generateTimeSeriesData(12, 25000000, 0.12)
-const revenueData = generateTimeSeriesData(12, 500000, 0.15)
-
-const departmentPerformance = [
-  { name: 'Education', value: 125, growth: 15, color: '#3b82f6', icon: '🎓' },
-  { name: 'Health', value: 98, growth: 12, color: '#10b981', icon: '🏥' },
-  { name: 'Finance', value: 87, growth: 18, color: '#f59e0b', icon: '💰' },
-  { name: 'Revenue', value: 76, growth: 8, color: '#8b5cf6', icon: '📊' },
-  { name: 'Defense', value: 54, growth: 5, color: '#ef4444', icon: '🛡️' },
-  { name: 'Police', value: 42, growth: 20, color: '#06b6d4', icon: '👮' }
-]
-
-const investmentDistribution = [
-  { name: 'Mutual Funds', value: 35, color: '#3b82f6', trend: 'up' },
-  { name: 'Insurance', value: 28, color: '#10b981', trend: 'up' },
-  { name: 'Equity', value: 20, color: '#f59e0b', trend: 'steady' },
-  { name: 'Government Bonds', value: 12, color: '#8b5cf6', trend: 'up' },
-  { name: 'Fixed Deposits', value: 5, color: '#ef4444', trend: 'down' }
-]
-
-const clientStatusData = [
-  { status: 'Active', value: 68, color: '#10b981', icon: UserCheck },
-  { status: 'Engaged', value: 18, color: '#3b82f6', icon: Activity },
-  { status: 'Dormant', value: 9, color: '#f59e0b', icon: Clock },
-  { status: 'Inactive', value: 5, color: '#ef4444', icon: AlertCircle }
-]
-
-const recentActivities = [
-  { id: 1, client: 'Dr. Rajesh Kumar', action: 'ITR Filing Completed', time: '10:30 AM', status: 'success', amount: '₹85,000', type: 'tax' },
-  { id: 2, client: 'Priya Sharma', action: 'New Insurance Policy', time: '11:45 AM', status: 'success', amount: '₹25,000', type: 'insurance' },
-  { id: 3, client: 'Amit Patel', action: 'Portfolio Rebalanced', time: '1:20 PM', status: 'pending', amount: '₹1.2L', type: 'investment' },
-  { id: 4, client: 'Sunita Verma', action: 'Asset Declaration', time: '2:15 PM', status: 'success', amount: '₹2.1 Cr', type: 'assets' },
-  { id: 5, client: 'Rahul Mehta', action: 'White Income Report', time: '3:45 PM', status: 'success', amount: '₹8.5L', type: 'report' }
-]
-
-const performanceMetrics = [
-  { metric: 'Client Retention', value: 94, target: 90, trend: 'up', icon: Users },
-  { metric: 'Portfolio Growth', value: 18.5, target: 15, trend: 'up', icon: TrendingUp },
-  { metric: 'Avg. Investment', value: 5.2, target: 4.5, trend: 'up', icon: DollarSign },
-  { metric: 'Response Time', value: 2.4, target: 3, trend: 'down', icon: Clock }
-]
-
-const topClients = [
-  { rank: 1, name: 'Dr. Rajesh Kumar', department: 'Education', investment: '₹85L', growth: '22%', engagement: 95 },
-  { rank: 2, name: 'Priya Sharma', department: 'Health', investment: '₹72L', growth: '18%', engagement: 92 },
-  { rank: 3, name: 'Amit Patel', department: 'Revenue', investment: '₹68L', growth: '15%', engagement: 88 },
-  { rank: 4, name: 'Sunita Verma', department: 'Finance', investment: '₹62L', growth: '20%', engagement: 91 },
-  { rank: 5, name: 'Rahul Mehta', department: 'Defense', investment: '₹58L', growth: '12%', engagement: 84 }
-]
-
-// Custom Tooltip Components
-const ChartTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="rounded-lg border bg-white p-3 shadow-lg dark:bg-slate-800 dark:border-slate-700">
-        <p className="font-semibold text-slate-900 dark:text-white mb-2">{label}</p>
-        {payload.map((pld: any, index: number) => (
-          <div key={index} className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: pld.color }} />
-              <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">{pld.dataKey}</span>
-            </div>
-            <span className="font-semibold text-slate-900 dark:text-white">
-              {pld.dataKey.includes('value') ? pld.value.toLocaleString() : `₹${(pld.value / 1000000).toFixed(1)}M`}
-            </span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-  return null
-}
-
-const PerformanceCard = ({ metric, value, target, trend, icon: Icon }: any) => {
-  const percentage = (value / target) * 100
-  const isPositive = trend === 'up'
-  
-  return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800">
-            <Icon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-          </div>
-          <Badge variant={isPositive ? "success" : "secondary"}>
-            {isPositive ? (
-              <ArrowUpRight className="h-3 w-3 mr-1" />
-            ) : (
-              <ArrowDownRight className="h-3 w-3 mr-1" />
-            )}
-            {isPositive ? 'Ahead' : 'Behind'}
-          </Badge>
-        </div>
-        
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400">{metric}</h4>
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{value}{metric.includes('Time') ? 'h' : '%'}</div>
-              <p className="text-sm text-slate-500 dark:text-slate-500">Target: {target}{metric.includes('Time') ? 'h' : '%'}</p>
-            </div>
-            <div className="text-right">
-              <div className={cn(
-                "text-sm font-semibold",
-                isPositive ? "text-green-600" : "text-red-600"
-              )}>
-                {percentage > 100 ? '+' : ''}{(percentage - 100).toFixed(1)}%
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Progress value={Math.min(percentage, 100)} className="h-2" />
-            <div className="flex justify-between text-xs text-slate-500">
-              <span>0%</span>
-              <span>100%</span>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [timeRange, setTimeRange] = useState('6M')
-  const [viewMode, setViewMode] = useState('grid')
-
-  // Calculate derived metrics
-  const totalClients = 1254
-  const activeClients = 1042
-  const totalAUM = 428000000 // 42.8 Cr in lakhs
-  const avgPortfolio = 512000 // 5.12L in rupees
-  const activeRate = (activeClients / totalClients) * 100
-
-  const stats = [
-    {
-      title: "Total Clients",
-      value: totalClients.toLocaleString(),
-      change: "+12% this month",
-      icon: Users,
-      color: "from-blue-500 to-cyan-500",
-      trend: "up"
-    },
-    {
-      title: "Active Clients",
-      value: activeClients.toLocaleString(),
-      change: `${activeRate.toFixed(1)}% active rate`,
-      icon: UserCheck,
-      color: "from-emerald-500 to-green-500",
-      trend: "up"
-    },
-    {
-      title: "Total AUM",
-      value: `₹${(totalAUM / 10000000).toFixed(1)} Cr`,
-      change: "↑ ₹4.2 Cr growth",
-      icon: IndianRupee,
-      color: "from-purple-500 to-violet-500",
-      trend: "up"
-    },
-    {
-      title: "Avg. Portfolio",
-      value: `₹${(avgPortfolio / 1000).toFixed(1)}L`,
-      change: "Per client average",
-      icon: PieChartIcon,
-      color: "from-amber-500 to-orange-500",
-      trend: "steady"
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12
     }
-  ]
+  }
+}
+
+const cardHoverVariants = {
+  hover: {
+    y: -5,
+    scale: 1.02,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 25
+    }
+  }
+}
+
+export default function ClientInvestments() {
+  const [showAll, setShowAll] = useState(false)
+  const [activeTab, setActiveTab] = useState("all")
+  const [hiddenAmounts, setHiddenAmounts] = useState(false)
+  const [sortBy, setSortBy] = useState("value")
+
+  const displayedInvestments = showAll ? investments : investments.slice(0, 4)
+  const totalInvestment = investments.reduce((acc, inv) => acc + inv.amount, 0)
+  const totalGrowth = investments.reduce((acc, inv) => acc + inv.growth, 0)
+  const avgReturns = (investments.reduce((acc, inv) => acc + inv.returns, 0) / investments.length).toFixed(2)
+
+  const handleDownload = () => {
+    const headers = ["Type", "Investment Name", "Category", "Invested Amount", "Returns (%)", "Growth", "Status", "Risk", "Start Date"]
+    const rows = investments.map(inv => [
+      inv.type,
+      `"${inv.name}"`,
+      inv.category,
+      inv.amount,
+      inv.returns,
+      inv.growth,
+      inv.status,
+      inv.risk,
+      inv.startDate
+    ])
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n")
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.setAttribute("href", url)
+    link.setAttribute("download", `investment_portfolio_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const filteredInvestments = displayedInvestments.filter(inv => {
+    if (activeTab === "all") return true
+    if (activeTab === "equity") return inv.category === "Equity"
+    if (activeTab === "mf") return inv.type === "Mutual Fund" || inv.type === "SIP"
+    if (activeTab === "fixed") return inv.category === "Fixed Income" || inv.category === "Government"
+    return true
+  })
+
+  const sortedInvestments = [...filteredInvestments].sort((a, b) => {
+    if (sortBy === "value") return b.amount - a.amount
+    if (sortBy === "returns") return b.returns - a.returns
+    if (sortBy === "growth") return b.growth - a.growth
+    return 0
+  })
 
   return (
-    <AdminLayout activeTab="/admin/dashboard">
+    <AdminLayout activeTab="/client/investments">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-6 max-w-7xl mx-auto px-4 md:px-6"
+        className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
-
-        {/* Header with Filters */}
-        <motion.div variants={itemVariants} className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-                Dashboard Overview
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">
-                Real-time insights into client portfolio and financial performance
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-[140px]">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1M">Last Month</SelectItem>
-                  <SelectItem value="3M">Last 3 Months</SelectItem>
-                  <SelectItem value="6M">Last 6 Months</SelectItem>
-                  <SelectItem value="1Y">Last Year</SelectItem>
-                  <SelectItem value="YTD">Year to Date</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filters
-              </Button>
-              
-              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-            </div>
+        {/* HEADER */}
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Investment Portfolio</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
+              Track and manage all your investments in one place
+            </p>
           </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon
-              return (
-                <motion.div
-                  key={stat.title}
-                  variants={itemVariants}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -2 }}
-                >
-                  <Card className="relative overflow-hidden border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.color} bg-opacity-10`}>
-                          <Icon className="h-5 w-5" style={{ 
-                            background: `linear-gradient(${stat.color})`,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
-                          }} />
-                        </div>
-                        <Badge variant={stat.trend === "up" ? "success" : "secondary"} className="text-xs">
-                          {stat.trend === "up" ? (
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                          ) : (
-                            <ArrowDownRight className="h-3 w-3 mr-1" />
-                          )}
-                          Trend
-                        </Badge>
-                      </div>
-                      
-                      <div className="space-y-1">
-                        <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                          {stat.value}
-                        </div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          {stat.title}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
-                          <ChartUp className="h-3 w-3 text-green-500" />
-                          {stat.change}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )
-            })}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setHiddenAmounts(!hiddenAmounts)}
+              className="border-slate-200 dark:border-slate-700"
+            >
+              {hiddenAmounts ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
+              {hiddenAmounts ? "Show" : "Hide"} Amounts
+            </Button>
+            <Button
+              onClick={handleDownload}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
           </div>
         </motion.div>
 
-        {/* Performance Metrics */}
+        {/* SUMMARY CARDS */}
+        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-4">
+          
+          {/* Total Value Card */}
+          <motion.div variants={cardHoverVariants} whileHover="hover">
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:shadow-2xl transition-all duration-500 group">
+  {/* Emoji Background */}
+ <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+  <div className="absolute -right-6 -top-6 text-[12rem] leading-none">💼</div>
+</div>
+  
+  {/* Glow Effect - Same as others */}
+  <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+  
+  <CardHeader className="pb-2 relative z-10">
+    <div className="flex items-center justify-between">
+      <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Total Value</CardTitle>
+      <div className="">
+        {/* <Wallet className="h-4 w-4 text-white" /> */}
+      </div>
+    </div>
+  </CardHeader>
+  
+  <CardContent className="relative z-10">
+    <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+      {hiddenAmounts ? "••••••" : `₹${totalInvestment.toLocaleString()}`}
+    </div>
+    
+    <div className="flex items-center gap-2">
+      <Briefcase className="h-4 w-4 text-white/80" />
+      <span className="text-sm text-white/90">
+        Across {investments.length} Instruments
+      </span>
+    </div>
+    
+    <div className="mt-4 flex items-center justify-between">
+      <span className="text-xs text-white/70">Since Last Month</span>
+      <Badge className="bg-white/30 backdrop-blur-sm text-white border border-white/40">
+        <TrendingUp className="h-3 w-3 mr-1" />
+        +8.2%
+      </Badge>
+    </div>
+  </CardContent>
+</Card>
+          </motion.div>
+
+          {/* Average Returns Card */}
+          <motion.div variants={cardHoverVariants} whileHover="hover">
+            <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 hover:shadow-2xl transition-all duration-500 group">
+  {/* Emoji Background - Chart emoji */}
+  
+   <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+  <div className="absolute -right-6 -top-6 text-[8rem] leading-none">✨</div>
+</div>
+
+  
+  {/* Glow Effect */}
+  <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+  
+  <CardHeader className="pb-2 relative z-10">
+    <div className="flex items-center justify-between">
+      <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Avg. Returns</CardTitle>
+      <div className="">
+        {/* <Percent className="h-4 w-4 text-white" /> */}
+      </div>
+    </div>
+  </CardHeader>
+  
+  <CardContent className="relative z-10">
+    <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">+{avgReturns}%</div>
+    
+    <div className="flex items-center gap-2">
+      <ArrowUpRight className="h-4 w-4 text-white/80" />
+      <span className="text-sm text-white/90">Annualized Growth</span>
+    </div>
+    
+    <div className="mt-4 flex items-center justify-between">
+      <span className="text-xs text-white/70">YTD Performance</span>
+      <Badge className="bg-white/30 backdrop-blur-sm text-white border border-white/40">
+        <Sparkles className="h-3 w-3 mr-1" />
+        Top 25%
+      </Badge>
+    </div>
+  </CardContent>
+</Card>
+          </motion.div>
+
+          {/* Total Gains Card */}
+          <motion.div variants={cardHoverVariants} whileHover="hover">
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-violet-500 via-purple-600 to-violet-700 hover:shadow-2xl transition-all duration-500 group">
+  {/* Emoji Background - EXACT same positioning */}
+  <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+  <div className="absolute -right-6 -top-6 text-[12rem] leading-none">💵</div>
+</div>
+  
+  {/* Glow Effect - EXACT same */}
+  <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+  
+  <CardHeader className="pb-2 relative z-10">
+    <div className="flex items-center justify-between">
+      <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Total Gains</CardTitle>
+      <div className="">
+      </div>
+    </div>
+  </CardHeader>
+  
+  <CardContent className="relative z-10">
+    <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+      {hiddenAmounts ? "••••••" : `₹${totalGrowth.toLocaleString()}`}
+    </div>
+    
+    <div className="flex items-center gap-2">
+      <TrendingUp className="h-4 w-4 text-white/80" />
+      <span className="text-sm text-white/90">
+        Absolute Growth
+      </span>
+    </div>
+    
+    <div className="mt-4 flex items-center justify-between">
+      <span className="text-xs text-white/70">All Time</span>
+      <Badge className="bg-white/30 backdrop-blur-sm text-white border border-white/40">
+        <ArrowUpRight className="h-3 w-3 mr-1" />
+        +24.8%
+      </Badge>
+    </div>
+  </CardContent>
+</Card>
+          </motion.div>
+
+          {/* Best Performer Card */}
+          <motion.div variants={cardHoverVariants} whileHover="hover">
+     <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-amber-500 via-orange-600 to-amber-600 hover:shadow-2xl transition-all duration-500 group">
+  {/* Emoji Background - Trophy emoji */}
+   <div className="absolute right-0 top-0 w-32 h-32 opacity-30 group-hover:opacity-20 transition-all duration-700 overflow-hidden">
+  <div className="absolute -right-6 -top-6 text-[12rem] leading-none"> 🏆</div>
+</div>
+    
+  
+  {/* Glow Effect */}
+  <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+  
+  <CardHeader className="pb-2 relative z-10">
+    <div className="flex items-center justify-between">
+      <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Best Performer</CardTitle>
+      <div className="">
+      </div>
+    </div>
+  </CardHeader>
+  
+  <CardContent className="relative z-10">
+    <div className="text-2xl font-bold text-white mb-1 drop-shadow-lg">SBI Blue Chip</div>
+    <div className="text-lg font-bold text-white/90 mb-2">+15.2%</div>
+    
+    <div className="mt-4 flex items-center justify-between">
+      <span className="text-xs text-white/70">Equity Fund</span>
+      <Badge className="bg-white/30 backdrop-blur-sm text-white border border-white/40">
+        <Shield className="h-3 w-3 mr-1" />
+        High Risk
+      </Badge>
+    </div>
+  </CardContent>
+</Card>
+          </motion.div>
+        </motion.div>
+
+        {/* FILTER AND SORT CONTROLS */}
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+            <TabsList className="grid grid-cols-5 w-full md:w-auto">
+              <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600">
+                All
+              </TabsTrigger>
+              <TabsTrigger value="equity" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600">
+                Equity
+              </TabsTrigger>
+              <TabsTrigger value="mf" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-violet-600">
+                MF/SIP
+              </TabsTrigger>
+              <TabsTrigger value="fixed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600">
+                Fixed Income
+              </TabsTrigger>
+              <TabsTrigger value="others" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-500 data-[state=active]:to-slate-600">
+                Others
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="value">Sort by: Highest Value</option>
+                <option value="returns">Sort by: Best Returns</option>
+                <option value="growth">Sort by: Most Growth</option>
+              </select>
+              <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {}}
+              className="border-slate-200 dark:border-slate-700"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* INVESTMENTS TABLE */}
         <motion.div variants={itemVariants}>
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-blue-900/10 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="border-b border-slate-100/50 dark:border-slate-800 bg-gradient-to-r from-blue-50/50 to-white dark:from-blue-900/10 dark:to-slate-900/50">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle className="text-xl">Key Performance Indicators</CardTitle>
-                  <CardDescription>Track your progress against targets</CardDescription>
+                  <CardTitle className="text-2xl text-blue-900 dark:text-white">Investment Holdings</CardTitle>
+                  <CardDescription className="text-blue-600/80 dark:text-slate-400">
+                    Detailed breakdown of your current investment portfolio
+                  </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                  <Badge variant="outline" className="bg-white/50 dark:bg-slate-800/50">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    Updated Today
+                  </Badge>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {performanceMetrics.map((metric, index) => (
-                  <PerformanceCard key={index} {...metric} />
-                ))}
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-gradient-to-r from-blue-50/80 to-white/80 dark:from-slate-800/80 dark:to-slate-900/80">
+                    <TableRow className="border-b border-slate-100/50 dark:border-slate-800">
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 pl-8 py-4">Investment</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-center py-4">Risk</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-center py-4">Duration</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right py-4">Invested Value</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right py-4">Growth</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-right py-4">Returns</TableHead>
+                      <TableHead className="font-semibold text-slate-600 dark:text-slate-300 text-center py-4 pr-8">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <AnimatePresence>
+                      {sortedInvestments.map((investment, index) => (
+                        <motion.tr
+                          key={investment.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.05)" }}
+                          className="group border-b border-slate-100/50 dark:border-slate-800/50 hover:bg-blue-50/30 dark:hover:bg-blue-900/5 transition-colors"
+                        >
+                          <TableCell className="pl-8 py-5">
+                            <div className="flex items-start gap-4">
+                              <div className={cn(
+                                "p-2 rounded-lg",
+                                investment.category === "Equity" ? "bg-red-100 dark:bg-red-900/30" :
+                                investment.category === "Mutual Fund" ? "bg-blue-100 dark:bg-blue-900/30" :
+                                investment.category === "Fixed Income" ? "bg-green-100 dark:bg-green-900/30" :
+                                "bg-purple-100 dark:bg-purple-900/30"
+                              )}>
+                                {investment.category === "Equity" ? <LineChart className="h-5 w-5 text-red-600 dark:text-red-400" /> :
+                                 investment.category === "Mutual Fund" ? <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" /> :
+                                 investment.category === "Fixed Income" ? <Shield className="h-5 w-5 text-green-600 dark:text-green-400" /> :
+                                 <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900 dark:text-white text-lg">{investment.name}</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Badge variant="outline" className={cn(
+                                    "text-xs",
+                                    investment.type === "SIP" ? "border-blue-200 text-blue-600 bg-blue-50/50 dark:bg-blue-900/20" :
+                                    investment.type === "Mutual Fund" ? "border-emerald-200 text-emerald-600 bg-emerald-50/50 dark:bg-emerald-900/20" :
+                                    "border-slate-200 text-slate-600 bg-slate-50/50 dark:bg-slate-800/50"
+                                  )}>
+                                    {investment.type}
+                                  </Badge>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                                    Started: {new Date(investment.startDate).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center py-5">
+                            <Badge className={cn(
+                              "px-3 py-1 rounded-full text-xs font-medium border-0",
+                              investment.risk === "High" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300" :
+                              investment.risk === "Medium" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" :
+                              "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                            )}>
+                              {investment.risk} Risk
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center py-5">
+                            <div className="text-sm text-slate-700 dark:text-slate-300">{investment.duration}</div>
+                          </TableCell>
+                          <TableCell className="text-right py-5">
+                            <div className="font-bold text-lg text-slate-900 dark:text-white">
+                              {hiddenAmounts ? "••••••" : `₹${investment.amount.toLocaleString()}`}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right py-5">
+                            <div className={cn(
+                              "inline-flex items-center gap-2 font-bold px-3 py-1.5 rounded-lg text-sm",
+                              investment.growth >= 0 
+                                ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 dark:from-green-900/20 dark:to-emerald-900/20 dark:text-green-400 border border-green-200 dark:border-green-800" 
+                                : "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 dark:from-red-900/20 dark:to-rose-900/20 dark:text-red-400 border border-red-200 dark:border-red-800"
+                            )}>
+                              {investment.growth >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                              {hiddenAmounts ? "••••••" : `₹${Math.abs(investment.growth).toLocaleString()}`}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right py-5">
+                            <div className={cn(
+                              "inline-flex items-center gap-2 font-bold px-3 py-1.5 rounded-lg text-sm",
+                              investment.returns >= 0 
+                                ? "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 dark:from-emerald-900/20 dark:to-green-900/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" 
+                                : "bg-gradient-to-r from-rose-50 to-red-50 text-rose-700 dark:from-rose-900/20 dark:to-red-900/20 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+                            )}>
+                              {investment.returns >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                              {investment.returns >= 0 ? "+" : ""}{investment.returns}%
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center py-5 pr-8">
+                            <span className={cn(
+                              "inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold border",
+                              investment.status === "Active" 
+                                ? "bg-gradient-to-r from-emerald-50 to-green-100 text-emerald-700 border-emerald-200 dark:bg-gradient-to-r dark:from-emerald-900/30 dark:to-green-900/20 dark:text-emerald-400 dark:border-emerald-800" 
+                                : "bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 border-slate-200 dark:bg-gradient-to-r dark:from-slate-800 dark:to-slate-900/50 dark:text-slate-400 dark:border-slate-700"
+                            )}>
+                              {investment.status}
+                            </span>
+                          </TableCell>
+                        </motion.tr>
+                      ))}
+                    </AnimatePresence>
+                  </TableBody>
+                </Table>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Client Growth Chart */}
-          <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
+        {/* SHOW MORE/LESS BUTTON */}
+        {investments.length > 4 && (
+          <motion.div 
+            variants={itemVariants}
+            className="flex justify-center"
+          >
+            <Button
+              variant="outline"
+              onClick={() => setShowAll(!showAll)}
+              className="px-8 py-6 text-lg bg-gradient-to-r from-blue-50 to-white dark:from-slate-800 dark:to-slate-900 border-blue-200 dark:border-slate-700 hover:bg-blue-100 dark:hover:bg-slate-800"
+            >
+              <RefreshCw className={cn("h-5 w-5 mr-3 transition-transform", showAll ? "rotate-180" : "")} />
+              {showAll ? "Show Less" : `View All ${investments.length} Investments`}
+            </Button>
+          </motion.div>
+        )}
+
+        {/* PERFORMANCE SUMMARY */}
+        <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <PieChart className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                Asset Allocation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Client Growth Trend</CardTitle>
-                    <CardDescription>Monthly client acquisition and retention</CardDescription>
-                  </div>
-                  <Badge variant="outline" className="gap-1">
-                    <Users className="h-3 w-3" />
-                    {totalClients.toLocaleString()} Total
+                  <span className="text-slate-600 dark:text-slate-400">Equity</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">45%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Mutual Funds</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">30%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Fixed Income</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">20%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Others</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">5%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                  <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                Performance Insights
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Beat Market Average</span>
+                  <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    +8.5%
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={clientGrowthData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.5} />
-                      <XAxis 
-                        dataKey="month" 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#64748b', fontSize: 12 }}
-                      />
-                      <YAxis 
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#64748b', fontSize: 12 }}
-                        tickFormatter={(value) => value.toLocaleString()}
-                      />
-                      <RechartsTooltip content={<ChartTooltip />} />
-                      <Area 
-                        type="monotone" 
-                        dataKey="value" 
-                        name="Active Clients"
-                        stroke="#3b82f6" 
-                        fill="url(#clientGradient)"
-                        strokeWidth={2}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="target" 
-                        name="Target"
-                        stroke="#94a3b8" 
-                        fill="url(#targetGradient)"
-                        strokeWidth={1}
-                        strokeDasharray="5 5"
-                      />
-                      <defs>
-                        <linearGradient id="clientGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="targetGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Investment Distribution */}
-          <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Portfolio Distribution</CardTitle>
-                    <CardDescription>Asset allocation across investment types</CardDescription>
-                  </div>
-                  <Badge variant="outline" className="gap-1">
-                    <PieChartIcon className="h-3 w-3" />
-                    ₹{Math.round(totalAUM / 10000000).toFixed(1)} Cr AUM
+                  <span className="text-slate-600 dark:text-slate-400">Risk-Adjusted Return</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Good</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">Portfolio Diversity</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">High</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
+                  <Clock className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                </div>
+                Next Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600 dark:text-slate-400">SIP Due Date</span>
+                  <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                    5th Dec
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={investmentDistribution}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={70}
-                        outerRadius={100}
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                        labelLine={false}
-                      >
-                        {investmentDistribution.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.color}
-                            stroke="white"
-                            strokeWidth={2}
-                          />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip 
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            const data = payload[0].payload
-                            return (
-                              <div className="rounded-lg border bg-white p-3 shadow-lg dark:bg-slate-800 dark:border-slate-700">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.color }} />
-                                  <span className="font-semibold text-slate-900 dark:text-white">{data.name}</span>
-                                </div>
-                                <div className="text-sm text-slate-600 dark:text-slate-300">
-                                  Allocation: <span className="font-semibold">{data.value}%</span>
-                                </div>
-                                <div className="text-sm text-slate-600 dark:text-slate-300">
-                                  Trend: <span className={cn(
-                                    "font-semibold",
-                                    data.trend === 'up' ? 'text-green-600' : 
-                                    data.trend === 'down' ? 'text-red-600' : 'text-amber-600'
-                                  )}>
-                                    {data.trend === 'up' ? '↗ Growing' : 
-                                     data.trend === 'down' ? '↘ Declining' : '→ Stable'}
-                                  </span>
-                                </div>
-                              </div>
-                            )
-                          }
-                          return null
-                        }}
-                      />
-                      <Legend 
-                        verticalAlign="bottom"
-                        height={36}
-                        formatter={(value, entry: any) => (
-                          <span className="text-xs text-slate-600 dark:text-slate-400">
-                            {value}
-                          </span>
-                        )}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Departments & Activities */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Department Performance */}
-          <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Department Performance</CardTitle>
-                    <CardDescription>Client distribution and growth by department</CardDescription>
-                  </div>
-                  <Button variant="ghost" size="sm" className="gap-1">
-                    <Eye className="h-4 w-4" />
-                    Details
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {departmentPerformance.map((dept, index) => (
-                    <motion.div
-                      key={index}
-                      variants={itemVariants}
-                      transition={{ delay: index * 0.05 }}
-                      className="group flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg text-xl">
-                          {dept.icon}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-white">{dept.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="w-24 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${(dept.value / 125) * 100}%` }}
-                                transition={{ duration: 1, delay: index * 0.1 }}
-                                className="h-full rounded-full"
-                                style={{ backgroundColor: dept.color }}
-                              />
-                            </div>
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                              {dept.value} clients
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={cn(
-                          "text-sm font-semibold flex items-center justify-end gap-1",
-                          dept.growth > 10 ? "text-green-600" : "text-amber-600"
-                        )}>
-                          {dept.growth > 10 ? (
-                            <ArrowUpRight className="h-3 w-3" />
-                          ) : (
-                            <ArrowDownRight className="h-3 w-3" />
-                          )}
-                          {dept.growth}%
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-500">Growth</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Recent Activities */}
-          <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Recent Activities</CardTitle>
-                    <CardDescription>Latest client interactions and updates</CardDescription>
-                  </div>
-                  <Badge variant="secondary" className="gap-1 animate-pulse">
-                    <Zap className="h-3 w-3" />
-                    Live
+                  <span className="text-slate-600 dark:text-slate-400">Review Portfolio</span>
+                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                    15 Days
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentActivities.map((activity, index) => (
-                    <motion.div
-                      key={activity.id}
-                      variants={itemVariants}
-                      transition={{ delay: index * 0.05 }}
-                      className="group flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all"
-                    >
-                      <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-full",
-                        activity.status === 'success' 
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                          : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
-                      )}>
-                        {activity.status === 'success' ? (
-                          <CheckCircle className="h-5 w-5" />
-                        ) : (
-                          <Clock className="h-5 w-5" />
-                        )}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium text-slate-900 dark:text-white truncate">
-                            {activity.client}
-                          </p>
-                          <Badge 
-                            variant={activity.status === 'success' ? 'success' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {activity.status === 'success' ? 'Completed' : 'Pending'}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                          {activity.action}
-                        </p>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-slate-500 dark:text-slate-500">
-                            {activity.time}
-                          </span>
-                          <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                            {activity.amount}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                
-                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <Button variant="ghost" className="w-full justify-center gap-2">
-                    View All Activities
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Top Clients & Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Top Clients */}
-          <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <CardTitle>Top Performing Clients</CardTitle>
-                      <CardDescription>Highest investment value and engagement</CardDescription>
-                    </div>
-                  </div>
-                  <Select defaultValue="investment">
-                    <SelectTrigger className="w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="investment">By Investment</SelectItem>
-                      <SelectItem value="growth">By Growth</SelectItem>
-                      <SelectItem value="engagement">By Engagement</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <span className="text-slate-600 dark:text-slate-400">Tax Harvesting</span>
+                  <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    Available
+                  </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {topClients.map((client, index) => (
-                    <motion.div
-                      key={index}
-                      variants={itemVariants}
-                      transition={{ delay: index * 0.05 }}
-                      className="group flex items-center justify-between p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="relative">
-                          <div className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-full font-bold",
-                            index < 3 
-                              ? "bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-600 dark:text-amber-400"
-                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                          )}>
-                            {client.rank}
-                          </div>
-                          {client.growth > 15 && (
-                            <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-green-500 border-2 border-white dark:border-slate-900 flex items-center justify-center">
-                              <ArrowUpRight className="h-2 w-2 text-white" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900 dark:text-white">{client.name}</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                            <Building2 className="h-3 w-3" />
-                            {client.department} Department
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right space-y-1">
-                        <div className="text-lg font-bold text-slate-900 dark:text-white">
-                          {client.investment}
-                        </div>
-                        <div className="flex items-center justify-end gap-2">
-                          <div className="w-20 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                            <div 
-                              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-500"
-                              style={{ width: `${client.engagement}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-slate-600 dark:text-slate-400">
-                            {client.engagement}%
-                          </span>
-                        </div>
-                        <p className={cn(
-                          "text-xs font-medium",
-                          parseFloat(client.growth) > 15 
-                            ? "text-green-600" 
-                            : parseFloat(client.growth) > 10 
-                            ? "text-amber-600" 
-                            : "text-slate-500"
-                        )}>
-                          {client.growth} Growth
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Quick Actions & Insights */}
-          <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 dark:border-slate-800 h-full">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common administrative tasks</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button className="w-full justify-start gap-3 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700">
-                  <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <div className="text-left">
-                    <div className="font-medium text-blue-700 dark:text-blue-300">Add New Client</div>
-                    <div className="text-xs text-blue-600/70 dark:text-blue-400/70">Register new government employee</div>
-                  </div>
-                </Button>
-                
-                <Button className="w-full justify-start gap-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-700">
-                  <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <div className="text-left">
-                    <div className="font-medium text-emerald-700 dark:text-emerald-300">Generate Reports</div>
-                    <div className="text-xs text-emerald-600/70 dark:text-emerald-400/70">Monthly financial summaries</div>
-                  </div>
-                </Button>
-                
-                <Button className="w-full justify-start gap-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 hover:border-amber-300 dark:hover:border-amber-700">
-                  <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                  <div className="text-left">
-                    <div className="font-medium text-amber-700 dark:text-amber-300">Pending Approvals</div>
-                    <div className="text-xs text-amber-600/70 dark:text-amber-400/70">8 requests awaiting review</div>
-                  </div>
-                </Button>
-                
-                <Button className="w-full justify-start gap-3 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border border-purple-200 dark:border-purple-800 hover:border-purple-300 dark:hover:border-purple-700">
-                  <BarChart3 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                  <div className="text-left">
-                    <div className="font-medium text-purple-700 dark:text-purple-300">Analytics Dashboard</div>
-                    <div className="text-xs text-purple-600/70 dark:text-purple-400/70">Detailed performance insights</div>
-                  </div>
-                </Button>
-
-                {/* Insights Section */}
-                <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Target className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                    <h4 className="font-medium text-slate-900 dark:text-white">Today's Insight</h4>
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
-                    <p>• Health department shows highest engagement at 92%</p>
-                    <p>• Mutual Funds allocation increased by 5% this month</p>
-                    <p>• 12 new clients registered from Education department</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
     </AdminLayout>
   )

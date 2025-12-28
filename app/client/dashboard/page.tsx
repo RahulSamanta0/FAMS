@@ -5,17 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, DollarSign, Wallet, AlertCircle, Calendar, BarChart3, PieChart } from "lucide-react"
-import { 
-  Bar, 
-  BarChart, 
-  CartesianGrid, 
-  Legend, 
-  Line, 
-  LineChart, 
-  ResponsiveContainer, 
-  XAxis, 
-  YAxis, 
-  Area, 
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Area,
   AreaChart,
   Tooltip
 } from "recharts"
@@ -58,92 +58,84 @@ const itemVariants = {
 export default function ClientDashboard() {
   return (
     <ClientLayout activeTab="/client/dashboard">
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
-        
-       
+
+
 
         {/* SUMMARY CARDS */}
-        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          
+        <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
           {/* Income Card */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <DollarSign className="h-16 w-16 text-blue-600" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-                Monthly Income
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">₹75,000</div>
-              <p className="text-xs text-blue-600 dark:text-blue-300 flex items-center gap-1 mt-1 font-medium">
-                <TrendingUp className="h-3 w-3" />
-                +5% from last month
-              </p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-xl transition-all duration-300 rounded-3xl p-6">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-8 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <DollarSign className="h-8 w-8 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-sm font-medium mb-1">Monthly Income</p>
+                <p className="text-white text-2xl font-bold mb-1">₹75,000</p>
+                <p className="text-white/90 text-xs flex items-center gap-1 font-medium">
+                  <TrendingUp className="h-3 w-3" />
+                  +5% from last month
+                </p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Expense Card */}
-          <Card className="relative overflow-hidden border-red-100 bg-gradient-to-br from-red-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Wallet className="h-16 w-16 text-red-600" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">
-                Monthly Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">₹44,000</div>
-              <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1 mt-1 font-medium">
-                <TrendingDown className="h-3 w-3" />
-                -8% (Savings!)
-              </p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-400 to-yellow-500 hover:shadow-xl transition-all duration-300 rounded-3xl p-6">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-8 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <Wallet className="h-8 w-8 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-sm font-medium mb-1">Monthly Expenses</p>
+                <p className="text-white text-2xl font-bold mb-1">₹44,000</p>
+                <p className="text-white/90 text-xs flex items-center gap-1 font-medium">
+                  <TrendingDown className="h-3 w-3" />
+                  -8% (Savings!)
+                </p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Savings Rate Card */}
-          <Card className="relative overflow-hidden border-purple-100 bg-gradient-to-br from-purple-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <PieChart className="h-16 w-16 text-purple-600" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">
-                Savings Rate
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">41.3%</div>
-              <p className="text-xs text-purple-600 dark:text-purple-300 mt-1 font-medium">Excellent progress</p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-pink-400 to-pink-600 hover:shadow-xl transition-all duration-300 rounded-3xl p-6">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-8 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <PieChart className="h-8 w-8 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-sm font-medium mb-1">Savings Rate</p>
+                <p className="text-white text-2xl font-bold mb-1">41.3%</p>
+                <p className="text-white/90 text-xs font-medium">Excellent progress</p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Tax Card */}
-          <Card className="relative overflow-hidden border-orange-100 bg-gradient-to-br from-orange-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <AlertCircle className="h-16 w-16 text-orange-600" />
-            </div>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">
-                Est. Tax (FY 24-25)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">₹45,600</div>
-              <p className="text-xs text-orange-600 dark:text-orange-300 mt-1 font-medium">Under old regime</p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-purple-500 to-purple-700 hover:shadow-xl transition-all duration-300 rounded-3xl p-6">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-8 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <AlertCircle className="h-8 w-8 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-sm font-medium mb-1">Est. Tax (FY 24-25)</p>
+                <p className="text-white text-2xl font-bold mb-1">₹45,600</p>
+                <p className="text-white/90 text-xs font-medium">Under old regime</p>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
         {/* ALERTS & INVESTMENTS ROW */}
         <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-2">
-          
+
           {/* Alerts & Reminders */}
           <Card className="hover:shadow-lg transition-all duration-300 border-blue-100 dark:border-slate-800 bg-white dark:bg-slate-900">
             <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-blue-50/30 dark:bg-slate-900/50">
@@ -202,24 +194,24 @@ export default function ClientDashboard() {
                   <AreaChart data={investmentData}>
                     <defs>
                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                    <Tooltip 
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                    <Tooltip
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                       formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Value']}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#10b981" 
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#10b981"
                       strokeWidth={3}
-                      fillOpacity={1} 
-                      fill="url(#colorValue)" 
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -246,19 +238,19 @@ export default function ClientDashboard() {
                   <BarChart data={incomeExpenseData} barGap={8}>
                     <defs>
                       <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3} />
                       </linearGradient>
                       <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3}/>
+                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0.3} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                    <Tooltip 
-                      cursor={{fill: 'transparent'}}
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700" />
+                    <XAxis dataKey="month" axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                    <Tooltip
+                      cursor={{ fill: 'transparent' }}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
