@@ -240,8 +240,7 @@ export default function ApprovedClientsPage() {
             <CardHeader className="pb-2 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Total Approved</CardTitle>
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
-                  <Users className="h-4 w-4 text-white" />
+                <div className="">
                 </div>
               </div>
             </CardHeader>
@@ -266,8 +265,7 @@ export default function ApprovedClientsPage() {
             <CardHeader className="pb-2 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Total Investment</CardTitle>
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
-                  <Wallet className="h-4 w-4 text-white" />
+                <div className="">
                 </div>
               </div>
             </CardHeader>
@@ -292,8 +290,7 @@ export default function ApprovedClientsPage() {
             <CardHeader className="pb-2 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">Total Insurance</CardTitle>
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
-                  <Shield className="h-4 w-4 text-white" />
+                <div className="">
                 </div>
               </div>
             </CardHeader>
@@ -318,8 +315,7 @@ export default function ApprovedClientsPage() {
             <CardHeader className="pb-2 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wider">White Money</CardTitle>
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm border border-white/30">
-                  <DollarSign className="h-4 w-4 text-white" />
+                <div className="">
                 </div>
               </div>
             </CardHeader>

@@ -63,26 +63,26 @@ const menuItems = [
       { icon: FileUser, label: "Client Fact Sheets", href: "/admin/clients/factsheets" },
     ]
   },
-  { 
-    icon: TrendingUp, 
-    label: "Investments", 
-    href: "/admin/investments",
-    children: [
-      { icon: PieChart, label: "Portfolio Overview", href: "/admin/investments/portfolio" },
-      { icon: BarChart3, label: "Performance Reports", href: "/admin/investments/performance" },
-      { icon: Target, label: "Investment Offers", href: "/admin/investments/offers" },
-    ]
-  },
-  { 
-    icon: ShieldCheck, 
-    label: "Insurance", 
-    href: "/admin/insurance",
-    children: [
-      { icon: Shield, label: "Policies Overview", href: "/admin/insurance/policies" },
-      { icon: FileText, label: "Claims Tracking", href: "/admin/insurance/claims" },
-      { icon: Calculator, label: "Premium Analysis", href: "/admin/insurance/premiums" },
-    ]
-  },
+  // { 
+  //   icon: TrendingUp, 
+  //   label: "Investments", 
+  //   href: "/admin/investments",
+  //   children: [
+  //     { icon: PieChart, label: "Portfolio Overview", href: "/admin/investments/portfolio" },
+  //     { icon: BarChart3, label: "Performance Reports", href: "/admin/investments/performance" },
+  //     { icon: Target, label: "Investment Offers", href: "/admin/investments/offers" },
+  //   ]
+  // },
+  // { 
+  //   icon: ShieldCheck, 
+  //   label: "Insurance", 
+  //   href: "/admin/insurance",
+  //   children: [
+  //     { icon: Shield, label: "Policies Overview", href: "/admin/insurance/policies" },
+  //     { icon: FileText, label: "Claims Tracking", href: "/admin/insurance/claims" },
+  //     { icon: Calculator, label: "Premium Analysis", href: "/admin/insurance/premiums" },
+  //   ]
+  // },
   { 
     icon: FileText, 
     label: "Reports", 
