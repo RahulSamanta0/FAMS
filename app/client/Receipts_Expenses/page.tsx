@@ -77,68 +77,52 @@ export default function ReceiptsAndExpenses() {
         className="space-y-8 max-w-7xl mx-auto pb-10 px-4 md:px-0"
       >
 
-        {/* HEADER */}
-        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Receipts & Expenses
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
-              Track your cash flow, manage expenses, and monitor savings.
-            </p>
-          </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-all duration-300">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Entry
-          </Button>
-        </motion.div>
-
         {/* SUMMARY CARDS */}
-        <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-3">
+        <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-3">
           
           {/* Total Income */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <TrendingUp className="h-24 w-24 text-green-600" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">Total Income</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">₹{totalIncome.toLocaleString()}</div>
-              <p className="text-xs text-slate-500 mt-1">This month</p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-400 to-teal-500 hover:shadow-xl transition-all duration-300 rounded-3xl p-4">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-4 p-2 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-xs font-medium mb-1 uppercase tracking-wider">Total Income</p>
+                <p className="text-white text-xl font-bold mb-1">₹{totalIncome.toLocaleString()}</p>
+                <p className="text-white/90 text-xs font-medium">This month</p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Total Expenses */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <TrendingDown className="h-24 w-24 text-red-600" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wider">Total Expenses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-red-600 dark:text-red-400">₹{totalExpenses.toLocaleString()}</div>
-              <p className="text-xs text-slate-500 mt-1">This month</p>
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-400 to-amber-500 hover:shadow-xl transition-all duration-300 rounded-3xl p-4">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-4 p-2 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <TrendingDown className="h-5 w-5 text-white" />
+              </div>
+              <div className="w-full">
+                <p className="text-white/80 text-xs font-medium mb-1 uppercase tracking-wider">Total Expenses</p>
+                <p className="text-white text-xl font-bold mb-1">₹{totalExpenses.toLocaleString()}</p>
+                <p className="text-white/90 text-xs font-medium">This month</p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Net Savings */}
-          <Card className="relative overflow-hidden border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all duration-300 dark:bg-slate-900 dark:border-slate-800 dark:from-slate-800 dark:to-slate-900">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Wallet className="h-24 w-24 text-blue-600" />
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Net Savings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={cn("text-3xl font-bold", savings >= 0 ? "text-blue-700 dark:text-blue-300" : "text-orange-600")}>
-                ₹{savings.toLocaleString()}
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-violet-400 to-purple-600 hover:shadow-xl transition-all duration-300 rounded-3xl p-4">
+            <CardContent className="p-0 flex flex-col items-start justify-between h-full">
+              <div className="mb-4 p-2 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <Wallet className="h-5 w-5 text-white" />
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                {savings >= 0 ? "Great savings!" : "Budget deficit"}
-              </p>
+              <div className="w-full">
+                <p className="text-white/80 text-xs font-medium mb-1 uppercase tracking-wider">Net Savings</p>
+                <p className="text-white text-xl font-bold mb-1">
+                  ₹{savings.toLocaleString()}
+                </p>
+                <p className="text-white/90 text-xs font-medium">
+                  {savings >= 0 ? "Great savings!" : "Budget deficit"}
+                </p>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
